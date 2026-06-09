@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MeteoRadar</string>
+    <string name="nav_radar">Radar</string>
+    <string name="nav_alerts">Allerte</string>
+    <string name="alerts_title">Allerte Meteo</string>
+    <string name="mark_all_read">Segna tutte come lette</string>
+    <string name="no_alerts">Nessun allarme attivo.\nL\'app controlla le condizioni ogni 15 minuti.</string>
+    <string name="radar_loading">Caricamento radar…</string>
+    <string name="error_network">Errore di rete. Riprova.</string>
+    <string name="permission_location">Consenti l\'accesso alla posizione per ricevere allerte locali.</string>
+    <string name="permission_notification">Consenti le notifiche per ricevere allerte in tempo reale.</string>
+    <string name="hail_risk">Rischio grandine</string>
+    <string name="channel_alerts_name">Allerte meteo</string>
+    <string name="channel_alerts_desc">Notifiche per temporali, grandine e pioggia intensa</string>
+    <string name="channel_info_name">Informazioni meteo</string>
+</resources>

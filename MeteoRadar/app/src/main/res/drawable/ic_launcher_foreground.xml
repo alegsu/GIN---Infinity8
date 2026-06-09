@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Storm cloud with lightning bolt -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,20 C43,20 34,27 32,37 C25,37 20,42 20,49 C20,56 25,61 32,61 L76,61 C83,61 88,56 88,49 C88,42 83,37 76,37 C74,27 65,20 54,20 Z" />
+    <!-- Lightning bolt -->
+    <path
+        android:fillColor="#FFC107"
+        android:pathData="M58,45 L50,60 L56,60 L52,80 L64,58 L57,58 L62,45 Z" />
+</vector>

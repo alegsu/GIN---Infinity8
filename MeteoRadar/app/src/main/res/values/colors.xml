@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark theme palette -->
+    <color name="background">#0D1117</color>
+    <color name="surface">#161B22</color>
+    <color name="surface_dark">#0D1117</color>
+    <color name="accent">#1565C0</color>
+    <color name="accent_light">#42A5F5</color>
+
+    <color name="text_primary">#E6EDF3</color>
+    <color name="text_secondary">#8B949E</color>
+
+    <!-- Alert levels -->
+    <color name="alert_info">#2196F3</color>
+    <color name="alert_warning">#FF9800</color>
+    <color name="alert_danger">#F44336</color>
+    <color name="alert_extreme">#9C27B0</color>
+
+    <!-- Hail risk -->
+    <color name="risk_low">#4CAF50</color>
+    <color name="risk_possible">#FFC107</color>
+    <color name="risk_moderate">#FF9800</color>
+    <color name="risk_high">#F44336</color>
+
+    <!-- System -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>

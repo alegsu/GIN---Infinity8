@@ -1,0 +1,8 @@
+#!/bin/sh
+# Gradle wrapper shell script
+
+APP_NAME="Gradle"
+DIRNAME="$(dirname "$0")"
+cd "$DIRNAME" || exit 1
+
+exec java -jar "$DIRNAME/gradle/wrapper/gradle-wrapper.jar" "$@"
