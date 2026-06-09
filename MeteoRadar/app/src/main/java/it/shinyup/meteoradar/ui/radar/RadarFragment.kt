@@ -183,7 +183,7 @@ class RadarFragment : Fragment() {
 
         val host = radarHost.trimEnd('/')
         val tileSource = object : OnlineTileSourceBase(
-            "Radar_${frame.time}", 0, 18, 256, ".png", host
+            "Radar_${frame.time}", 0, 18, 256, ".png", arrayOf(host)
         ) {
             override fun getTileURLString(pMapTileIndex: Long): String {
                 val z = MapTileIndex.getZoom(pMapTileIndex)
