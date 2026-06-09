@@ -20,13 +20,11 @@ import it.shinyup.meteoradar.R
 import it.shinyup.meteoradar.data.models.RadarFrame
 import it.shinyup.meteoradar.data.models.WeatherCode
 import it.shinyup.meteoradar.databinding.FragmentRadarBinding
-import it.shinyup.meteoradar.utils.LocationHelper
-import org.osmdroid.config.Configuration
+import org.osmdroid.tileprovider.MapTileProviderBasic
 import org.osmdroid.tileprovider.tilesource.OnlineTileSourceBase
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.util.MapTileIndex
-import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.TilesOverlay
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
@@ -194,12 +192,9 @@ class RadarFragment : Fragment() {
         }
 
         radarOverlay = TilesOverlay(
-            org.osmdroid.tileprovider.MapTileProviderBasic(requireContext(), tileSource),
+            MapTileProviderBasic(requireContext(), tileSource),
             requireContext()
-        ).apply {
-            loadingBackgroundColor = Color.TRANSPARENT
-            loadingLineColor = Color.TRANSPARENT
-        }
+        )
 
         map.overlays.add(radarOverlay)
         locationOverlay?.let {
@@ -213,6 +208,7 @@ class RadarFragment : Fragment() {
         stopAnimation()
         animRunnable = object : Runnable {
             override fun run() {
+                if (allFrames.isEmpty()) return
                 val current = viewModel.currentFrameIndex.value ?: 0
                 val next = (current + 1) % allFrames.size
                 viewModel.setFrameIndex(next)

@@ -1,0 +1,95 @@
+name: Build MeteoRadar APK
+
+on:
+  push:
+    branches: ["**"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android platform & build-tools
+        run: |
+          yes | sdkmanager --licenses > /dev/null 2>&1 || true
+          sdkmanager "platforms;android-34" "build-tools;34.0.0" "platform-tools"
+
+      - name: Create local.properties
+        working-directory: MeteoRadar
+        run: echo "sdk.dir=$ANDROID_HOME" > local.properties
+
+      - name: Generate Gradle wrapper
+        working-directory: MeteoRadar
+        run: gradle wrapper --gradle-version 8.6 --distribution-type bin
+
+      - name: Make gradlew executable
+        working-directory: MeteoRadar
+        run: chmod +x gradlew
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: ${{ runner.os }}-gradle-
+
+      - name: Build Debug APK
+        working-directory: MeteoRadar
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Rename APK
+        run: |
+          mkdir -p /tmp/apk-out
+          cp MeteoRadar/app/build/outputs/apk/debug/app-debug.apk \
+             /tmp/apk-out/MeteoRadar-debug.apk
+          echo "APK_PATH=/tmp/apk-out/MeteoRadar-debug.apk" >> $GITHUB_ENV
+
+      - name: Upload APK as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MeteoRadar-debug-apk
+          path: /tmp/apk-out/MeteoRadar-debug.apk
+          retention-days: 30
+
+      - name: Create / update Release with APK
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest-build
+          name: "MeteoRadar – Build più recente"
+          body: |
+            ## MeteoRadar APK
+
+            Installa questo APK sul tuo dispositivo Android (minimo Android 8.0).
+
+            **Funzionalità:**
+            - Radar meteo animato in tempo reale (RainViewer)
+            - Legenda intensità precipitazioni (scala dBZ)
+            - Indicatore rischio grandine (codici WMO + CAPE)
+            - Allerte push automatiche ogni 15 minuti
+            - Storico allarmi con livelli Attenzione / Pericolo / Estremo
+
+            **Come installare:**
+            1. Scarica `MeteoRadar-debug.apk`
+            2. Su Android: Impostazioni → Sicurezza → Consenti fonti sconosciute
+            3. Apri il file APK e installa
+          files: /tmp/apk-out/MeteoRadar-debug.apk
+          make_latest: true
+          prerelease: false
