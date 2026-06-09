@@ -77,7 +77,7 @@ class RadarFragment : Fragment() {
             controller.setZoom(7.0)
             controller.setCenter(GeoPoint(41.9028, 12.4964)) // Italia
             minZoomLevel = 4.0
-            maxZoomLevel = 14.0
+            maxZoomLevel = 18.0
         }
     }
 
@@ -130,10 +130,11 @@ class RadarFragment : Fragment() {
                 updateRadarOverlay(allFrames[index])
                 binding.seekBarTimeline.progress = index
                 val time = Date(allFrames[index].time * 1000L)
-                val label = if (index < allFrames.indexOfFirst { it.time > System.currentTimeMillis() / 1000 })
-                    timeFormat.format(time)
-                else
+                val nowcastStart = allFrames.indexOfFirst { it.time > System.currentTimeMillis() / 1000 }
+                val label = if (nowcastStart > 0 && index >= nowcastStart)
                     "Previsione ${timeFormat.format(time)}"
+                else
+                    timeFormat.format(time)
                 binding.tvFrameTime.text = label
             }
         }
@@ -180,19 +181,20 @@ class RadarFragment : Fragment() {
         val map = binding.mapView
         radarOverlay?.let { map.overlays.remove(it) }
 
+        val host = radarHost.trimEnd('/')
         val tileSource = object : OnlineTileSourceBase(
-            "RainViewer", 0, 14, 256, ".png", arrayOf(radarHost)
+            "Radar_${frame.time}", 0, 18, 256, ".png", host
         ) {
             override fun getTileURLString(pMapTileIndex: Long): String {
                 val z = MapTileIndex.getZoom(pMapTileIndex)
                 val x = MapTileIndex.getX(pMapTileIndex)
                 val y = MapTileIndex.getY(pMapTileIndex)
-                return "$radarHost${frame.path}/256/$z/$x/$y/2/1_1.png"
+                return "$host${frame.path}/256/$z/$x/$y/2/1_1.png"
             }
         }
 
         radarOverlay = TilesOverlay(
-            MapTileProviderBasic(requireContext(), tileSource),
+            MapTileProviderBasic(requireContext().applicationContext, tileSource),
             requireContext()
         )
 
