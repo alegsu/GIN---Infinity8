@@ -8,9 +8,6 @@
 # Gson models
 -keep class it.shinyup.meteoradar.data.models.** { *; }
 
-# OSMDroid
--keep class org.osmdroid.** { *; }
-
 # Room
 -keep class * extends androidx.room.RoomDatabase
 -keep @androidx.room.Entity class *
