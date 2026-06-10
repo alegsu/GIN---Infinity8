@@ -47,7 +47,7 @@ class RadarTileOverlay(
 
         val frame = frames.getOrNull(currentFrameIndex) ?: return
         val projection = mapView.projection
-        val zoom = projection.zoomLevel.coerceIn(0, 18)
+        val zoom = projection.zoomLevel.toInt().coerceIn(0, 18)
         val numTiles = 1 shl zoom
         val bbox = projection.boundingBox
 
