@@ -51,7 +51,7 @@ jobs:
 
       - name: Build Debug APK
         working-directory: MeteoRadar
-        run: ./gradlew assembleDebug --stacktrace
+        run: ./gradlew assembleDebug -PbuildNumber=${{ github.run_number }} --stacktrace
 
       - name: Rename APK
         run: |
@@ -71,9 +71,12 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: latest-build
-          name: "MeteoRadar – Build più recente"
+          name: "MeteoRadar – Build #${{ github.run_number }}"
           body: |
-            ## MeteoRadar APK
+            ## MeteoRadar APK — Build #${{ github.run_number }}
+
+            Versione nell'app: **v1.${{ github.run_number }}**
+            _(verificabile in basso a destra sulla mappa dopo l'installazione)_
 
             Installa questo APK sul tuo dispositivo Android (minimo Android 8.0).
 

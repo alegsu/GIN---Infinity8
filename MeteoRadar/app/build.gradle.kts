@@ -8,12 +8,14 @@ android {
     namespace = "it.shinyup.meteoradar"
     compileSdk = 34
 
+    val buildNumber = (project.findProperty("buildNumber") as? String)?.toIntOrNull() ?: 1
+
     defaultConfig {
         applicationId = "it.shinyup.meteoradar"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = buildNumber
+        versionName = "1.$buildNumber"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
