@@ -92,19 +92,21 @@ class RadarTileOverlay(
             }
         }
 
-        // Diagnostic / status line — always drawn so the overlay is provably alive.
-        val y = canvas.height - 70f
+        // Status line near top — always visible regardless of UI chrome below.
+        val y = 80f
         val status = when {
-            frames.isEmpty() -> "Radar: nessun frame (API?)"
-            tilesDrawn == 0 && totalVisible > 0 -> "Radar in caricamento... (0/$totalVisible)"
-            tilesDrawn < totalVisible -> "Radar in caricamento... ($tilesDrawn/$totalVisible)"
-            else -> ""
+            frames.isEmpty() -> "Radar: nessun frame"
+            tilesDrawn == 0 && totalVisible > 0 -> "Radar: caricamento... (0/$totalVisible)"
+            tilesDrawn < totalVisible -> "Radar: caricamento... ($tilesDrawn/$totalVisible)"
+            tilesDrawn > 0 -> ""   // tiles loaded — rain visible if present
+            else -> "Radar: nessuna precipitazione nell'area"
         }
         if (status.isNotEmpty()) {
             canvas.drawText(status, 20f, y, labelStroke)
             canvas.drawText(status, 20f, y, labelFill)
         }
 
+        // Version — top-right corner, always drawn
         val ver = "v${BuildConfig.VERSION_NAME}"
         val verW = labelFill.measureText(ver)
         canvas.drawText(ver, canvas.width - verW - 16f, y, labelStroke)
