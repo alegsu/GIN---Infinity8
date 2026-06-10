@@ -10,7 +10,9 @@ interface OpenMeteoApi {
     suspend fun getForecast(
         @Query("latitude") latitude: Double,
         @Query("longitude") longitude: Double,
-        @Query("hourly") hourly: String = "precipitation,weathercode,cape,precipitation_probability",
+        @Query("hourly") hourly: String =
+            "precipitation,weathercode,cape,precipitation_probability," +
+            "lifted_index,windgusts_10m,freezing_level_height,showers",
         @Query("current_weather") currentWeather: Boolean = true,
         @Query("timezone") timezone: String = "auto",
         @Query("forecast_hours") forecastHours: Int = 24

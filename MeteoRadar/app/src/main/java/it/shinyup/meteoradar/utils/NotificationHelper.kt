@@ -46,7 +46,6 @@ object NotificationHelper {
     fun sendAlertNotification(context: Context, alert: WeatherAlert) {
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            putExtra("navigate_to", "alerts")
         }
         val pendingIntent = PendingIntent.getActivity(
             context, alert.id, intent,

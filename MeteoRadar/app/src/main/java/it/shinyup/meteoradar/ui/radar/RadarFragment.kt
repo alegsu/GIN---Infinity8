@@ -52,12 +52,20 @@ class RadarFragment : Fragment() {
 
         binding.btnRefresh.setOnClickListener { checkLocationAndLoad() }
 
+        // Restore saved radius before attaching listener to avoid double load
+        when (viewModel.radiusKm.value) {
+            25  -> binding.chipRadius25.isChecked = true
+            50  -> binding.chipRadius50.isChecked = true
+            100 -> binding.chipRadius100.isChecked = true
+            else -> binding.chipRadius0.isChecked = true
+        }
+
         binding.radiusChipGroup.setOnCheckedStateChangeListener { _, checkedIds ->
             val km = when (checkedIds.firstOrNull()) {
-                R.id.chipRadius25 -> 25
-                R.id.chipRadius50 -> 50
+                R.id.chipRadius25  -> 25
+                R.id.chipRadius50  -> 50
                 R.id.chipRadius100 -> 100
-                else -> 0
+                else               -> 0
             }
             viewModel.setRadius(km)
         }
@@ -106,19 +114,24 @@ class RadarFragment : Fragment() {
         binding.tvWeatherDesc.text = WeatherCode.description(code)
         binding.tvTemperature.text = "${temp.toInt()}°C"
 
-        val cape = data.hourly?.cape?.take(3)?.maxOrNull() ?: 0.0
-        val hasHailCode = data.hourly?.weatherCode?.take(6)?.any { WeatherCode.hasHail(it) } == true
+        val hourly = data.hourly
+        val maxScore = if (hourly != null) {
+            (0 until minOf(6, hourly.time.size)).maxOfOrNull { i ->
+                WeatherCode.computeSeverityScore(
+                    code       = hourly.weatherCode.getOrElse(i) { 0 },
+                    cape       = hourly.cape.getOrElse(i) { 0.0 },
+                    liftedIndex   = hourly.liftedIndex?.getOrElse(i) { 0.0 } ?: 0.0,
+                    windGusts     = hourly.windGusts?.getOrElse(i) { 0.0 } ?: 0.0,
+                    freezingLevel = hourly.freezingLevelHeight?.getOrElse(i) { 3000.0 } ?: 3000.0,
+                    precip     = hourly.precipitation.getOrElse(i) { 0.0 },
+                    showers    = hourly.showers?.getOrElse(i) { 0.0 } ?: 0.0,
+                    precipProb = hourly.precipitationProbability.getOrElse(i) { 0 }
+                )
+            } ?: 0
+        } else 0
 
-        val (label, color) = when {
-            WeatherCode.isHeavyHail(code) ||
-            data.hourly?.weatherCode?.take(6)?.any { WeatherCode.isHeavyHail(it) } == true ->
-                "ALTO" to Color.parseColor("#F44336")
-            hasHailCode || cape > 2000 -> "MODERATO" to Color.parseColor("#FF9800")
-            cape > 500 -> "POSSIBILE" to Color.parseColor("#FFC107")
-            else -> "BASSO" to Color.parseColor("#4CAF50")
-        }
-
-        binding.tvHailRisk.text = "Rischio grandine: $label"
+        val (label, color) = scoreToDisplay(maxScore)
+        binding.tvHailRisk.text = "Rischio grandine/temporale: $label"
         binding.tvHailRisk.setTextColor(color)
         binding.cardWeatherInfo.visibility = View.VISIBLE
     }
@@ -127,12 +140,18 @@ class RadarFragment : Fragment() {
         if (hourly == null) return
 
         val items = hourly.time.indices.map { i ->
-            val timeStr = hourly.time[i].substringAfter("T").take(5)
-            val code = hourly.weatherCode.getOrElse(i) { 0 }
-            val precip = hourly.precipitation.getOrElse(i) { 0.0 }
+            val timeStr    = hourly.time[i].substringAfter("T").take(5)
+            val code       = hourly.weatherCode.getOrElse(i) { 0 }
+            val precip     = hourly.precipitation.getOrElse(i) { 0.0 }
             val precipProb = hourly.precipitationProbability.getOrElse(i) { 0 }
-            val cape = hourly.cape.getOrElse(i) { 0.0 }
-            val (label, color) = hourSeverity(code, cape, precipProb)
+            val cape       = hourly.cape.getOrElse(i) { 0.0 }
+            val li         = hourly.liftedIndex?.getOrElse(i) { 0.0 } ?: 0.0
+            val gusts      = hourly.windGusts?.getOrElse(i) { 0.0 } ?: 0.0
+            val fz         = hourly.freezingLevelHeight?.getOrElse(i) { 3000.0 } ?: 3000.0
+            val showers    = hourly.showers?.getOrElse(i) { 0.0 } ?: 0.0
+
+            val score = WeatherCode.computeSeverityScore(code, cape, li, gusts, fz, precip, showers, precipProb)
+            val (label, color) = scoreToDisplay(score)
             HourForecastItem(timeStr, WeatherCode.description(code), precip, precipProb, cape, label, color)
         }
 
@@ -144,13 +163,12 @@ class RadarFragment : Fragment() {
             "Prossime 24 ore (peggiore entro $radius km)" else "Prossime 24 ore"
     }
 
-    private fun hourSeverity(code: Int, cape: Double, precipProb: Int): Pair<String, Int> = when {
-        WeatherCode.isHeavyHail(code)  -> "ESTREMO"  to Color.parseColor("#9C27B0")
-        WeatherCode.hasHail(code)      -> "PERICOLO" to Color.parseColor("#F44336")
-        WeatherCode.isThunderstorm(code) -> "MODERATO" to Color.parseColor("#FF9800")
-        cape > 2000                    -> "MODERATO" to Color.parseColor("#FF9800")
-        cape > 500 && precipProb > 40  -> "POSSIBILE" to Color.parseColor("#FFC107")
-        else                           -> "BASSO"    to Color.parseColor("#4CAF50")
+    private fun scoreToDisplay(score: Int): Pair<String, Int> = when {
+        score >= 7 -> "ESTREMO"  to Color.parseColor("#9C27B0")
+        score >= 5 -> "PERICOLO" to Color.parseColor("#F44336")
+        score >= 3 -> "MODERATO" to Color.parseColor("#FF9800")
+        score >= 1 -> "POSSIBILE" to Color.parseColor("#FFC107")
+        else       -> "BASSO"    to Color.parseColor("#4CAF50")
     }
 
     override fun onDestroyView() {
