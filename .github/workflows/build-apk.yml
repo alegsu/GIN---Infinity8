@@ -67,6 +67,11 @@ jobs:
           path: /tmp/apk-out/MeteoRadar-debug.apk
           retention-days: 30
 
+      - name: Delete old APK asset (force fresh file on every build)
+        run: gh release delete-asset latest-build MeteoRadar-debug.apk --yes 2>/dev/null || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Create / update Release with APK
         uses: softprops/action-gh-release@v2
         with:

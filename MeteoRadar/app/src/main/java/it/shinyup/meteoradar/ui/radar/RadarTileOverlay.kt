@@ -60,7 +60,9 @@ class RadarTileOverlay(
     override fun draw(canvas: Canvas, projection: Projection) {
         if (!isEnabled) return
 
-        val zoom = projection.zoomLevel.toInt().coerceIn(0, 18)
+        // Clamp tile zoom 3-8: prevents blank screen when zooming out (new zoom = cache miss)
+        // and avoids fetching thousands of tiny tiles when zoomed in past z8.
+        val zoom = projection.zoomLevel.toInt().coerceIn(3, 8)
         val frame = frames.getOrNull(currentFrameIndex)
 
         var tilesDrawn = 0
