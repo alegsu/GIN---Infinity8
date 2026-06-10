@@ -159,7 +159,7 @@ class RadarFragment : Fragment() {
         radarTileOverlay?.let { map.overlays.remove(it) }
         radarTileOverlay?.destroy()
 
-        radarTileOverlay = RadarTileOverlay(allFrames, radarHost)
+        radarTileOverlay = RadarTileOverlay(allFrames, radarHost, map)
         map.overlays.add(radarTileOverlay)
 
         // Keep location overlay on top

@@ -13,13 +13,11 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
+import org.osmdroid.views.Projection
 import org.osmdroid.views.overlay.Overlay
-import java.lang.ref.WeakReference
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.PI
 import kotlin.math.atan
 import kotlin.math.cos
@@ -29,7 +27,8 @@ import kotlin.math.tan
 
 class RadarTileOverlay(
     private val frames: List<RadarFrame>,
-    private val host: String
+    private val host: String,
+    private val mapView: MapView
 ) : Overlay() {
 
     var currentFrameIndex: Int = 0
@@ -37,97 +36,79 @@ class RadarTileOverlay(
     private val tilePaint = Paint(Paint.FILTER_BITMAP_FLAG).apply { alpha = 204 }
     private val labelFill = Paint().apply {
         color = Color.WHITE
-        textSize = 34f
+        textSize = 32f
         isAntiAlias = true
     }
     private val labelStroke = Paint().apply {
         color = Color.BLACK
-        textSize = 34f
+        textSize = 32f
         isAntiAlias = true
         style = Paint.Style.STROKE
-        strokeWidth = 3f
-    }
-    private val versionPaint = Paint().apply {
-        color = Color.WHITE
-        textSize = 24f
-        isAntiAlias = true
-        alpha = 180
+        strokeWidth = 4f
     }
 
     private val cache = LruCache<String, Bitmap>(400)
     private val pending = ConcurrentHashMap.newKeySet<String>()
     private val executor = Executors.newFixedThreadPool(6)
-    private var mapRef = WeakReference<MapView>(null)
-    private val prefetchDone = AtomicBoolean(false)
-    private val totalLoaded = AtomicInteger(0)
-    private val totalFailed = AtomicInteger(0)
 
     private val http = OkHttpClient.Builder()
         .connectTimeout(10, TimeUnit.SECONDS)
         .readTimeout(15, TimeUnit.SECONDS)
         .build()
 
-    override fun draw(canvas: Canvas, mapView: MapView, shadow: Boolean) {
-        if (shadow || !isEnabled) return
-        mapRef = WeakReference(mapView)
+    // Canonical OSMDroid extension point — always invoked by the overlay manager.
+    override fun draw(canvas: Canvas, projection: Projection) {
+        if (!isEnabled) return
 
-        val frame = frames.getOrNull(currentFrameIndex) ?: return
-        val projection = mapView.projection
         val zoom = projection.zoomLevel.toInt().coerceIn(0, 18)
-        val numTiles = 1 shl zoom
-        val bbox = projection.boundingBox
-
-        if (bbox.lonWest.isNaN() || bbox.latNorth.isNaN()) return
-
-        val xMin = lonToTileX(bbox.lonWest, zoom).coerceIn(0, numTiles - 1)
-        val xMax = lonToTileX(bbox.lonEast, zoom).coerceIn(0, numTiles - 1)
-        val yMin = latToTileY(bbox.latNorth, zoom).coerceIn(0, numTiles - 1)
-        val yMax = latToTileY(bbox.latSouth, zoom).coerceIn(0, numTiles - 1)
+        val frame = frames.getOrNull(currentFrameIndex)
 
         var tilesDrawn = 0
-        val totalVisible = (xMax - xMin + 1) * (yMax - yMin + 1)
+        var totalVisible = 0
 
-        for (x in xMin..xMax) {
-            for (y in yMin..yMax) {
-                val key = "${frame.time}_${zoom}_${x}_${y}"
-                val bmp = cache[key]
-                if (bmp != null) {
-                    drawTile(canvas, projection, zoom, x, y, bmp)
-                    tilesDrawn++
-                } else {
-                    fetchTile(frame, zoom, x, y, key)
+        if (frame != null) {
+            val numTiles = 1 shl zoom
+            val bbox = projection.boundingBox
+            if (!bbox.lonWest.isNaN() && !bbox.latNorth.isNaN()) {
+                val xMin = lonToTileX(bbox.lonWest, zoom).coerceIn(0, numTiles - 1)
+                val xMax = lonToTileX(bbox.lonEast, zoom).coerceIn(0, numTiles - 1)
+                val yMin = latToTileY(bbox.latNorth, zoom).coerceIn(0, numTiles - 1)
+                val yMax = latToTileY(bbox.latSouth, zoom).coerceIn(0, numTiles - 1)
+
+                totalVisible = (xMax - xMin + 1) * (yMax - yMin + 1)
+
+                for (x in xMin..xMax) {
+                    for (y in yMin..yMax) {
+                        val key = "${frame.time}_${zoom}_${x}_${y}"
+                        val bmp = cache[key]
+                        if (bmp != null) {
+                            drawTile(canvas, projection, zoom, x, y, bmp)
+                            tilesDrawn++
+                        } else {
+                            fetchTile(frame, zoom, x, y, key)
+                        }
+                    }
                 }
             }
         }
 
-        // Pre-fetch tiles for all frames on the first real draw
-        if (prefetchDone.compareAndSet(false, true) && zoom in 3..10) {
-            prefetchAllFrames(zoom, xMin, xMax, yMin, yMax)
+        // Diagnostic / status line — always drawn so the overlay is provably alive.
+        val y = canvas.height - 70f
+        val status = when {
+            frames.isEmpty() -> "Radar: nessun frame (API?)"
+            tilesDrawn == 0 && totalVisible > 0 -> "Radar in caricamento... (0/$totalVisible)"
+            tilesDrawn < totalVisible -> "Radar in caricamento... ($tilesDrawn/$totalVisible)"
+            else -> ""
+        }
+        if (status.isNotEmpty()) {
+            canvas.drawText(status, 20f, y, labelStroke)
+            canvas.drawText(status, 20f, y, labelFill)
         }
 
-        // Status label — visible until all tiles for current frame are loaded
-        val statusY = canvas.height - 80f
-        if (tilesDrawn < totalVisible) {
-            val msg = "Radar in caricamento... ($tilesDrawn/$totalVisible)"
-            canvas.drawText(msg, 20f, statusY, labelStroke)
-            canvas.drawText(msg, 20f, statusY, labelFill)
-        }
-
-        // Version label bottom-right
         val ver = "v${BuildConfig.VERSION_NAME}"
-        val verW = versionPaint.measureText(ver)
-        canvas.drawText(ver, canvas.width - verW - 16f, statusY, versionPaint)
-    }
-
-    private fun prefetchAllFrames(zoom: Int, xMin: Int, xMax: Int, yMin: Int, yMax: Int) {
-        for (frame in frames) {
-            for (x in xMin..xMax) {
-                for (y in yMin..yMax) {
-                    val key = "${frame.time}_${zoom}_${x}_${y}"
-                    if (cache[key] == null) fetchTile(frame, zoom, x, y, key)
-                }
-            }
-        }
+        val verW = labelFill.measureText(ver)
+        canvas.drawText(ver, canvas.width - verW - 16f, y, labelStroke)
+        canvas.drawText(ver, canvas.width - verW - 16f, y, labelFill)
     }
 
     private fun fetchTile(frame: RadarFrame, z: Int, x: Int, y: Int, key: String) {
@@ -141,24 +122,18 @@ class RadarTileOverlay(
                         val bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
                         if (bmp != null) {
                             cache.put(key, bmp)
-                            totalLoaded.incrementAndGet()
-                            mapRef.get()?.post { mapRef.get()?.invalidate() }
-                        } else {
-                            totalFailed.incrementAndGet()
+                            mapView.postInvalidate()
                         }
-                    } else {
-                        totalFailed.incrementAndGet()
                     }
                 }
             } catch (_: Exception) {
-                totalFailed.incrementAndGet()
             } finally {
                 pending.remove(key)
             }
         }
     }
 
-    private fun drawTile(canvas: Canvas, projection: org.osmdroid.views.Projection,
+    private fun drawTile(canvas: Canvas, projection: Projection,
                          zoom: Int, x: Int, y: Int, bmp: Bitmap) {
         val numTiles = 1 shl zoom
         val topLat = tileYToLat(y, zoom)
