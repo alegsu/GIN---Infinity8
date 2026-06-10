@@ -30,4 +30,7 @@ interface AlertDao {
 
     @Query("SELECT * FROM alerts ORDER BY timestamp DESC LIMIT 1")
     suspend fun getLastAlert(): WeatherAlert?
+
+    @Query("SELECT * FROM alerts WHERE timestamp > :since")
+    suspend fun getAlertsSince(since: Long): List<WeatherAlert>
 }

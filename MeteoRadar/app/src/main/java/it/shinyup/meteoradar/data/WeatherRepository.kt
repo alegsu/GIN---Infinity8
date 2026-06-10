@@ -129,12 +129,58 @@ class WeatherRepository {
             }
         }
 
+        // Always include hail forecast timeline (sent at most once/hour via deduplication)
+        val hailTimeline = buildHailTimeline(hourly)
+        val maxHailLevel = computeMaxHailLevel(hourly)
+        alerts.add(WeatherAlert(
+            type = AlertType.HAIL_FORECAST,
+            level = maxHailLevel,
+            title = "Previsione grandine – prossime 6h",
+            description = hailTimeline,
+            latitude = lat,
+            longitude = lon
+        ))
+
         return alerts
+    }
+
+    private fun buildHailTimeline(hourly: HourlyData): String {
+        val sb = StringBuilder()
+        val count = minOf(6, hourly.time.size)
+        for (i in 0 until count) {
+            val code = hourly.weatherCode.getOrElse(i) { 0 }
+            val cape = hourly.cape.getOrElse(i) { 0.0 }
+            val precipProb = hourly.precipitationProbability.getOrElse(i) { 0 }
+
+            val risk = when {
+                WeatherCode.isHeavyHail(code) -> "ALTO ⛈"
+                WeatherCode.hasHail(code) -> "PERICOLO ⚡"
+                cape > 2000 -> "MODERATO ⚡"
+                cape > 500 && precipProb > 40 -> "POSSIBILE 🌧"
+                else -> "BASSO ✓"
+            }
+
+            val label = if (i == 0) "Prossima ora" else "Tra ${i}-${i + 1}h"
+            sb.appendLine("• $label: $risk")
+        }
+        return sb.toString().trimEnd()
+    }
+
+    private fun computeMaxHailLevel(hourly: HourlyData): AlertLevel {
+        for (i in 0 until minOf(6, hourly.weatherCode.size)) {
+            val code = hourly.weatherCode[i]
+            val cape = hourly.cape.getOrElse(i) { 0.0 }
+            if (WeatherCode.isHeavyHail(code)) return AlertLevel.EXTREME
+            if (WeatherCode.hasHail(code)) return AlertLevel.DANGER
+            if (cape > 2000) return AlertLevel.WARNING
+        }
+        return AlertLevel.INFO
     }
 
     private fun buildAlertTitle(type: AlertType, level: AlertLevel): String = when (type) {
         AlertType.HEAVY_HAIL -> "⛈ GRANDINE FORTE IN CORSO"
         AlertType.HAIL -> "⛈ Grandine in corso"
+        AlertType.HAIL_FORECAST -> "Previsione grandine"
         AlertType.THUNDERSTORM -> "⚡ Temporale in corso"
         AlertType.HEAVY_RAIN -> "🌧 Pioggia intensa"
         AlertType.STRONG_WIND -> "💨 Vento forte"

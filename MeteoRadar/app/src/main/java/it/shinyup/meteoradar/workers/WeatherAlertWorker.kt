@@ -30,15 +30,13 @@ class WeatherAlertWorker(
 
         val alerts = repository.assessAlerts(forecast, lat, lon)
 
-        // Deduplicate: don't re-notify if same type was already alerted recently (1h)
-        val lastAlert = dao.getLastAlert()
+        // Deduplicate per type: don't re-notify the same alert type within 1 hour
         val cutoff = System.currentTimeMillis() - 60 * 60 * 1000
+        val recentAlerts = dao.getAlertsSince(cutoff)
 
         for (alert in alerts) {
             dao.insert(alert)
-            // Only notify if this is a new type or it's been more than 1 hour
-            if (lastAlert == null || lastAlert.timestamp < cutoff ||
-                lastAlert.type != alert.type) {
+            if (recentAlerts.none { it.type == alert.type }) {
                 NotificationHelper.sendAlertNotification(applicationContext, alert)
             }
         }

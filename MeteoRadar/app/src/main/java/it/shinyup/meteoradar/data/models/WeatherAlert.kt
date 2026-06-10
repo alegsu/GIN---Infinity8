@@ -15,6 +15,7 @@ enum class AlertType(val label: String) {
     HEAVY_RAIN("Pioggia intensa"),
     HAIL("Grandine"),
     HEAVY_HAIL("Grandine forte"),
+    HAIL_FORECAST("Previsione grandine"),
     STRONG_WIND("Vento forte")
 }
 

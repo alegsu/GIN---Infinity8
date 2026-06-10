@@ -16,7 +16,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import it.shinyup.meteoradar.R
 import it.shinyup.meteoradar.data.models.RadarFrame
 import it.shinyup.meteoradar.data.models.WeatherCode
 import it.shinyup.meteoradar.databinding.FragmentRadarBinding
@@ -38,13 +37,13 @@ class RadarFragment : Fragment() {
 
     private val viewModel: RadarViewModel by viewModels()
     private var locationOverlay: MyLocationNewOverlay? = null
-    private var radarOverlay: TilesOverlay? = null
+    private var radarOverlays: List<TilesOverlay> = emptyList()
     private var allFrames: List<RadarFrame> = emptyList()
     private var radarHost: String = ""
 
     private val animHandler = Handler(Looper.getMainLooper())
     private var animRunnable: Runnable? = null
-    private val animInterval = 500L // ms per frame
+    private val animInterval = 500L
 
     private val timeFormat = SimpleDateFormat("HH:mm", Locale.ITALY)
 
@@ -75,7 +74,7 @@ class RadarFragment : Fragment() {
             setTileSource(TileSourceFactory.MAPNIK)
             setMultiTouchControls(true)
             controller.setZoom(7.0)
-            controller.setCenter(GeoPoint(41.9028, 12.4964)) // Italia
+            controller.setCenter(GeoPoint(41.9028, 12.4964))
             minZoomLevel = 4.0
             maxZoomLevel = 18.0
         }
@@ -111,6 +110,7 @@ class RadarFragment : Fragment() {
             result.onSuccess { data ->
                 radarHost = data.host
                 allFrames = data.radar.past + data.radar.nowcast
+                setupAllRadarOverlays()
                 binding.seekBarTimeline.max = (allFrames.size - 1).coerceAtLeast(0)
                 binding.seekBarTimeline.progress = allFrames.size - 1
                 viewModel.setFrameIndex(allFrames.size - 1)
@@ -127,7 +127,7 @@ class RadarFragment : Fragment() {
 
         viewModel.currentFrameIndex.observe(viewLifecycleOwner) { index ->
             if (allFrames.isNotEmpty() && index in allFrames.indices) {
-                updateRadarOverlay(allFrames[index])
+                showFrame(index)
                 binding.seekBarTimeline.progress = index
                 val time = Date(allFrames[index].time * 1000L)
                 val nowcastStart = allFrames.indexOfFirst { it.time > System.currentTimeMillis() / 1000 }
@@ -150,6 +150,45 @@ class RadarFragment : Fragment() {
         }
     }
 
+    // Pre-creates one TilesOverlay per frame; all disabled initially.
+    // Animation / seekbar only toggle isEnabled — no overlay churn during playback.
+    private fun setupAllRadarOverlays() {
+        val map = binding.mapView
+        radarOverlays.forEach { map.overlays.remove(it) }
+
+        val host = radarHost.trimEnd('/')
+        radarOverlays = allFrames.map { frame ->
+            val tileSource = object : OnlineTileSourceBase(
+                "Radar_${frame.time}", 0, 25, 256, ".png", arrayOf(host)
+            ) {
+                // maxZoom 25 prevents "Zoom Level Not Supported" on high-DPI screens;
+                // URL clamps to 18 (RainViewer's actual limit).
+                override fun getTileURLString(pMapTileIndex: Long): String {
+                    val z = MapTileIndex.getZoom(pMapTileIndex).coerceAtMost(18)
+                    val x = MapTileIndex.getX(pMapTileIndex)
+                    val y = MapTileIndex.getY(pMapTileIndex)
+                    return "$host${frame.path}/256/$z/$x/$y/2/1_1.png"
+                }
+            }
+            TilesOverlay(
+                MapTileProviderBasic(requireContext().applicationContext, tileSource),
+                requireContext()
+            ).apply { isEnabled = false }
+        }
+
+        radarOverlays.forEach { map.overlays.add(it) }
+        locationOverlay?.let {
+            map.overlays.remove(it)
+            map.overlays.add(it)
+        }
+        map.invalidate()
+    }
+
+    private fun showFrame(index: Int) {
+        radarOverlays.forEachIndexed { i, overlay -> overlay.isEnabled = (i == index) }
+        binding.mapView.invalidate()
+    }
+
     private fun updateWeatherInfo(data: it.shinyup.meteoradar.data.models.OpenMeteoResponse) {
         val code = data.currentWeather?.weathercode ?: 0
         val temp = data.currentWeather?.temperature ?: 0.0
@@ -157,7 +196,6 @@ class RadarFragment : Fragment() {
         binding.tvWeatherDesc.text = WeatherCode.description(code)
         binding.tvTemperature.text = "${temp.toInt()}°C"
 
-        // Hail risk from next 6h
         val cape = data.hourly?.cape?.take(6)?.maxOrNull() ?: 0.0
         val hasHailCode = data.hourly?.weatherCode?.take(6)?.any { WeatherCode.hasHail(it) } ?: false
 
@@ -175,35 +213,6 @@ class RadarFragment : Fragment() {
         binding.tvHailRisk.text = "Rischio grandine: ${hailRisk.first}"
         binding.tvHailRisk.setTextColor(hailRisk.second)
         binding.cardWeatherInfo.visibility = View.VISIBLE
-    }
-
-    private fun updateRadarOverlay(frame: RadarFrame) {
-        val map = binding.mapView
-        radarOverlay?.let { map.overlays.remove(it) }
-
-        val host = radarHost.trimEnd('/')
-        val tileSource = object : OnlineTileSourceBase(
-            "Radar_${frame.time}", 0, 18, 256, ".png", arrayOf(host)
-        ) {
-            override fun getTileURLString(pMapTileIndex: Long): String {
-                val z = MapTileIndex.getZoom(pMapTileIndex)
-                val x = MapTileIndex.getX(pMapTileIndex)
-                val y = MapTileIndex.getY(pMapTileIndex)
-                return "$host${frame.path}/256/$z/$x/$y/2/1_1.png"
-            }
-        }
-
-        radarOverlay = TilesOverlay(
-            MapTileProviderBasic(requireContext().applicationContext, tileSource),
-            requireContext()
-        )
-
-        map.overlays.add(radarOverlay)
-        locationOverlay?.let {
-            map.overlays.remove(it)
-            map.overlays.add(it)
-        }
-        map.invalidate()
     }
 
     private fun startAnimation() {
