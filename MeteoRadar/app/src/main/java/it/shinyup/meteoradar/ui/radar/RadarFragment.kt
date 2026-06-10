@@ -21,7 +21,6 @@ import it.shinyup.meteoradar.data.models.WeatherCode
 import it.shinyup.meteoradar.databinding.FragmentRadarBinding
 import org.osmdroid.tileprovider.MapTileProviderBasic
 import org.osmdroid.tileprovider.tilesource.OnlineTileSourceBase
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.util.MapTileIndex
 import org.osmdroid.views.overlay.TilesOverlay
@@ -70,8 +69,21 @@ class RadarFragment : Fragment() {
     }
 
     private fun setupMap() {
+        // Custom tile source so OSMDroid never shows "Zoom Level Not Supported" on
+        // high-DPI screens: maxZoom declared as 21 but OSM requests are clamped to 19.
+        val baseSource = object : OnlineTileSourceBase(
+            "Mapnik", 0, 21, 256, ".png",
+            arrayOf("https://tile.openstreetmap.org/")
+        ) {
+            override fun getTileURLString(pMapTileIndex: Long): String {
+                val z = MapTileIndex.getZoom(pMapTileIndex).coerceAtMost(19)
+                val x = MapTileIndex.getX(pMapTileIndex)
+                val y = MapTileIndex.getY(pMapTileIndex)
+                return "https://tile.openstreetmap.org/$z/$x/$y.png"
+            }
+        }
         binding.mapView.apply {
-            setTileSource(TileSourceFactory.MAPNIK)
+            setTileSource(baseSource)
             setMultiTouchControls(true)
             controller.setZoom(7.0)
             controller.setCenter(GeoPoint(41.9028, 12.4964))
