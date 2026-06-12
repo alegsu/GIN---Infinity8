@@ -51,6 +51,10 @@ class DailyFragment : Fragment() {
             binding.swipeRefresh.isRefreshing = loading
         }
 
+        viewModel.locationName.observe(viewLifecycleOwner) { city ->
+            binding.tvLocationName.text = "📍 $city"
+        }
+
         viewModel.days.observe(viewLifecycleOwner) { result ->
             result.onSuccess { items ->
                 adapter.submitList(items)

@@ -60,6 +60,10 @@ class RadarFragment : Fragment() {
             binding.progressBar.visibility = if (loading) View.VISIBLE else View.GONE
         }
 
+        viewModel.locationName.observe(viewLifecycleOwner) { city ->
+            binding.tvLocationName.text = "📍 $city"
+        }
+
         viewModel.forecast.observe(viewLifecycleOwner) { result ->
             result.onSuccess { data ->
                 updateCurrentConditions(data)

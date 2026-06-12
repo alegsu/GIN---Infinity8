@@ -14,8 +14,11 @@ import it.shinyup.meteoradar.data.models.DailyData
 import it.shinyup.meteoradar.data.models.DayForecastItem
 import it.shinyup.meteoradar.data.models.OpenMeteoResponse
 import it.shinyup.meteoradar.data.models.WeatherCode
+import it.shinyup.meteoradar.utils.GeocoderHelper
 import it.shinyup.meteoradar.utils.Prefs
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale
@@ -27,6 +30,9 @@ class DailyViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _days = MutableLiveData<Result<List<DayForecastItem>>>()
     val days: LiveData<Result<List<DayForecastItem>>> = _days
+
+    private val _locationName = MutableLiveData<String>()
+    val locationName: LiveData<String> = _locationName
 
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading
@@ -50,18 +56,23 @@ class DailyViewModel(application: Application) : AndroidViewModel(application) {
 
         viewModelScope.launch {
             _isLoading.value = true
+
+            val city = withContext(Dispatchers.IO) {
+                GeocoderHelper.cityName(getApplication(), lat, lon)
+            }
+            _locationName.value = city
+
             val result = repository.getDailyForecast(lat, lon)
             result.onSuccess { response ->
                 val daily = response.daily
                 if (daily != null) {
                     _days.value = Result.success(buildItems(daily))
                     lastSuccessfulFetchMs = System.currentTimeMillis()
-                    saveSnapshots(response)
+                    saveSnapshots(response, city)
                 } else if (_days.value?.isSuccess != true) {
                     _days.value = Result.success(emptyList())
                 }
             }.onFailure { error ->
-                // On failure, keep previous data visible; only set error if no previous data
                 if (_days.value?.isSuccess != true) {
                     _days.value = Result.failure(error)
                 }
@@ -70,12 +81,11 @@ class DailyViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private suspend fun saveSnapshots(response: OpenMeteoResponse) {
+    private suspend fun saveSnapshots(response: OpenMeteoResponse, locationName: String) {
         val daily = response.daily ?: return
         val dao = AppDatabase.getInstance(getApplication()).snapshotDao()
 
-        // Only save if last save was > 4 hours ago (avoid duplicate snapshots)
-        val lastFetch = dao.getLastFetchTime() ?: 0L
+        val lastFetch = dao.getLastFetchTimeForLocation(locationName) ?: 0L
         if (System.currentTimeMillis() - lastFetch < 4 * 60 * 60 * 1000L) return
 
         val fetchedAt = System.currentTimeMillis()
@@ -84,6 +94,7 @@ class DailyViewModel(application: Application) : AndroidViewModel(application) {
             ForecastSnapshot(
                 fetchedAt = fetchedAt,
                 targetDate = date,
+                locationName = locationName,
                 minTemp = daily.temperatureMin.getOrElse(i) { 0.0 },
                 maxTemp = daily.temperatureMax.getOrElse(i) { 0.0 },
                 weatherCode = daily.weatherCode.getOrElse(i) { 0 },
@@ -93,7 +104,7 @@ class DailyViewModel(application: Application) : AndroidViewModel(application) {
         }
         if (snapshots.isNotEmpty()) {
             dao.insertAll(snapshots)
-            dao.deleteOlderThan(System.currentTimeMillis() - 30L * 24 * 60 * 60 * 1000L) // keep 30 days
+            dao.deleteOlderThan(System.currentTimeMillis() - 30L * 24 * 60 * 60 * 1000L)
         }
     }
 
@@ -104,7 +115,6 @@ class DailyViewModel(application: Application) : AndroidViewModel(application) {
         val avgMax = if (n > 0) daily.temperatureMax.take(n).average() else 0.0
         val avgMin = if (n > 0) daily.temperatureMin.take(n).average() else 0.0
 
-        // Reliability degrades: day 1 = 95%, each day -7%, floor 50%
         val reliabilities = List(n) { i -> maxOf(50, 95 - i * 7) }
 
         return List(n) { i ->

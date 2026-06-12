@@ -75,6 +75,14 @@
                                 android:textColor="@color/text_secondary"
                                 android:textSize="14sp" />
 
+                            <TextView
+                                android:id="@+id/tvLocationName"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="12sp"
+                                android:layout_marginTop="2dp" />
+
                         </LinearLayout>
 
                         <com.google.android.material.button.MaterialButton

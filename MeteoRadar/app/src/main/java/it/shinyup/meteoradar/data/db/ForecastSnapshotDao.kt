@@ -10,8 +10,8 @@ interface ForecastSnapshotDao {
     @Query("SELECT * FROM forecast_snapshots WHERE targetDate >= :fromDate ORDER BY targetDate ASC, fetchedAt ASC")
     suspend fun getSnapshotsFrom(fromDate: String): List<ForecastSnapshot>
 
-    @Query("SELECT MAX(fetchedAt) FROM forecast_snapshots")
-    suspend fun getLastFetchTime(): Long?
+    @Query("SELECT MAX(fetchedAt) FROM forecast_snapshots WHERE locationName = :location")
+    suspend fun getLastFetchTimeForLocation(location: String): Long?
 
     @Query("DELETE FROM forecast_snapshots WHERE fetchedAt < :cutoff")
     suspend fun deleteOlderThan(cutoff: Long)

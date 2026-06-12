@@ -7,7 +7,8 @@ import androidx.room.PrimaryKey
 data class ForecastSnapshot(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val fetchedAt: Long,
-    val targetDate: String,   // ISO "2026-06-16"
+    val targetDate: String,
+    val locationName: String,
     val minTemp: Double,
     val maxTemp: Double,
     val weatherCode: Int,

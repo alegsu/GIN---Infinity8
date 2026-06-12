@@ -6,10 +6,13 @@ import androidx.lifecycle.*
 import androidx.preference.PreferenceManager
 import it.shinyup.meteoradar.data.WeatherRepository
 import it.shinyup.meteoradar.data.models.OpenMeteoResponse
+import it.shinyup.meteoradar.utils.GeocoderHelper
 import it.shinyup.meteoradar.utils.Prefs
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.math.cos
 
 class RadarViewModel(application: Application) : AndroidViewModel(application) {
@@ -20,10 +23,11 @@ class RadarViewModel(application: Application) : AndroidViewModel(application) {
     private val _forecast = MutableLiveData<Result<OpenMeteoResponse>>()
     val forecast: LiveData<Result<OpenMeteoResponse>> = _forecast
 
+    private val _locationName = MutableLiveData<String>()
+    val locationName: LiveData<String> = _locationName
+
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading
-
-    private val _userLocation = MutableLiveData<Location?>()
 
     private var lastSuccessfulFetchMs = 0L
     private val CACHE_MS = 3 * 60 * 1000L
@@ -31,8 +35,6 @@ class RadarViewModel(application: Application) : AndroidViewModel(application) {
     fun loadData(location: Location?, forceRefresh: Boolean = false) {
         val now = System.currentTimeMillis()
         if (!forceRefresh && _forecast.value?.isSuccess == true && now - lastSuccessfulFetchMs < CACHE_MS) return
-
-        _userLocation.value = location
 
         val useGps = prefs.getBoolean(Prefs.USE_GPS, true)
         val lat: Double
@@ -60,12 +62,17 @@ class RadarViewModel(application: Application) : AndroidViewModel(application) {
 
         viewModelScope.launch {
             _isLoading.value = true
+
+            val city = withContext(Dispatchers.IO) {
+                GeocoderHelper.cityName(getApplication(), lat, lon)
+            }
+            _locationName.value = city
+
             val results = points.map { (la, lo) ->
                 async { repository.getForecast(la, lo, forecastHours).getOrNull() }
             }.awaitAll().filterNotNull()
 
             if (results.isEmpty()) {
-                // On failure, only update if we have no previous data; otherwise keep existing data visible
                 if (_forecast.value?.isSuccess != true) {
                     _forecast.value = Result.failure(Exception("Nessun dato"))
                 }

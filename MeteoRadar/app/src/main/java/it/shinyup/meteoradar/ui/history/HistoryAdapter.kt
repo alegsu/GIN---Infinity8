@@ -32,10 +32,12 @@ class HistoryAdapter : ListAdapter<DayHistory, HistoryAdapter.VH>(DIFF) {
         val prev = item.snapshots[item.snapshots.size - 2]
 
         val latestEmoji = WeatherCode.emoji(latest.weatherCode)
-        holder.tvLatest.text = "Ora: $latestEmoji  ${latest.minTemp.toInt()}° / ${latest.maxTemp.toInt()}°  💧${latest.precipProb}%"
+        val latestLoc = if (latest.locationName.isNotBlank()) " · 📍${latest.locationName}" else ""
+        holder.tvLatest.text = "Ora: $latestEmoji  ${latest.minTemp.toInt()}° / ${latest.maxTemp.toInt()}°  💧${latest.precipProb}%$latestLoc"
 
         val prevTime = formatTime(prev.fetchedAt)
-        holder.tvPrev.text = "$prevTime: ${WeatherCode.emoji(prev.weatherCode)}  ${prev.minTemp.toInt()}° / ${prev.maxTemp.toInt()}°"
+        val prevLoc = if (prev.locationName.isNotBlank() && prev.locationName != latest.locationName) " · 📍${prev.locationName}" else ""
+        holder.tvPrev.text = "$prevTime: ${WeatherCode.emoji(prev.weatherCode)}  ${prev.minTemp.toInt()}° / ${prev.maxTemp.toInt()}°$prevLoc"
 
         val deltaMax = latest.maxTemp - prev.maxTemp
         when {
