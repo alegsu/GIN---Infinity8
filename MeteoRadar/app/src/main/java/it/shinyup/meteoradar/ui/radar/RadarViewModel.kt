@@ -25,7 +25,13 @@ class RadarViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _userLocation = MutableLiveData<Location?>()
 
-    fun loadData(location: Location?) {
+    private var lastSuccessfulFetchMs = 0L
+    private val CACHE_MS = 3 * 60 * 1000L
+
+    fun loadData(location: Location?, forceRefresh: Boolean = false) {
+        val now = System.currentTimeMillis()
+        if (!forceRefresh && _forecast.value?.isSuccess == true && now - lastSuccessfulFetchMs < CACHE_MS) return
+
         _userLocation.value = location
 
         val useGps = prefs.getBoolean(Prefs.USE_GPS, true)
@@ -58,10 +64,17 @@ class RadarViewModel(application: Application) : AndroidViewModel(application) {
                 async { repository.getForecast(la, lo, forecastHours).getOrNull() }
             }.awaitAll().filterNotNull()
 
-            _forecast.value = when {
-                results.isEmpty() -> Result.failure(Exception("Nessun dato"))
-                results.size == 1 -> Result.success(results[0])
-                else              -> Result.success(repository.mergeForecasts(results))
+            if (results.isEmpty()) {
+                // On failure, only update if we have no previous data; otherwise keep existing data visible
+                if (_forecast.value?.isSuccess != true) {
+                    _forecast.value = Result.failure(Exception("Nessun dato"))
+                }
+            } else {
+                _forecast.value = when {
+                    results.size == 1 -> Result.success(results[0])
+                    else              -> Result.success(repository.mergeForecasts(results))
+                }
+                lastSuccessfulFetchMs = System.currentTimeMillis()
             }
             _isLoading.value = false
         }

@@ -7,11 +7,12 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import it.shinyup.meteoradar.data.models.WeatherAlert
 
-@Database(entities = [WeatherAlert::class], version = 1, exportSchema = false)
+@Database(entities = [WeatherAlert::class, ForecastSnapshot::class], version = 2, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun alertDao(): AlertDao
+    abstract fun snapshotDao(): ForecastSnapshotDao
 
     companion object {
         @Volatile private var INSTANCE: AppDatabase? = null
@@ -22,7 +23,7 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "meteoradar.db"
-                ).build().also { INSTANCE = it }
+                ).fallbackToDestructiveMigration().build().also { INSTANCE = it }
             }
     }
 }

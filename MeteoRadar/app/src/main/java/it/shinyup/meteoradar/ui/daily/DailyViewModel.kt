@@ -8,8 +8,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.preference.PreferenceManager
 import it.shinyup.meteoradar.data.WeatherRepository
+import it.shinyup.meteoradar.data.db.AppDatabase
+import it.shinyup.meteoradar.data.db.ForecastSnapshot
 import it.shinyup.meteoradar.data.models.DailyData
 import it.shinyup.meteoradar.data.models.DayForecastItem
+import it.shinyup.meteoradar.data.models.OpenMeteoResponse
 import it.shinyup.meteoradar.data.models.WeatherCode
 import it.shinyup.meteoradar.utils.Prefs
 import kotlinx.coroutines.launch
@@ -28,7 +31,13 @@ class DailyViewModel(application: Application) : AndroidViewModel(application) {
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading
 
-    fun loadData(location: Location?) {
+    private var lastSuccessfulFetchMs = 0L
+    private val CACHE_MS = 3 * 60 * 1000L
+
+    fun loadData(location: Location?, forceRefresh: Boolean = false) {
+        val now = System.currentTimeMillis()
+        if (!forceRefresh && _days.value?.isSuccess == true && now - lastSuccessfulFetchMs < CACHE_MS) return
+
         val useGps = prefs.getBoolean(Prefs.USE_GPS, true)
         val lat: Double
         val lon: Double
@@ -42,11 +51,49 @@ class DailyViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             _isLoading.value = true
             val result = repository.getDailyForecast(lat, lon)
-            _days.value = result.map { response ->
-                val daily = response.daily ?: return@map emptyList()
-                buildItems(daily)
+            result.onSuccess { response ->
+                val daily = response.daily
+                if (daily != null) {
+                    _days.value = Result.success(buildItems(daily))
+                    lastSuccessfulFetchMs = System.currentTimeMillis()
+                    saveSnapshots(response)
+                } else if (_days.value?.isSuccess != true) {
+                    _days.value = Result.success(emptyList())
+                }
+            }.onFailure { error ->
+                // On failure, keep previous data visible; only set error if no previous data
+                if (_days.value?.isSuccess != true) {
+                    _days.value = Result.failure(error)
+                }
             }
             _isLoading.value = false
+        }
+    }
+
+    private suspend fun saveSnapshots(response: OpenMeteoResponse) {
+        val daily = response.daily ?: return
+        val dao = AppDatabase.getInstance(getApplication()).snapshotDao()
+
+        // Only save if last save was > 4 hours ago (avoid duplicate snapshots)
+        val lastFetch = dao.getLastFetchTime() ?: 0L
+        if (System.currentTimeMillis() - lastFetch < 4 * 60 * 60 * 1000L) return
+
+        val fetchedAt = System.currentTimeMillis()
+        val snapshots = daily.time.indices.mapNotNull { i ->
+            val date = daily.time.getOrNull(i) ?: return@mapNotNull null
+            ForecastSnapshot(
+                fetchedAt = fetchedAt,
+                targetDate = date,
+                minTemp = daily.temperatureMin.getOrElse(i) { 0.0 },
+                maxTemp = daily.temperatureMax.getOrElse(i) { 0.0 },
+                weatherCode = daily.weatherCode.getOrElse(i) { 0 },
+                precipProb = daily.precipitationProbabilityMax.getOrElse(i) { 0 },
+                precipSum = daily.precipitationSum.getOrElse(i) { 0.0 }
+            )
+        }
+        if (snapshots.isNotEmpty()) {
+            dao.insertAll(snapshots)
+            dao.deleteOlderThan(System.currentTimeMillis() - 30L * 24 * 60 * 60 * 1000L) // keep 30 days
         }
     }
 

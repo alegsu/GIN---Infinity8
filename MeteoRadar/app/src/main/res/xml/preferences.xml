@@ -99,6 +99,12 @@
             android:title="Versione app"
             android:selectable="false" />
 
+        <Preference
+            android:key="data_source"
+            android:title="Fonte dati"
+            android:summary="Open-Meteo.com — GFS + ECMWF, aggiornati ogni ora"
+            android:selectable="false" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>

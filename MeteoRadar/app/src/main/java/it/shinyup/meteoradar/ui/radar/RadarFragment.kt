@@ -33,6 +33,7 @@ class RadarFragment : Fragment() {
 
     private val viewModel: RadarViewModel by viewModels()
     private val adapter = ForecastHourAdapter()
+    private var lastLocation: android.location.Location? = null
 
     private val locationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -53,7 +54,7 @@ class RadarFragment : Fragment() {
         binding.rvForecast.layoutManager = LinearLayoutManager(requireContext())
         binding.rvForecast.adapter = adapter
 
-        binding.btnRefresh.setOnClickListener { checkLocationAndLoad() }
+        binding.btnRefresh.setOnClickListener { viewModel.loadData(lastLocation, forceRefresh = true) }
 
         viewModel.isLoading.observe(viewLifecycleOwner) { loading ->
             binding.progressBar.visibility = if (loading) View.VISIBLE else View.GONE
@@ -64,7 +65,8 @@ class RadarFragment : Fragment() {
                 updateCurrentConditions(data)
                 updateForecastList(data.hourly)
             }.onFailure {
-                Toast.makeText(context, "Errore caricamento dati", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Errore aggiornamento dati", Toast.LENGTH_SHORT).show()
+                // Previous data stays visible — do not clear cards
             }
         }
 
@@ -97,6 +99,7 @@ class RadarFragment : Fragment() {
     private fun loadWithLocation() {
         lifecycleScope.launch {
             val location = LocationHelper.getCurrentLocation(requireContext())
+            lastLocation = location
             viewModel.loadData(location)
         }
     }
