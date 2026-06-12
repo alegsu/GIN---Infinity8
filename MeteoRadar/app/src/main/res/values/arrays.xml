@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Radius options -->
+    <string-array name="radius_entries">
+        <item>Solo qui</item>
+        <item>25 km</item>
+        <item>50 km</item>
+        <item>100 km</item>
+    </string-array>
+    <string-array name="radius_values">
+        <item>0</item>
+        <item>25</item>
+        <item>50</item>
+        <item>100</item>
+    </string-array>
+
+    <!-- Forecast hours options -->
+    <string-array name="forecast_hours_entries">
+        <item>12 ore</item>
+        <item>24 ore</item>
+        <item>48 ore</item>
+    </string-array>
+    <string-array name="forecast_hours_values">
+        <item>12</item>
+        <item>24</item>
+        <item>48</item>
+    </string-array>
+
+    <!-- Check interval options -->
+    <string-array name="interval_entries">
+        <item>15 minuti</item>
+        <item>30 minuti</item>
+        <item>1 ora</item>
+        <item>2 ore</item>
+    </string-array>
+    <string-array name="interval_values">
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>120</item>
+    </string-array>
+
+    <!-- Alert threshold options -->
+    <string-array name="threshold_entries">
+        <item>Qualsiasi (score ≥ 1)</item>
+        <item>Moderato (score ≥ 3)</item>
+        <item>Pericolo (score ≥ 5)</item>
+        <item>Estremo (score ≥ 7)</item>
+    </string-array>
+    <string-array name="threshold_values">
+        <item>1</item>
+        <item>3</item>
+        <item>5</item>
+        <item>7</item>
+    </string-array>
+
+</resources>

@@ -4,9 +4,15 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/radarFragment">
 
-    <fragment
-        android:id="@+id/radarFragment"
+    <fragment android:id="@+id/radarFragment"
         android:name="it.shinyup.meteoradar.ui.radar.RadarFragment"
-        android:label="MeteoRadar" />
+        android:label="Previsioni" />
 
+    <fragment android:id="@+id/dailyFragment"
+        android:name="it.shinyup.meteoradar.ui.daily.DailyFragment"
+        android:label="7 Giorni" />
+
+    <fragment android:id="@+id/settingsFragment"
+        android:name="it.shinyup.meteoradar.ui.settings.SettingsFragment"
+        android:label="Impostazioni" />
 </navigation>
