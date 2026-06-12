@@ -3,6 +3,7 @@ package it.shinyup.meteoradar.ui.radar
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,6 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import it.shinyup.meteoradar.R
 import it.shinyup.meteoradar.data.models.HourlyData
@@ -21,6 +23,7 @@ import it.shinyup.meteoradar.data.models.OpenMeteoResponse
 import it.shinyup.meteoradar.data.models.WeatherCode
 import it.shinyup.meteoradar.databinding.FragmentRadarBinding
 import it.shinyup.meteoradar.utils.LocationHelper
+import it.shinyup.meteoradar.utils.Prefs
 import kotlinx.coroutines.launch
 
 class RadarFragment : Fragment() {
@@ -52,24 +55,6 @@ class RadarFragment : Fragment() {
 
         binding.btnRefresh.setOnClickListener { checkLocationAndLoad() }
 
-        // Restore saved radius before attaching listener to avoid double load
-        when (viewModel.radiusKm.value) {
-            25  -> binding.chipRadius25.isChecked = true
-            50  -> binding.chipRadius50.isChecked = true
-            100 -> binding.chipRadius100.isChecked = true
-            else -> binding.chipRadius0.isChecked = true
-        }
-
-        binding.radiusChipGroup.setOnCheckedStateChangeListener { _, checkedIds ->
-            val km = when (checkedIds.firstOrNull()) {
-                R.id.chipRadius25  -> 25
-                R.id.chipRadius50  -> 50
-                R.id.chipRadius100 -> 100
-                else               -> 0
-            }
-            viewModel.setRadius(km)
-        }
-
         viewModel.isLoading.observe(viewLifecycleOwner) { loading ->
             binding.progressBar.visibility = if (loading) View.VISIBLE else View.GONE
         }
@@ -86,8 +71,17 @@ class RadarFragment : Fragment() {
         checkLocationAndLoad()
     }
 
+    override fun onResume() {
+        super.onResume()
+        // Refresh settings-dependent UI and reload data on every resume
+        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        adapter.showTechDetails = prefs.getBoolean(Prefs.SHOW_TECH_DETAILS, false)
+        adapter.notifyDataSetChanged()
+        checkLocationAndLoad()
+    }
+
     private fun checkLocationAndLoad() {
-        val fine = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+        val fine   = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
         val coarse = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
         if (fine == PackageManager.PERMISSION_GRANTED || coarse == PackageManager.PERMISSION_GRANTED) {
             loadWithLocation()
@@ -111,36 +105,42 @@ class RadarFragment : Fragment() {
         val code = data.currentWeather?.weathercode ?: 0
         val temp = data.currentWeather?.temperature ?: 0.0
 
-        binding.tvWeatherDesc.text = WeatherCode.description(code)
-        binding.tvTemperature.text = "${temp.toInt()}°C"
+        binding.tvWeatherEmoji.text = WeatherCode.emoji(code)
+        binding.tvWeatherDesc.text  = WeatherCode.description(code)
+        binding.tvTemperature.text  = "${temp.toInt()}°C"
 
         val hourly = data.hourly
         val maxScore = if (hourly != null) {
             (0 until minOf(6, hourly.time.size)).maxOfOrNull { i ->
                 WeatherCode.computeSeverityScore(
-                    code       = hourly.weatherCode.getOrElse(i) { 0 },
-                    cape       = hourly.cape.getOrElse(i) { 0.0 },
+                    code          = hourly.weatherCode.getOrElse(i) { 0 },
+                    cape          = hourly.cape.getOrElse(i) { 0.0 },
                     liftedIndex   = hourly.liftedIndex?.getOrElse(i) { 0.0 } ?: 0.0,
                     windGusts     = hourly.windGusts?.getOrElse(i) { 0.0 } ?: 0.0,
                     freezingLevel = hourly.freezingLevelHeight?.getOrElse(i) { 3000.0 } ?: 3000.0,
-                    precip     = hourly.precipitation.getOrElse(i) { 0.0 },
-                    showers    = hourly.showers?.getOrElse(i) { 0.0 } ?: 0.0,
-                    precipProb = hourly.precipitationProbability.getOrElse(i) { 0 }
+                    precip        = hourly.precipitation.getOrElse(i) { 0.0 },
+                    showers       = hourly.showers?.getOrElse(i) { 0.0 } ?: 0.0,
+                    precipProb    = hourly.precipitationProbability.getOrElse(i) { 0 }
                 )
             } ?: 0
         } else 0
 
         val (label, color) = scoreToDisplay(maxScore)
-        binding.tvHailRisk.text = "Rischio grandine/temporale: $label"
+        binding.tvHailRisk.text = label
         binding.tvHailRisk.setTextColor(color)
+        binding.tvScore6h.text = "$maxScore/15"
+        binding.scoreBar6h.progress = maxScore
+        binding.scoreBar6h.progressTintList = ColorStateList.valueOf(color)
         binding.cardWeatherInfo.visibility = View.VISIBLE
     }
 
     private fun updateForecastList(hourly: HourlyData?) {
         if (hourly == null) return
 
+        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        adapter.showTechDetails = prefs.getBoolean(Prefs.SHOW_TECH_DETAILS, false)
+
         val items = hourly.time.indices.map { i ->
-            val timeStr    = hourly.time[i].substringAfter("T").take(5)
             val code       = hourly.weatherCode.getOrElse(i) { 0 }
             val precip     = hourly.precipitation.getOrElse(i) { 0.0 }
             val precipProb = hourly.precipitationProbability.getOrElse(i) { 0 }
@@ -149,26 +149,30 @@ class RadarFragment : Fragment() {
             val gusts      = hourly.windGusts?.getOrElse(i) { 0.0 } ?: 0.0
             val fz         = hourly.freezingLevelHeight?.getOrElse(i) { 3000.0 } ?: 3000.0
             val showers    = hourly.showers?.getOrElse(i) { 0.0 } ?: 0.0
+            val timeStr    = hourly.time[i].substringAfter("T").take(5)
 
             val score = WeatherCode.computeSeverityScore(code, cape, li, gusts, fz, precip, showers, precipProb)
             val (label, color) = scoreToDisplay(score)
-            HourForecastItem(timeStr, WeatherCode.description(code), precip, precipProb, cape, label, color)
+            HourForecastItem(timeStr, WeatherCode.emoji(code), WeatherCode.description(code),
+                precip, precipProb, cape, li, gusts, fz, score, label, color)
         }
 
         adapter.submitList(items)
         binding.cardForecast.visibility = View.VISIBLE
 
-        val radius = viewModel.radiusKm.value ?: 0
+        val radius = prefs.getString(Prefs.RADIUS_KM, "0")?.toIntOrNull() ?: 0
         binding.tvForecastTitle.text = if (radius > 0)
-            "Prossime 24 ore (peggiore entro $radius km)" else "Prossime 24 ore"
+            "Prossime ${items.size}h (peggiore entro $radius km)"
+        else
+            "Prossime ${items.size} ore"
     }
 
     private fun scoreToDisplay(score: Int): Pair<String, Int> = when {
-        score >= 7 -> "ESTREMO"  to Color.parseColor("#9C27B0")
-        score >= 5 -> "PERICOLO" to Color.parseColor("#F44336")
-        score >= 3 -> "MODERATO" to Color.parseColor("#FF9800")
+        score >= 7 -> "ESTREMO"   to Color.parseColor("#9C27B0")
+        score >= 5 -> "PERICOLO"  to Color.parseColor("#F44336")
+        score >= 3 -> "MODERATO"  to Color.parseColor("#FF9800")
         score >= 1 -> "POSSIBILE" to Color.parseColor("#FFC107")
-        else       -> "BASSO"    to Color.parseColor("#4CAF50")
+        else       -> "BASSO"     to Color.parseColor("#4CAF50")
     }
 
     override fun onDestroyView() {

@@ -1,13 +1,17 @@
 package it.shinyup.meteoradar.data.models
 
 import com.google.gson.annotations.SerializedName
+import java.time.LocalDate
+import java.time.format.TextStyle
+import java.util.Locale
 
 data class OpenMeteoResponse(
     val latitude: Double,
     val longitude: Double,
     val timezone: String,
     @SerializedName("current_weather") val currentWeather: CurrentWeather?,
-    val hourly: HourlyData?
+    val hourly: HourlyData?,
+    val daily: DailyData?
 )
 
 data class CurrentWeather(
@@ -30,7 +34,31 @@ data class HourlyData(
     val showers: List<Double>?
 )
 
-// WMO weather codes + multi-source severity scoring
+data class DailyData(
+    val time: List<String>,
+    @SerializedName("temperature_2m_max") val temperatureMax: List<Double>,
+    @SerializedName("temperature_2m_min") val temperatureMin: List<Double>,
+    @SerializedName("weathercode") val weatherCode: List<Int>,
+    @SerializedName("precipitation_sum") val precipitationSum: List<Double>,
+    @SerializedName("precipitation_probability_max") val precipitationProbabilityMax: List<Int>
+)
+
+/** UI model for one row in the 7-day tab */
+data class DayForecastItem(
+    val dateLabel: String,        // "Lun 10 giu"
+    val isToday: Boolean,
+    val emoji: String,
+    val temperatureMax: Double,
+    val temperatureMin: Double,
+    val maxTrend: Int,            // -1 down, 0 same, +1 up vs previous day
+    val minTrend: Int,
+    val avgMax: Double,           // 7-day mean
+    val avgMin: Double,
+    val precipitationSum: Double,
+    val precipitationProbabilityMax: Int,
+    val reliabilityPct: Int       // empirical reliability: day1=95, day7=50
+)
+
 object WeatherCode {
     fun isThunderstorm(code: Int) = code >= 95
     fun hasHail(code: Int) = code == 96 || code == 99
@@ -52,6 +80,22 @@ object WeatherCode {
         96 -> "Temporale con grandine lieve"
         99 -> "Temporale con grandine forte"
         else -> "Sconosciuto"
+    }
+
+    fun emoji(code: Int): String = when (code) {
+        0 -> "☀️"
+        1, 2 -> "🌤️"
+        3 -> "☁️"
+        45, 48 -> "🌫️"
+        51, 53, 55 -> "🌦️"
+        61, 63, 65 -> "🌧️"
+        71, 73, 75 -> "🌨️"
+        77 -> "🌨️"
+        80, 81, 82 -> "🌦️"
+        85, 86 -> "❄️"
+        95 -> "⛈️"
+        96, 99 -> "⛈️"
+        else -> "🌡️"
     }
 
     /**
@@ -87,14 +131,12 @@ object WeatherCode {
             else -> 0
         }
 
-        // Lifted Index: negative = unstable; < -3 = severe
         score += when {
             liftedIndex < -6.0 -> 2
             liftedIndex < -3.0 -> 1
             else -> 0
         }
 
-        // Freezing level: 500–2000m = hail very likely; 2000–2500m = somewhat likely
         score += when {
             freezingLevel in 500.0..1999.9 -> 2
             freezingLevel in 2000.0..2499.9 -> 1

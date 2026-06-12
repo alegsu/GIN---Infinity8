@@ -1,9 +1,9 @@
 package it.shinyup.meteoradar.ui.radar
 
 import android.app.Application
-import android.content.Context
 import android.location.Location
 import androidx.lifecycle.*
+import androidx.preference.PreferenceManager
 import it.shinyup.meteoradar.data.WeatherRepository
 import it.shinyup.meteoradar.data.models.OpenMeteoResponse
 import it.shinyup.meteoradar.utils.Prefs
@@ -14,7 +14,7 @@ import kotlin.math.cos
 
 class RadarViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val prefs = application.getSharedPreferences(Prefs.NAME, Context.MODE_PRIVATE)
+    private val prefs = PreferenceManager.getDefaultSharedPreferences(application)
     private val repository = WeatherRepository()
 
     private val _forecast = MutableLiveData<Result<OpenMeteoResponse>>()
@@ -25,31 +25,37 @@ class RadarViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _userLocation = MutableLiveData<Location?>()
 
-    private val _radiusKm = MutableLiveData(prefs.getInt(Prefs.RADIUS_KM, 0))
-    val radiusKm: LiveData<Int> = _radiusKm
-
     fun loadData(location: Location?) {
         _userLocation.value = location
-        val lat = location?.latitude ?: 41.9028
-        val lon = location?.longitude ?: 12.4964
-        val radius = _radiusKm.value ?: 0
+
+        val useGps = prefs.getBoolean(Prefs.USE_GPS, true)
+        val lat: Double
+        val lon: Double
+        if (useGps && location != null) {
+            lat = location.latitude
+            lon = location.longitude
+        } else {
+            lat = prefs.getString(Prefs.MANUAL_LAT, "41.9028")?.toDoubleOrNull() ?: 41.9028
+            lon = prefs.getString(Prefs.MANUAL_LON, "12.4964")?.toDoubleOrNull() ?: 12.4964
+        }
+
+        val radius = prefs.getString(Prefs.RADIUS_KM, "0")?.toIntOrNull() ?: 0
+        val forecastHours = prefs.getString(Prefs.FORECAST_HOURS, "24")?.toIntOrNull() ?: 24
 
         val points = mutableListOf(lat to lon)
         if (radius > 0) {
             val latOff = radius / 111.0
             val lonOff = radius / (111.0 * cos(Math.toRadians(lat)))
             points += listOf(
-                (lat + latOff) to lon,
-                (lat - latOff) to lon,
-                lat to (lon + lonOff),
-                lat to (lon - lonOff)
+                (lat + latOff) to lon, (lat - latOff) to lon,
+                lat to (lon + lonOff), lat to (lon - lonOff)
             )
         }
 
         viewModelScope.launch {
             _isLoading.value = true
             val results = points.map { (la, lo) ->
-                async { repository.getForecast(la, lo).getOrNull() }
+                async { repository.getForecast(la, lo, forecastHours).getOrNull() }
             }.awaitAll().filterNotNull()
 
             _forecast.value = when {
@@ -59,11 +65,5 @@ class RadarViewModel(application: Application) : AndroidViewModel(application) {
             }
             _isLoading.value = false
         }
-    }
-
-    fun setRadius(km: Int) {
-        _radiusKm.value = km
-        prefs.edit().putInt(Prefs.RADIUS_KM, km).apply()
-        loadData(_userLocation.value)
     }
 }

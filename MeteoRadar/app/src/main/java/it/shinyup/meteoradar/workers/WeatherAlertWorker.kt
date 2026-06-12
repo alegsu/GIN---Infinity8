@@ -1,6 +1,7 @@
 package it.shinyup.meteoradar.workers
 
 import android.content.Context
+import androidx.preference.PreferenceManager
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import it.shinyup.meteoradar.data.WeatherRepository
@@ -14,10 +15,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlin.math.cos
 
-class WeatherAlertWorker(
-    context: Context,
-    params: WorkerParameters
-) : CoroutineWorker(context, params) {
+class WeatherAlertWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
 
     companion object {
         const val WORK_NAME = "weather_alert_worker"
@@ -27,23 +25,27 @@ class WeatherAlertWorker(
     private val dao = AppDatabase.getInstance(applicationContext).alertDao()
 
     override suspend fun doWork(): Result {
-        val prefs = applicationContext.getSharedPreferences(Prefs.NAME, Context.MODE_PRIVATE)
-        val radius = prefs.getInt(Prefs.RADIUS_KM, 0)
+        val prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext)
 
-        val location = LocationHelper.getCurrentLocation(applicationContext)
-        val lat = location?.latitude ?: LocationHelper.DEFAULT_LAT
-        val lon = location?.longitude ?: LocationHelper.DEFAULT_LON
+        if (!prefs.getBoolean(Prefs.NOTIFICATIONS_ENABLED, true)) return Result.success()
 
-        // Build sampling points: centre + cardinal N/S/E/W if radius > 0
+        val radius = prefs.getString(Prefs.RADIUS_KM, "0")?.toIntOrNull() ?: 0
+        val threshold = prefs.getString(Prefs.ALERT_THRESHOLD, "3")?.toIntOrNull() ?: 3
+
+        val useGps = prefs.getBoolean(Prefs.USE_GPS, true)
+        val location = if (useGps) LocationHelper.getCurrentLocation(applicationContext) else null
+        val lat = if (useGps && location != null) location.latitude
+                  else prefs.getString(Prefs.MANUAL_LAT, "41.9028")?.toDoubleOrNull() ?: LocationHelper.DEFAULT_LAT
+        val lon = if (useGps && location != null) location.longitude
+                  else prefs.getString(Prefs.MANUAL_LON, "12.4964")?.toDoubleOrNull() ?: LocationHelper.DEFAULT_LON
+
         val points = mutableListOf(lat to lon)
         if (radius > 0) {
             val latOff = radius / 111.0
             val lonOff = radius / (111.0 * cos(Math.toRadians(lat)))
             points += listOf(
-                (lat + latOff) to lon,
-                (lat - latOff) to lon,
-                lat to (lon + lonOff),
-                lat to (lon - lonOff)
+                (lat + latOff) to lon, (lat - latOff) to lon,
+                lat to (lon + lonOff), lat to (lon - lonOff)
             )
         }
 
@@ -58,20 +60,27 @@ class WeatherAlertWorker(
         val merged = if (forecasts.size == 1) forecasts[0] else repository.mergeForecasts(forecasts)
         val alerts = repository.assessAlerts(merged, lat, lon)
 
-        // Notify only WARNING or higher; suppress duplicates within 2 hours
+        // Only notify if score-derived level meets user's threshold
+        val thresholdLevel = when {
+            threshold >= 7 -> AlertLevel.EXTREME
+            threshold >= 5 -> AlertLevel.DANGER
+            threshold >= 3 -> AlertLevel.WARNING
+            else           -> AlertLevel.INFO
+        }
+
         val cutoff = System.currentTimeMillis() - 2 * 60 * 60 * 1000L
         val recentAlerts = dao.getAlertsSince(cutoff)
 
         for (alert in alerts) {
             dao.insert(alert)
-            val alreadyNotified = recentAlerts.any { it.level.ordinal >= alert.level.ordinal }
-            if (alert.level.ordinal >= AlertLevel.WARNING.ordinal && !alreadyNotified) {
+            val meetsThreshold = alert.level.ordinal >= thresholdLevel.ordinal
+            val notRecentlySent = recentAlerts.none { it.level.ordinal >= alert.level.ordinal }
+            if (meetsThreshold && notRecentlySent) {
                 NotificationHelper.sendAlertNotification(applicationContext, alert)
             }
         }
 
         dao.deleteOlderThan(System.currentTimeMillis() - 48 * 60 * 60 * 1000L)
-
         return Result.success()
     }
 }
