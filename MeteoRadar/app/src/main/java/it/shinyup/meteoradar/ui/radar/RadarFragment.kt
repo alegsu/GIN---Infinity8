@@ -101,6 +101,14 @@ class RadarFragment : Fragment() {
         }
     }
 
+    private fun nowStartIndex(times: List<String>): Int {
+        val now = java.time.LocalDateTime.now().minusMinutes(30)
+        val idx = times.indexOfFirst {
+            try { java.time.LocalDateTime.parse(it).isAfter(now) } catch (e: Exception) { false }
+        }
+        return if (idx == -1) 0 else idx
+    }
+
     private fun updateCurrentConditions(data: OpenMeteoResponse) {
         val code = data.currentWeather?.weathercode ?: 0
         val temp = data.currentWeather?.temperature ?: 0.0
@@ -111,7 +119,8 @@ class RadarFragment : Fragment() {
 
         val hourly = data.hourly
         val maxScore = if (hourly != null) {
-            (0 until minOf(6, hourly.time.size)).maxOfOrNull { i ->
+            val start = nowStartIndex(hourly.time)
+            (start until minOf(start + 6, hourly.time.size)).maxOfOrNull { i ->
                 WeatherCode.computeSeverityScore(
                     code          = hourly.weatherCode.getOrElse(i) { 0 },
                     cape          = hourly.cape.getOrElse(i) { 0.0 },
@@ -140,7 +149,8 @@ class RadarFragment : Fragment() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         adapter.showTechDetails = prefs.getBoolean(Prefs.SHOW_TECH_DETAILS, false)
 
-        val items = hourly.time.indices.map { i ->
+        val start = nowStartIndex(hourly.time)
+        val items = (start until hourly.time.size).map { i ->
             val code       = hourly.weatherCode.getOrElse(i) { 0 }
             val precip     = hourly.precipitation.getOrElse(i) { 0.0 }
             val precipProb = hourly.precipitationProbability.getOrElse(i) { 0 }
