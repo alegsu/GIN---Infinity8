@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MeteoRadar – Informativa sulla Privacy</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+         max-width: 800px; margin: 40px auto; padding: 0 20px;
+         color: #333; line-height: 1.6; }
+  h1 { color: #1565C0; }
+  h2 { color: #1976D2; margin-top: 2em; }
+  a  { color: #1565C0; }
+  .updated { color: #666; font-size: 0.9em; }
+</style>
+</head>
+<body>
+
+<h1>Informativa sulla Privacy — MeteoRadar</h1>
+<p class="updated">Ultimo aggiornamento: giugno 2025</p>
+
+<h2>1. Chi siamo</h2>
+<p>MeteoRadar è un'applicazione meteorologica sviluppata da <strong>ShinyUp</strong>
+(info@shinyup.it). Questa informativa descrive come l'app gestisce i dati degli utenti.</p>
+
+<h2>2. Dati raccolti</h2>
+
+<h3>Posizione geografica</h3>
+<p>MeteoRadar può accedere alla posizione del dispositivo (GPS / rete) per fornire
+previsioni meteo localizzate. La posizione viene utilizzata <strong>esclusivamente</strong>
+per interrogare il servizio Open-Meteo.com e viene trasmessa in forma di coordinate
+numeriche (latitudine/longitudine). Non viene mai memorizzata su server propri né
+condivisa con terze parti a fini commerciali.</p>
+<p>L'accesso alla posizione è facoltativo: è possibile inserire le coordinate manualmente
+nelle Impostazioni e disattivare completamente il GPS.</p>
+
+<h3>Dati meteorologici</h3>
+<p>Le previsioni meteo sono fornite da <a href="https://open-meteo.com" target="_blank">Open-Meteo.com</a>,
+un servizio aperto che non richiede registrazione né trasmette dati personali. Le chiamate API
+contengono solo coordinate geografiche e parametri meteo.</p>
+
+<h2>3. Dati NON raccolti</h2>
+<ul>
+  <li>Nessun account utente o registrazione</li>
+  <li>Nessun dato personale (nome, email, telefono, ecc.)</li>
+  <li>Nessun dato di utilizzo inviato a server propri</li>
+  <li>Nessuna pubblicità comportamentale o profilazione</li>
+  <li>Nessun tracking tra app diverse</li>
+</ul>
+
+<h2>4. Archiviazione locale</h2>
+<p>L'app memorizza in locale sul dispositivo:</p>
+<ul>
+  <li>Le impostazioni dell'utente (preferenze, soglie di allerta)</li>
+  <li>Lo storico delle allerte meteo ricevute</li>
+  <li>Snapshot delle previsioni per il tab "Analisi"</li>
+</ul>
+<p>Questi dati rimangono sul dispositivo e vengono eliminati automaticamente con
+la disinstallazione dell'app. Non vengono mai trasmessi a server esterni.</p>
+
+<h2>5. Notifiche push</h2>
+<p>MeteoRadar può inviare notifiche locali per allertare l'utente di condizioni meteo
+significative. Le notifiche sono generate interamente sul dispositivo: nessun servizio
+di messaggistica cloud viene utilizzato per l'invio di allerte.</p>
+
+<h2>6. Permessi richiesti</h2>
+<ul>
+  <li><strong>ACCESS_FINE_LOCATION / ACCESS_COARSE_LOCATION</strong> – per rilevare la posizione corrente (opzionale)</li>
+  <li><strong>ACCESS_BACKGROUND_LOCATION</strong> – per il monitoraggio meteo in background (opzionale)</li>
+  <li><strong>INTERNET</strong> – per scaricare i dati meteo da Open-Meteo</li>
+  <li><strong>POST_NOTIFICATIONS</strong> – per inviare notifiche di allerta</li>
+  <li><strong>RECEIVE_BOOT_COMPLETED</strong> – per ripristinare il worker di monitoraggio al riavvio</li>
+</ul>
+
+<h2>7. Condivisione con terze parti</h2>
+<p>MeteoRadar non vende, condivide né trasferisce dati personali a terze parti.
+Le coordinate geografiche vengono inviate a Open-Meteo.com esclusivamente per
+ottenere previsioni meteo; Open-Meteo è un servizio open-source senza pubblicità.</p>
+
+<h2>8. Sicurezza</h2>
+<p>Poiché l'app non raccoglie dati personali identificabili, il rischio di violazione
+della privacy è minimo. Le comunicazioni con Open-Meteo avvengono tramite HTTPS.</p>
+
+<h2>9. Minori</h2>
+<p>MeteoRadar non è destinata a utenti di età inferiore ai 13 anni e non raccoglie
+consapevolmente dati da minori.</p>
+
+<h2>10. Modifiche a questa informativa</h2>
+<p>Eventuali aggiornamenti saranno pubblicati su questa pagina. L'uso continuato
+dell'app dopo le modifiche costituisce accettazione della nuova informativa.</p>
+
+<h2>11. Contatti</h2>
+<p>Per domande sulla privacy scrivere a:
+<a href="mailto:info@shinyup.it">info@shinyup.it</a></p>
+
+<hr>
+<p style="font-size:0.85em; color:#666;">
+  MeteoRadar utilizza dati Open-Meteo.com (GFS, ECMWF, ICON) — servizio gratuito e open source.
+</p>
+
+</body>
+</html>
