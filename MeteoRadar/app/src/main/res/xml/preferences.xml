@@ -89,6 +89,11 @@
             android:summary="Vibra con la notifica di allerta"
             android:defaultValue="true" />
 
+        <Preference
+            android:key="test_notification"
+            android:title="🔔  Invia notifica di test"
+            android:summary="Mostra subito un esempio di allerta per verificare che le notifiche funzionino" />
+
     </PreferenceCategory>
 
     <!-- INFO -->
