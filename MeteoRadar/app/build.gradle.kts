@@ -6,14 +6,14 @@ plugins {
 
 android {
     namespace = "it.shinyup.meteoradar"
-    compileSdk = 34
+    compileSdk = 35
 
     val buildNumber = (project.findProperty("buildNumber") as? String)?.toIntOrNull() ?: 1
 
     defaultConfig {
         applicationId = "it.shinyup.grandinealert"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 35
         versionCode = buildNumber
         versionName = "1.$buildNumber"
 
