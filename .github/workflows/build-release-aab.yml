@@ -35,10 +35,6 @@ jobs:
         working-directory: MeteoRadar
         run: echo "sdk.dir=$ANDROID_HOME" > local.properties
 
-      - name: Generate Gradle wrapper
-        working-directory: MeteoRadar
-        run: gradle wrapper --gradle-version 8.6 --distribution-type bin
-
       - name: Make gradlew executable
         working-directory: MeteoRadar
         run: chmod +x gradlew
