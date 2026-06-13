@@ -12,9 +12,9 @@
         android:name="it.shinyup.meteoradar.ui.daily.DailyFragment"
         android:label="7 Giorni" />
 
-    <fragment android:id="@+id/historyFragment"
-        android:name="it.shinyup.meteoradar.ui.history.HistoryFragment"
-        android:label="Storico" />
+    <fragment android:id="@+id/analysisFragment"
+        android:name="it.shinyup.meteoradar.ui.analysis.AnalysisFragment"
+        android:label="Analisi" />
 
     <fragment android:id="@+id/settingsFragment"
         android:name="it.shinyup.meteoradar.ui.settings.SettingsFragment"

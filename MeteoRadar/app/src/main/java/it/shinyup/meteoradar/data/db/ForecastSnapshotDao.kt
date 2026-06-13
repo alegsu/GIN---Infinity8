@@ -15,4 +15,7 @@ interface ForecastSnapshotDao {
 
     @Query("DELETE FROM forecast_snapshots WHERE fetchedAt < :cutoff")
     suspend fun deleteOlderThan(cutoff: Long)
+
+    @Query("SELECT * FROM forecast_snapshots WHERE targetDate = :date ORDER BY fetchedAt ASC")
+    suspend fun getSnapshotsForDate(date: String): List<ForecastSnapshot>
 }

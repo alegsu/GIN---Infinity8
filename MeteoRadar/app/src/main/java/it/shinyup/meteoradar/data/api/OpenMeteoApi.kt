@@ -30,6 +30,16 @@ interface OpenMeteoApi {
         @Query("forecast_days") forecastDays: Int = 7
     ): OpenMeteoResponse
 
+    @GET("v1/forecast")
+    suspend fun getPastDaysData(
+        @Query("latitude") latitude: Double,
+        @Query("longitude") longitude: Double,
+        @Query("daily") daily: String = "temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,precipitation_probability_max",
+        @Query("past_days") pastDays: Int = 7,
+        @Query("forecast_days") forecastDays: Int = 0,
+        @Query("timezone") timezone: String = "auto"
+    ): OpenMeteoResponse
+
     /** Fetches temperature_2m_max from 3 independent models to compute inter-model spread. */
     @GET("v1/forecast")
     suspend fun getModelComparison(

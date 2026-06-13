@@ -52,6 +52,11 @@ class WeatherRepository {
             openMeteoApi.getModelComparison(latitude, longitude)
         }
 
+    suspend fun getPastDaysData(latitude: Double, longitude: Double): Result<OpenMeteoResponse> =
+        runCatching {
+            openMeteoApi.getPastDaysData(latitude, longitude)
+        }
+
     /** Merge multiple forecasts taking worst-case values per hour slot. */
     fun mergeForecasts(forecasts: List<OpenMeteoResponse>): OpenMeteoResponse {
         val base = forecasts[0]
