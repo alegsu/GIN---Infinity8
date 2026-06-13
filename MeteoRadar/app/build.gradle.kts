@@ -21,14 +21,13 @@ android {
     }
 
     signingConfigs {
-        create("release") {
-            val ksPath = System.getenv("KEYSTORE_PATH")
-            val ksPass = System.getenv("KEYSTORE_PASSWORD")
-            val ksAlias = System.getenv("KEY_ALIAS") ?: "meteoradar"
-            if (ksPath != null && ksPass != null) {
+        val ksPath = System.getenv("KEYSTORE_PATH")
+        val ksPass = System.getenv("KEYSTORE_PASSWORD")
+        if (ksPath != null && ksPass != null) {
+            create("release") {
                 storeFile     = file(ksPath)
                 storePassword = ksPass
-                keyAlias      = ksAlias
+                keyAlias      = System.getenv("KEY_ALIAS") ?: "meteoradar"
                 keyPassword   = ksPass
             }
         }
@@ -39,10 +38,8 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            val releaseSigning = signingConfigs.findByName("release")
-            if (releaseSigning?.storeFile != null) {
-                signingConfig = releaseSigning
-            }
+            val rs = signingConfigs.findByName("release")
+            if (rs != null) signingConfig = rs
         }
     }
     compileOptions {
