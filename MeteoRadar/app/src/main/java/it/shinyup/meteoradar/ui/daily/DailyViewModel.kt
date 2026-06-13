@@ -14,9 +14,11 @@ import it.shinyup.meteoradar.data.models.DailyData
 import it.shinyup.meteoradar.data.models.DayForecastItem
 import it.shinyup.meteoradar.data.models.OpenMeteoResponse
 import it.shinyup.meteoradar.data.models.WeatherCode
+import it.shinyup.meteoradar.data.models.ModelComparisonDaily
 import it.shinyup.meteoradar.utils.GeocoderHelper
 import it.shinyup.meteoradar.utils.Prefs
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
@@ -62,11 +64,16 @@ class DailyViewModel(application: Application) : AndroidViewModel(application) {
             }
             _locationName.value = city
 
-            val result = repository.getDailyForecast(lat, lon)
+            // Fire both requests concurrently
+            val dailyDeferred      = async { repository.getDailyForecast(lat, lon) }
+            val comparisonDeferred = async { repository.getModelComparison(lat, lon) }
+            val result      = dailyDeferred.await()
+            val comparison  = comparisonDeferred.await().getOrNull()?.daily
+
             result.onSuccess { response ->
                 val daily = response.daily
                 if (daily != null) {
-                    _days.value = Result.success(buildItems(daily))
+                    _days.value = Result.success(buildItems(daily, comparison))
                     lastSuccessfulFetchMs = System.currentTimeMillis()
                     saveSnapshots(response, city)
                 } else if (_days.value?.isSuccess != true) {
@@ -108,14 +115,21 @@ class DailyViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun buildItems(daily: DailyData): List<DayForecastItem> {
+    private fun buildItems(daily: DailyData, comparison: ModelComparisonDaily? = null): List<DayForecastItem> {
         val n = daily.time.size
         val today = LocalDate.now().toString()
 
         val avgMax = if (n > 0) daily.temperatureMax.take(n).average() else 0.0
         val avgMin = if (n > 0) daily.temperatureMin.take(n).average() else 0.0
 
-        val reliabilities = List(n) { i -> maxOf(50, 95 - i * 7) }
+        // Real reliability from inter-model spread; fallback to empirical decay if unavailable
+        val reliabilities = List(n) { i ->
+            val real = comparison?.reliability(i) ?: -1
+            Pair(
+                if (real >= 0) real else maxOf(50, 95 - i * 7),
+                real >= 0
+            )
+        }
 
         return List(n) { i ->
             val dateStr   = daily.time[i]
@@ -146,7 +160,8 @@ class DailyViewModel(application: Application) : AndroidViewModel(application) {
                 avgMin                = avgMin,
                 precipitationSum      = daily.precipitationSum.getOrElse(i) { 0.0 },
                 precipitationProbabilityMax = daily.precipitationProbabilityMax.getOrElse(i) { 0 },
-                reliabilityPct        = reliabilities[i]
+                reliabilityPct        = reliabilities[i].first,
+                reliabilityFromModels = reliabilities[i].second
             )
         }
     }
