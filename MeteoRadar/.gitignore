@@ -1,0 +1,16 @@
+# Build output
+build/
+.gradle/
+
+# Android Studio / IntelliJ
+*.iml
+.idea/
+local.properties
+
+# Signing
+*.jks
+*.keystore
+
+# OS
+.DS_Store
+Thumbs.db
