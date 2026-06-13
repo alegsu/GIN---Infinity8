@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">MeteoRadar</string>
+    <string name="app_name">GrandineAlert</string>
     <string name="nav_radar">Radar</string>
     <string name="nav_alerts">Allerte</string>
     <string name="alerts_title">Allerte Meteo</string>

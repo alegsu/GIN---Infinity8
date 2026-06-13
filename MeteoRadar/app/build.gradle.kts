@@ -11,7 +11,7 @@ android {
     val buildNumber = (project.findProperty("buildNumber") as? String)?.toIntOrNull() ?: 1
 
     defaultConfig {
-        applicationId = "it.shinyup.meteoradar"
+        applicationId = "it.shinyup.grandinealert"
         minSdk = 26
         targetSdk = 34
         versionCode = buildNumber

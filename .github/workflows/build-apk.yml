@@ -45,6 +45,15 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: ${{ runner.os }}-gradle-
 
+      - name: Diagnose Gradle
+        working-directory: MeteoRadar
+        run: |
+          echo "=== gradlew ===" && ls -la gradlew
+          echo "=== wrapper jar ===" && ls -la gradle/wrapper/
+          echo "=== Gradle version ===" && ./gradlew --version 2>&1 || true
+          echo "=== build.gradle.kts syntax ===" && ./gradlew help --stacktrace 2>&1 | tail -40 || true
+        continue-on-error: true
+
       - name: Build Debug APK
         working-directory: MeteoRadar
         run: ./gradlew assembleDebug -PbuildNumber=${{ github.run_number }} --stacktrace
