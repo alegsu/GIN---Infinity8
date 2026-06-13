@@ -22,14 +22,14 @@ android {
 
     signingConfigs {
         create("release") {
-            val keystorePath = System.getenv("KEYSTORE_PATH")
-            val keystorePass = System.getenv("KEYSTORE_PASSWORD")
-            val keyAlias    = System.getenv("KEY_ALIAS") ?: "meteoradar"
-            if (keystorePath != null && keystorePass != null) {
-                storeFile     = file(keystorePath)
-                storePassword = keystorePass
-                keyAlias      = keyAlias
-                keyPassword   = keystorePass
+            val ksPath = System.getenv("KEYSTORE_PATH")
+            val ksPass = System.getenv("KEYSTORE_PASSWORD")
+            val ksAlias = System.getenv("KEY_ALIAS") ?: "meteoradar"
+            if (ksPath != null && ksPass != null) {
+                storeFile     = file(ksPath)
+                storePassword = ksPass
+                keyAlias      = ksAlias
+                keyPassword   = ksPass
             }
         }
     }
