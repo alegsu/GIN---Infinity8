@@ -102,8 +102,13 @@
         <Preference
             android:key="data_source"
             android:title="Fonte dati"
-            android:summary="Open-Meteo.com — GFS + ECMWF, aggiornati ogni ora"
+            android:summary="Open-Meteo.com — GFS + ECMWF + ICON, aggiornati ogni ora"
             android:selectable="false" />
+
+        <Preference
+            android:key="open_help"
+            android:title="📖  Guida all\'app"
+            android:summary="Come funziona lo score, le previsioni, lo storico e le notifiche" />
 
     </PreferenceCategory>
 

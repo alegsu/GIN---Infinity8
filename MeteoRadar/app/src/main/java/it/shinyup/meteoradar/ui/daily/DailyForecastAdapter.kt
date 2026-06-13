@@ -53,7 +53,14 @@ class DailyForecastAdapter : RecyclerView.Adapter<DailyForecastAdapter.ViewHolde
         holder.tvMinArrow.text = trendArrow(d.minTrend)
         holder.tvMinArrow.setTextColor(trendColor(d.minTrend))
 
-        holder.tvAvg.text = "media: ${d.avgMax.toInt()}° / ${d.avgMin.toInt()}°"
+        val deltaMax = (d.temperatureMax - d.avgMax).toInt()
+        val sign = if (deltaMax >= 0) "+" else ""
+        holder.tvAvg.text = "${sign}${deltaMax}° vs media sett."
+        holder.tvAvg.setTextColor(when {
+            deltaMax >= 3  -> Color.parseColor("#F44336")
+            deltaMax <= -3 -> Color.parseColor("#42A5F5")
+            else           -> Color.parseColor("#8B949E")
+        })
 
         // Precipitation probability colour-coded
         val prob = d.precipitationProbabilityMax

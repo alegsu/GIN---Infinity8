@@ -2,6 +2,7 @@ package it.shinyup.meteoradar.ui.settings
 
 import android.os.Bundle
 import android.widget.Toast
+import androidx.navigation.fragment.findNavController
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
@@ -24,6 +25,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
         findPreference<ListPreference>(Prefs.CHECK_INTERVAL)?.setOnPreferenceChangeListener { _, _ ->
             (requireContext().applicationContext as MeteoRadarApp).scheduleAlertWorker()
             Toast.makeText(requireContext(), "Frequenza aggiornata", Toast.LENGTH_SHORT).show()
+            true
+        }
+
+        // Open in-app guide
+        findPreference<Preference>("open_help")?.setOnPreferenceClickListener {
+            findNavController().navigate(R.id.action_settings_to_help)
             true
         }
     }

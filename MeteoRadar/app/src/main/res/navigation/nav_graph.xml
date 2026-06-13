@@ -18,5 +18,12 @@
 
     <fragment android:id="@+id/settingsFragment"
         android:name="it.shinyup.meteoradar.ui.settings.SettingsFragment"
-        android:label="Impostazioni" />
+        android:label="Impostazioni">
+        <action android:id="@+id/action_settings_to_help"
+            app:destination="@id/helpFragment" />
+    </fragment>
+
+    <fragment android:id="@+id/helpFragment"
+        android:name="it.shinyup.meteoradar.ui.help.HelpFragment"
+        android:label="Guida" />
 </navigation>
