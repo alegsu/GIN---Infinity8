@@ -52,14 +52,14 @@ jobs:
 
       - name: Decode Keystore
         run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > /tmp/grandinealert-release.keystore
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > /tmp/meteoradar-release.keystore
 
       - name: Build Release AAB
         working-directory: MeteoRadar
         env:
-          KEYSTORE_PATH: /tmp/grandinealert-release.keystore
+          KEYSTORE_PATH: /tmp/meteoradar-release.keystore
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_ALIAS: meteoradar
         run: |
           BUILD_NUM=${{ github.run_number }}
           ./gradlew bundleRelease -PbuildNumber=$BUILD_NUM --stacktrace
@@ -68,29 +68,29 @@ jobs:
         run: |
           mkdir -p /tmp/aab-out
           cp MeteoRadar/app/build/outputs/bundle/release/app-release.aab \
-             /tmp/aab-out/GrandineAlert-release.aab
+             /tmp/aab-out/MeteoRadar-release.aab
 
       - name: Upload AAB as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: GrandineAlert-release-aab
-          path: /tmp/aab-out/GrandineAlert-release.aab
+          name: MeteoRadar-release-aab
+          path: /tmp/aab-out/MeteoRadar-release.aab
           retention-days: 90
 
       - name: Create GitHub Release with AAB
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: release-aab-${{ github.run_number }}
-          name: "GrandineAlert v1.${{ github.run_number }} — Release AAB"
+          tag_name: release-${{ github.run_number }}
+          name: "MeteoRadar v1.${{ github.run_number }} — Release"
           body: |
-            ## GrandineAlert v1.${{ github.run_number }} — Play Store Release
+            ## MeteoRadar v1.${{ github.run_number }} — Play Store Release
 
-            AAB firmato, pronto per il Google Play Store.
+            Questo AAB firmato è pronto per essere caricato sul Google Play Store.
 
             **Come caricare:**
             1. Vai su [Google Play Console](https://play.google.com/console)
-            2. Seleziona GrandineAlert
+            2. Seleziona l'app MeteoRadar
             3. Produzione → Crea nuova versione
-            4. Carica `GrandineAlert-release.aab`
-          files: /tmp/aab-out/GrandineAlert-release.aab
+            4. Carica `MeteoRadar-release.aab`
+          files: /tmp/aab-out/MeteoRadar-release.aab
           prerelease: false
