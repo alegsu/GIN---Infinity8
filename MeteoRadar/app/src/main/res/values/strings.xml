@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">GrandineAlert</string>
-    <string name="nav_radar">Radar</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_previsioni">Previsioni</string>
+    <string name="nav_7giorni">7 Giorni</string>
+    <string name="nav_analisi">Analisi</string>
+    <string name="nav_impostazioni">Impostazioni</string>
+    <string name="nav_guida">Guida</string>
+
+    <!-- Legacy refs kept for code -->
+    <string name="nav_radar">Previsioni</string>
     <string name="nav_alerts">Allerte</string>
     <string name="alerts_title">Allerte Meteo</string>
     <string name="mark_all_read">Segna tutte come lette</string>
@@ -14,4 +23,76 @@
     <string name="channel_alerts_name">Allerte meteo</string>
     <string name="channel_alerts_desc">Notifiche per temporali, grandine e pioggia intensa</string>
     <string name="channel_info_name">Informazioni meteo</string>
+
+    <!-- Analysis tabs -->
+    <string name="tab_evolution">Evoluzione previsioni</string>
+    <string name="tab_past_weather">Ultimi 7 giorni</string>
+
+    <!-- Analysis empty states -->
+    <string name="evolution_no_data">Nessun dato disponibile.\nApri il tab \"7 Giorni\" per iniziare a raccogliere le previsioni.\nLo storico si costruisce con una rilevazione ogni 4 ore.</string>
+    <string name="evolution_need_more">Serve almeno una seconda rilevazione (ogni 4 ore) per mostrare il grafico.</string>
+    <string name="evolution_selected_date">Previsioni per: %s</string>
+
+    <!-- Radar screen -->
+    <string name="risk_next_6h">RISCHIO PROSSIME 6 ORE</string>
+    <string name="risk_scale_label">SCALA RISCHIO</string>
+    <string name="risk_low">BASSO</string>
+    <string name="risk_possible">POSSIBILE</string>
+    <string name="risk_moderate">MODERATO</string>
+    <string name="risk_danger">PERICOLO</string>
+    <string name="risk_extreme">ESTREMO</string>
+    <string name="forecast_next_24h">Prossime 24 ore</string>
+
+    <!-- Daily forecast -->
+    <string name="next_7_days">PROSSIMI 7 GIORNI</string>
+    <string name="label_precip_prob">🌧 prob.</string>
+    <string name="vs_weekly_avg">vs media sett.</string>
+    <string name="reliability_suffix">affid.</string>
+    <string name="legend_trend">↑ sale vs ieri  ↓ scende  ─ stabile · ±X% = spread GFS/ECMWF/ICON · ~X% = stima</string>
+
+    <!-- Settings categories -->
+    <string name="pref_cat_location">Posizione</string>
+    <string name="pref_cat_forecast">Previsioni</string>
+    <string name="pref_cat_notifications">Notifiche</string>
+    <string name="pref_cat_language">Lingua / Language</string>
+    <string name="pref_cat_info">Informazioni</string>
+
+    <!-- Settings: Location -->
+    <string name="pref_use_gps">Usa GPS</string>
+    <string name="pref_use_gps_summary">Rileva automaticamente la posizione corrente</string>
+    <string name="pref_lat">Latitudine manuale</string>
+    <string name="pref_lat_summary">Usata quando il GPS è disattivato</string>
+    <string name="pref_lon">Longitudine manuale</string>
+    <string name="pref_lon_summary">Usata quando il GPS è disattivato</string>
+    <string name="pref_radius">Raggio di monitoraggio</string>
+    <string name="pref_radius_summary">Cerca il peggior scenario entro questo raggio</string>
+
+    <!-- Settings: Forecast -->
+    <string name="pref_forecast_hours">Ore previsione oraria</string>
+    <string name="pref_forecast_hours_summary">Quante ore visualizzare nel tab Previsioni</string>
+    <string name="pref_tech_details">Mostra dettagli tecnici</string>
+    <string name="pref_tech_details_summary">CAPE, Lifted Index, livello zero, raffiche</string>
+
+    <!-- Settings: Notifications -->
+    <string name="pref_notifications_enabled">Abilita notifiche</string>
+    <string name="pref_notifications_enabled_summary">Invia avvisi per eventi meteo significativi</string>
+    <string name="pref_check_interval">Frequenza controllo</string>
+    <string name="pref_check_interval_summary">Ogni quanto controllare le condizioni meteo</string>
+    <string name="pref_alert_threshold">Soglia allerta</string>
+    <string name="pref_alert_threshold_summary">Score minimo per ricevere notifica</string>
+    <string name="pref_vibration">Vibrazione</string>
+    <string name="pref_vibration_summary">Vibra con la notifica di allerta</string>
+    <string name="pref_test_notification">🔔  Invia notifica di test</string>
+    <string name="pref_test_notification_summary">Mostra subito un esempio di allerta per verificare che le notifiche funzionino</string>
+
+    <!-- Settings: Language -->
+    <string name="pref_language_title">Lingua / Language</string>
+    <string name="pref_language_summary">Scegli la lingua dell\'app</string>
+
+    <!-- Settings: Info -->
+    <string name="pref_version">Versione app</string>
+    <string name="pref_data_source">Fonte dati</string>
+    <string name="pref_data_source_summary">Open-Meteo.com — GFS + ECMWF + ICON, aggiornati ogni ora</string>
+    <string name="pref_help">📖  Guida all\'app</string>
+    <string name="pref_help_summary">Come funziona lo score, le previsioni, lo storico e le notifiche</string>
 </resources>

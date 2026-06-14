@@ -3,32 +3,32 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!-- POSIZIONE -->
-    <PreferenceCategory android:title="Posizione">
+    <PreferenceCategory android:title="@string/pref_cat_location">
 
         <SwitchPreferenceCompat
             android:key="use_gps"
-            android:title="Usa GPS"
-            android:summary="Rileva automaticamente la posizione corrente"
+            android:title="@string/pref_use_gps"
+            android:summary="@string/pref_use_gps_summary"
             android:defaultValue="true" />
 
         <EditTextPreference
             android:key="manual_lat"
-            android:title="Latitudine manuale"
-            android:summary="Usata quando il GPS è disattivato"
+            android:title="@string/pref_lat"
+            android:summary="@string/pref_lat_summary"
             android:defaultValue="41.9028"
             app:useSimpleSummaryProvider="true" />
 
         <EditTextPreference
             android:key="manual_lon"
-            android:title="Longitudine manuale"
-            android:summary="Usata quando il GPS è disattivato"
+            android:title="@string/pref_lon"
+            android:summary="@string/pref_lon_summary"
             android:defaultValue="12.4964"
             app:useSimpleSummaryProvider="true" />
 
         <ListPreference
             android:key="radius_km"
-            android:title="Raggio di monitoraggio"
-            android:summary="Cerca il peggior scenario entro questo raggio"
+            android:title="@string/pref_radius"
+            android:summary="@string/pref_radius_summary"
             android:entries="@array/radius_entries"
             android:entryValues="@array/radius_values"
             android:defaultValue="0"
@@ -37,12 +37,12 @@
     </PreferenceCategory>
 
     <!-- PREVISIONI -->
-    <PreferenceCategory android:title="Previsioni">
+    <PreferenceCategory android:title="@string/pref_cat_forecast">
 
         <ListPreference
             android:key="forecast_hours"
-            android:title="Ore previsione oraria"
-            android:summary="Quante ore visualizzare nel tab Previsioni"
+            android:title="@string/pref_forecast_hours"
+            android:summary="@string/pref_forecast_hours_summary"
             android:entries="@array/forecast_hours_entries"
             android:entryValues="@array/forecast_hours_values"
             android:defaultValue="24"
@@ -50,25 +50,25 @@
 
         <SwitchPreferenceCompat
             android:key="show_tech_details"
-            android:title="Mostra dettagli tecnici"
-            android:summary="CAPE, Lifted Index, livello zero, raffiche"
+            android:title="@string/pref_tech_details"
+            android:summary="@string/pref_tech_details_summary"
             android:defaultValue="false" />
 
     </PreferenceCategory>
 
     <!-- NOTIFICHE -->
-    <PreferenceCategory android:title="Notifiche">
+    <PreferenceCategory android:title="@string/pref_cat_notifications">
 
         <SwitchPreferenceCompat
             android:key="notifications_enabled"
-            android:title="Abilita notifiche"
-            android:summary="Invia avvisi per eventi meteo significativi"
+            android:title="@string/pref_notifications_enabled"
+            android:summary="@string/pref_notifications_enabled_summary"
             android:defaultValue="true" />
 
         <ListPreference
             android:key="check_interval_min"
-            android:title="Frequenza controllo"
-            android:summary="Ogni quanto controllare le condizioni meteo"
+            android:title="@string/pref_check_interval"
+            android:summary="@string/pref_check_interval_summary"
             android:entries="@array/interval_entries"
             android:entryValues="@array/interval_values"
             android:defaultValue="30"
@@ -76,8 +76,8 @@
 
         <ListPreference
             android:key="alert_threshold"
-            android:title="Soglia allerta"
-            android:summary="Score minimo per ricevere notifica"
+            android:title="@string/pref_alert_threshold"
+            android:summary="@string/pref_alert_threshold_summary"
             android:entries="@array/threshold_entries"
             android:entryValues="@array/threshold_values"
             android:defaultValue="3"
@@ -85,24 +85,24 @@
 
         <SwitchPreferenceCompat
             android:key="vibration"
-            android:title="Vibrazione"
-            android:summary="Vibra con la notifica di allerta"
+            android:title="@string/pref_vibration"
+            android:summary="@string/pref_vibration_summary"
             android:defaultValue="true" />
 
         <Preference
             android:key="test_notification"
-            android:title="🔔  Invia notifica di test"
-            android:summary="Mostra subito un esempio di allerta per verificare che le notifiche funzionino" />
+            android:title="@string/pref_test_notification"
+            android:summary="@string/pref_test_notification_summary" />
 
     </PreferenceCategory>
 
     <!-- LINGUA -->
-    <PreferenceCategory android:title="Lingua / Language">
+    <PreferenceCategory android:title="@string/pref_cat_language">
 
         <ListPreference
             android:key="app_language"
-            android:title="Lingua / Language"
-            android:summary="Scegli la lingua dell\'app"
+            android:title="@string/pref_language_title"
+            android:summary="@string/pref_language_summary"
             android:entries="@array/language_entries"
             android:entryValues="@array/language_values"
             android:defaultValue="it"
@@ -111,23 +111,23 @@
     </PreferenceCategory>
 
     <!-- INFO -->
-    <PreferenceCategory android:title="Informazioni">
+    <PreferenceCategory android:title="@string/pref_cat_info">
 
         <Preference
             android:key="version_info"
-            android:title="Versione app"
+            android:title="@string/pref_version"
             android:selectable="false" />
 
         <Preference
             android:key="data_source"
-            android:title="Fonte dati"
-            android:summary="Open-Meteo.com — GFS + ECMWF + ICON, aggiornati ogni ora"
+            android:title="@string/pref_data_source"
+            android:summary="@string/pref_data_source_summary"
             android:selectable="false" />
 
         <Preference
             android:key="open_help"
-            android:title="📖  Guida all\'app"
-            android:summary="Come funziona lo score, le previsioni, lo storico e le notifiche" />
+            android:title="@string/pref_help"
+            android:summary="@string/pref_help_summary" />
 
     </PreferenceCategory>
 

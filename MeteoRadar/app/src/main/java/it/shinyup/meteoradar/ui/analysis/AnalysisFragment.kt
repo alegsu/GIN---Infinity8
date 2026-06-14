@@ -111,7 +111,7 @@ class AnalysisFragment : Fragment() {
 
         if (state.availableDates.isEmpty()) {
             binding.tvEvolutionEmpty.visibility = View.VISIBLE
-            binding.tvEvolutionEmpty.text = "Nessun dato disponibile.\nApri il tab \"7 Giorni\" per iniziare a raccogliere le previsioni.\nLo storico si costruisce con una rilevazione ogni 4 ore."
+            binding.tvEvolutionEmpty.text = getString(R.string.evolution_no_data)
             binding.tvSelectedDateLabel.visibility = View.GONE
             binding.chartView.visibility = View.GONE
             binding.tvChartLegend.visibility = View.GONE
@@ -119,9 +119,9 @@ class AnalysisFragment : Fragment() {
         }
 
         binding.tvEvolutionEmpty.visibility = if (!state.hasEnoughData) View.VISIBLE else View.GONE
-        binding.tvEvolutionEmpty.text = "Serve almeno una seconda rilevazione (ogni 4 ore) per mostrare il grafico."
+        binding.tvEvolutionEmpty.text = getString(R.string.evolution_need_more)
         binding.tvSelectedDateLabel.visibility = View.VISIBLE
-        binding.tvSelectedDateLabel.text = "Previsioni per: ${state.dateLabel}"
+        binding.tvSelectedDateLabel.text = getString(R.string.evolution_selected_date, state.dateLabel)
         binding.chartView.visibility = if (state.hasEnoughData) View.VISIBLE else View.GONE
         binding.tvChartLegend.visibility = if (state.hasEnoughData) View.VISIBLE else View.GONE
 

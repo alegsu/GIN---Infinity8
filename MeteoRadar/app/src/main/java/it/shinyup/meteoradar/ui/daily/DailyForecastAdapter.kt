@@ -55,7 +55,8 @@ class DailyForecastAdapter : RecyclerView.Adapter<DailyForecastAdapter.ViewHolde
 
         val deltaMax = (d.temperatureMax - d.avgMax).toInt()
         val sign = if (deltaMax >= 0) "+" else ""
-        holder.tvAvg.text = "${sign}${deltaMax}° vs media sett."
+        val vsAvg = holder.itemView.context.getString(R.string.vs_weekly_avg)
+        holder.tvAvg.text = "${sign}${deltaMax}° $vsAvg"
         holder.tvAvg.setTextColor(when {
             deltaMax >= 3  -> Color.parseColor("#F44336")
             deltaMax <= -3 -> Color.parseColor("#42A5F5")
@@ -80,7 +81,8 @@ class DailyForecastAdapter : RecyclerView.Adapter<DailyForecastAdapter.ViewHolde
         }
 
         // ± = inter-model spread (GFS/ECMWF/ICON), ~ = empirical fallback
-        val reliabLabel = if (d.reliabilityFromModels) "±${d.reliabilityPct}% affid." else "~${d.reliabilityPct}% affid."
+        val suffix = holder.itemView.context.getString(R.string.reliability_suffix)
+        val reliabLabel = if (d.reliabilityFromModels) "±${d.reliabilityPct}% $suffix" else "~${d.reliabilityPct}% $suffix"
         holder.tvReliab.text = reliabLabel
         holder.tvReliab.setTextColor(when {
             d.reliabilityPct >= 85 -> Color.parseColor("#4CAF50")

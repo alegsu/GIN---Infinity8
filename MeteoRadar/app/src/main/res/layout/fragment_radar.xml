@@ -107,7 +107,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="RISCHIO PROSSIME 6 ORE"
+                        android:text="@string/risk_next_6h"
                         android:textColor="@color/text_secondary"
                         android:textSize="10sp"
                         android:letterSpacing="0.12"
@@ -169,7 +169,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="SCALA RISCHIO"
+                        android:text="@string/risk_scale_label"
                         android:textColor="@color/text_secondary"
                         android:textSize="10sp"
                         android:letterSpacing="0.12"
@@ -183,15 +183,15 @@
 
                         <TextView android:layout_width="0dp" android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="● BASSO" android:textColor="#4CAF50"
+                            android:text="@string/risk_low" android:textColor="#4CAF50"
                             android:textSize="11sp" android:textStyle="bold" />
                         <TextView android:layout_width="0dp" android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="● POSSIBILE" android:textColor="#FFC107"
+                            android:text="@string/risk_possible" android:textColor="#FFC107"
                             android:textSize="11sp" android:textStyle="bold" />
                         <TextView android:layout_width="0dp" android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="● MODERATO" android:textColor="#FF9800"
+                            android:text="@string/risk_moderate" android:textColor="#FF9800"
                             android:textSize="11sp" android:textStyle="bold" />
 
                     </LinearLayout>
@@ -205,11 +205,11 @@
 
                         <TextView android:layout_width="0dp" android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="● PERICOLO" android:textColor="#F44336"
+                            android:text="@string/risk_danger" android:textColor="#F44336"
                             android:textSize="11sp" android:textStyle="bold" />
                         <TextView android:layout_width="0dp" android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="● ESTREMO" android:textColor="#9C27B0"
+                            android:text="@string/risk_extreme" android:textColor="#9C27B0"
                             android:textSize="11sp" android:textStyle="bold" />
                         <View android:layout_width="0dp" android:layout_height="1dp"
                             android:layout_weight="1" />
@@ -257,7 +257,7 @@
                         android:id="@+id/tvForecastTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Prossime 24 ore"
+                        android:text="@string/forecast_next_24h"
                         android:textColor="@color/text_primary"
                         android:textSize="14sp"
                         android:textStyle="bold"

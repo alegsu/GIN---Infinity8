@@ -24,7 +24,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Evoluzione previsioni" />
+            android:text="@string/tab_evolution" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnPastWeather"
@@ -32,7 +32,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Ultimi 7 giorni" />
+            android:text="@string/tab_past_weather" />
 
     </com.google.android.material.button.MaterialButtonToggleGroup>
 

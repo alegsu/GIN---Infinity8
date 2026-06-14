@@ -69,10 +69,11 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
         val chartWidth = width - leftPad - rightPad
         val chartHeight = height - topPad - bottomPad
 
+        // Round to integers so chart positions match the displayed labels (no phantom movements)
         val allTemps = points.flatMap { listOf(it.tempMax, it.tempMin) }
+            .map { kotlin.math.round(it).toFloat() }
         val dataMin = allTemps.min()
         val dataMax = allTemps.max()
-        // Enforce a minimum visible range (10°) so small variations don't look dramatic
         val center = (dataMin + dataMax) / 2f
         val halfRange = maxOf((dataMax - dataMin) / 2f + 2f, 6f)
         val minTemp = center - halfRange
@@ -80,7 +81,7 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
         val range = maxTemp - minTemp
 
         fun xOf(i: Int) = leftPad + i * chartWidth / (points.size - 1)
-        fun yOf(temp: Float) = topPad + chartHeight * (1f - (temp - minTemp) / range)
+        fun yOf(temp: Float) = topPad + chartHeight * (1f - (kotlin.math.round(temp).toFloat() - minTemp) / range)
 
         // Horizontal grid lines every 2 degrees
         val gridStep = 2

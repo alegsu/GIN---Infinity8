@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">GrandineAlert</string>
-    <string name="nav_radar">Radar</string>
+
+    <string name="nav_previsioni">Forecast</string>
+    <string name="nav_7giorni">7 Days</string>
+    <string name="nav_analisi">Analysis</string>
+    <string name="nav_impostazioni">Settings</string>
+    <string name="nav_guida">Guide</string>
+
+    <string name="nav_radar">Forecast</string>
     <string name="nav_alerts">Alerts</string>
     <string name="alerts_title">Weather Alerts</string>
     <string name="mark_all_read">Mark all as read</string>
@@ -14,4 +21,66 @@
     <string name="channel_alerts_name">Weather alerts</string>
     <string name="channel_alerts_desc">Notifications for storms, hail and heavy rain</string>
     <string name="channel_info_name">Weather info</string>
+
+    <string name="tab_evolution">Forecast Evolution</string>
+    <string name="tab_past_weather">Last 7 days</string>
+
+    <string name="evolution_no_data">No data available.\nOpen the \"7 Days\" tab to start collecting forecasts.\nHistory builds up with one reading every 4 hours.</string>
+    <string name="evolution_need_more">A second reading is needed (every 4 hours) to show the chart.</string>
+    <string name="evolution_selected_date">Forecasts for: %s</string>
+
+    <string name="risk_next_6h">RISK NEXT 6 HOURS</string>
+    <string name="risk_scale_label">RISK SCALE</string>
+    <string name="risk_low">LOW</string>
+    <string name="risk_possible">POSSIBLE</string>
+    <string name="risk_moderate">MODERATE</string>
+    <string name="risk_danger">DANGER</string>
+    <string name="risk_extreme">EXTREME</string>
+    <string name="forecast_next_24h">Next 24 hours</string>
+
+    <string name="next_7_days">NEXT 7 DAYS</string>
+    <string name="label_precip_prob">🌧 prob.</string>
+    <string name="vs_weekly_avg">vs weekly avg</string>
+    <string name="reliability_suffix">reliab.</string>
+    <string name="legend_trend">↑ rising vs yesterday  ↓ falling  ─ stable · ±X% = GFS/ECMWF/ICON spread · ~X% = estimate</string>
+
+    <string name="pref_cat_location">Location</string>
+    <string name="pref_cat_forecast">Forecasts</string>
+    <string name="pref_cat_notifications">Notifications</string>
+    <string name="pref_cat_language">Lingua / Language</string>
+    <string name="pref_cat_info">Information</string>
+
+    <string name="pref_use_gps">Use GPS</string>
+    <string name="pref_use_gps_summary">Automatically detect current position</string>
+    <string name="pref_lat">Manual latitude</string>
+    <string name="pref_lat_summary">Used when GPS is disabled</string>
+    <string name="pref_lon">Manual longitude</string>
+    <string name="pref_lon_summary">Used when GPS is disabled</string>
+    <string name="pref_radius">Monitoring radius</string>
+    <string name="pref_radius_summary">Find worst case scenario within this radius</string>
+
+    <string name="pref_forecast_hours">Hourly forecast hours</string>
+    <string name="pref_forecast_hours_summary">Hours to display in the Forecast tab</string>
+    <string name="pref_tech_details">Show technical details</string>
+    <string name="pref_tech_details_summary">CAPE, Lifted Index, freezing level, wind gusts</string>
+
+    <string name="pref_notifications_enabled">Enable notifications</string>
+    <string name="pref_notifications_enabled_summary">Send alerts for significant weather events</string>
+    <string name="pref_check_interval">Check frequency</string>
+    <string name="pref_check_interval_summary">How often to check weather conditions</string>
+    <string name="pref_alert_threshold">Alert threshold</string>
+    <string name="pref_alert_threshold_summary">Minimum score to receive a notification</string>
+    <string name="pref_vibration">Vibration</string>
+    <string name="pref_vibration_summary">Vibrate with alert notification</string>
+    <string name="pref_test_notification">🔔  Send test notification</string>
+    <string name="pref_test_notification_summary">Show an example alert to verify notifications work</string>
+
+    <string name="pref_language_title">Lingua / Language</string>
+    <string name="pref_language_summary">Choose app language</string>
+
+    <string name="pref_version">App version</string>
+    <string name="pref_data_source">Data source</string>
+    <string name="pref_data_source_summary">Open-Meteo.com — GFS + ECMWF + ICON, updated hourly</string>
+    <string name="pref_help">📖  App guide</string>
+    <string name="pref_help_summary">How the score, forecasts, history and notifications work</string>
 </resources>

@@ -36,7 +36,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="PROSSIMI 7 GIORNI"
+                        android:text="@string/next_7_days"
                         android:textColor="@color/text_secondary"
                         android:textSize="10sp"
                         android:letterSpacing="0.12"
@@ -64,7 +64,7 @@
                         android:textColor="@color/text_secondary"
                         android:textSize="11sp"
                         android:layout_marginTop="4dp"
-                        android:text="↑ sale vs ieri  ↓ scende  ─ stabile · ±X% = spread GFS/ECMWF/ICON · ~X% = stima" />
+                        android:text="@string/legend_trend" />
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
