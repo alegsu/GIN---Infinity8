@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.PreferenceManager
 import it.shinyup.meteoradar.BuildConfig
 import it.shinyup.meteoradar.MeteoRadarApp
 import it.shinyup.meteoradar.R
@@ -53,7 +54,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
             true
         }
 
-        findPreference<ListPreference>("app_language")?.setOnPreferenceChangeListener { _, _ ->
+        findPreference<ListPreference>("app_language")?.setOnPreferenceChangeListener { _, newValue ->
+            // ListPreference uses apply() (async) — commit() before recreate() ensures
+            // LocaleHelper.wrap() in attachBaseContext reads the updated value
+            PreferenceManager.getDefaultSharedPreferences(requireContext())
+                .edit().putString("app_language", newValue as String).commit()
             requireActivity().recreate()
             true
         }

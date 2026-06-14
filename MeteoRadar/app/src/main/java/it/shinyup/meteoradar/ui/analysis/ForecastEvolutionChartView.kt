@@ -37,18 +37,24 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
     }
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#E0E0E0")
-        textSize = 28f
+        textSize = 24f
         textAlign = Paint.Align.CENTER
     }
     private val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#8B949E")
-        textSize = 24f
+        textSize = 22f
         textAlign = Paint.Align.CENTER
     }
     private val gridPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#20FFFFFF")
         strokeWidth = 1f
         style = Paint.Style.STROKE
+    }
+    private val separatorPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#30FFFFFF")
+        strokeWidth = 1f
+        style = Paint.Style.STROKE
+        pathEffect = DashPathEffect(floatArrayOf(8f, 6f), 0f)
     }
 
     fun setData(data: List<DataPoint>) {
@@ -62,62 +68,77 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
             return
         }
 
-        val leftPad = 20f
-        val rightPad = 20f
-        val topPad = 50f
+        val leftPad   = 20f
+        val rightPad  = 20f
+        val topPad    = 50f
         val bottomPad = 50f
-        val chartWidth = width - leftPad - rightPad
-        val chartHeight = height - topPad - bottomPad
+        val chartWidth  = width  - leftPad - rightPad
+        val chartHeight = height - topPad  - bottomPad
 
-        // Round to integers so chart positions match the displayed labels (no phantom movements)
-        val allTemps = points.flatMap { listOf(it.tempMax, it.tempMin) }
-            .map { kotlin.math.round(it).toFloat() }
-        val dataMin = allTemps.min()
-        val dataMax = allTemps.max()
-        val center = (dataMin + dataMax) / 2f
-        val halfRange = maxOf((dataMax - dataMin) / 2f + 2f, 6f)
-        val minTemp = center - halfRange
-        val maxTemp = center + halfRange
-        val range = maxTemp - minTemp
+        // Split layout: Tmax top 45%, gap 10%, Tmin bottom 45%
+        val bandH = chartHeight * 0.44f
+        val gapH  = chartHeight * 0.12f
+        val minBandTop = topPad + bandH + gapH
 
-        fun xOf(i: Int) = leftPad + i * chartWidth / (points.size - 1)
-        fun yOf(temp: Float) = topPad + chartHeight * (1f - (kotlin.math.round(temp).toFloat() - minTemp) / range)
+        val maxTemps = points.map { it.tempMax }
+        val minTemps = points.map { it.tempMin }
 
-        // Horizontal grid lines every 2 degrees
-        val gridStep = 2
-        val gridStart = (minTemp.toInt() / gridStep) * gridStep
-        for (g in gridStart..maxTemp.toInt() step gridStep) {
-            val y = yOf(g.toFloat())
-            canvas.drawLine(leftPad, y, leftPad + chartWidth, y, gridPaint)
+        // Tmax band: centre ± halfRange, minimum 2° half-range so flat data still has room
+        val maxCenter    = (maxTemps.max() + maxTemps.min()) / 2f
+        val maxHalfRange = maxOf((maxTemps.max() - maxTemps.min()) / 2f + 0.8f, 2f)
+        val maxBandMin   = maxCenter - maxHalfRange
+        val maxBandRange = maxHalfRange * 2f
+
+        // Tmin band: same logic
+        val minCenter    = (minTemps.max() + minTemps.min()) / 2f
+        val minHalfRange = maxOf((minTemps.max() - minTemps.min()) / 2f + 0.8f, 2f)
+        val minBandMin   = minCenter - minHalfRange
+        val minBandRange = minHalfRange * 2f
+
+        fun xOf(i: Int)    = leftPad + i * chartWidth / (points.size - 1)
+        fun yOfMax(t: Float) = topPad     + bandH * (1f - (t - maxBandMin) / maxBandRange)
+        fun yOfMin(t: Float) = minBandTop + bandH * (1f - (t - minBandMin) / minBandRange)
+
+        // Grid lines every 1° inside each band
+        for (g in kotlin.math.floor(maxBandMin.toDouble()).toInt()..
+                  kotlin.math.ceil((maxBandMin + maxBandRange).toDouble()).toInt()) {
+            val y = yOfMax(g.toFloat())
+            if (y in topPad..(topPad + bandH))
+                canvas.drawLine(leftPad, y, leftPad + chartWidth, y, gridPaint)
+        }
+        for (g in kotlin.math.floor(minBandMin.toDouble()).toInt()..
+                  kotlin.math.ceil((minBandMin + minBandRange).toDouble()).toInt()) {
+            val y = yOfMin(g.toFloat())
+            if (y in minBandTop..(minBandTop + bandH))
+                canvas.drawLine(leftPad, y, leftPad + chartWidth, y, gridPaint)
         }
 
-        // Draw min line
+        // Dashed separator between the two bands
+        val sepY = topPad + bandH + gapH / 2f
+        canvas.drawLine(leftPad, sepY, leftPad + chartWidth, sepY, separatorPaint)
+
+        // Draw lines
+        val pathMax = Path()
         val pathMin = Path()
         points.forEachIndexed { i, p ->
-            val x = xOf(i); val y = yOf(p.tempMin)
-            if (i == 0) pathMin.moveTo(x, y) else pathMin.lineTo(x, y)
+            val x = xOf(i)
+            if (i == 0) { pathMax.moveTo(x, yOfMax(p.tempMax)); pathMin.moveTo(x, yOfMin(p.tempMin)) }
+            else        { pathMax.lineTo(x, yOfMax(p.tempMax)); pathMin.lineTo(x, yOfMin(p.tempMin)) }
         }
         canvas.drawPath(pathMin, linePaintMin)
-
-        // Draw max line
-        val pathMax = Path()
-        points.forEachIndexed { i, p ->
-            val x = xOf(i); val y = yOf(p.tempMax)
-            if (i == 0) pathMax.moveTo(x, y) else pathMax.lineTo(x, y)
-        }
         canvas.drawPath(pathMax, linePaintMax)
 
-        // Dots + temperature labels + x-axis labels
+        // Dots + 1-decimal labels + x-axis labels
         points.forEachIndexed { i, p ->
-            val x = xOf(i)
-            val yMax = yOf(p.tempMax)
-            val yMin = yOf(p.tempMin)
+            val x    = xOf(i)
+            val yMax = yOfMax(p.tempMax)
+            val yMin = yOfMin(p.tempMin)
 
             canvas.drawCircle(x, yMax, 7f, dotPaintMax)
             canvas.drawCircle(x, yMin, 7f, dotPaintMin)
 
-            canvas.drawText("${p.tempMax.toInt()}°", x, yMax - 14f, textPaint)
-            canvas.drawText("${p.tempMin.toInt()}°", x, yMin + 30f, textPaint)
+            canvas.drawText("${"%.1f".format(p.tempMax)}°", x, yMax - 14f, textPaint)
+            canvas.drawText("${"%.1f".format(p.tempMin)}°", x, yMin + 30f, textPaint)
             canvas.drawText(p.xLabel, x, height.toFloat() - 8f, labelPaint)
         }
     }
