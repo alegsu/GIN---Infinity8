@@ -70,8 +70,13 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
         val chartHeight = height - topPad - bottomPad
 
         val allTemps = points.flatMap { listOf(it.tempMax, it.tempMin) }
-        val minTemp = allTemps.min() - 1.5f
-        val maxTemp = allTemps.max() + 1.5f
+        val dataMin = allTemps.min()
+        val dataMax = allTemps.max()
+        // Enforce a minimum visible range (10°) so small variations don't look dramatic
+        val center = (dataMin + dataMax) / 2f
+        val halfRange = maxOf((dataMax - dataMin) / 2f + 2f, 6f)
+        val minTemp = center - halfRange
+        val maxTemp = center + halfRange
         val range = maxTemp - minTemp
 
         fun xOf(i: Int) = leftPad + i * chartWidth / (points.size - 1)

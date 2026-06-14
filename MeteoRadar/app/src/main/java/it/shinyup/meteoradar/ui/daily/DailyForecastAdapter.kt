@@ -79,8 +79,8 @@ class DailyForecastAdapter : RecyclerView.Adapter<DailyForecastAdapter.ViewHolde
             holder.tvPrecip.visibility = View.GONE
         }
 
-        // Label shows source: ± for real inter-model spread, ~ for empirical fallback
-        val reliabLabel = if (d.reliabilityFromModels) "± ${d.reliabilityPct}%" else "~${d.reliabilityPct}%"
+        // ± = inter-model spread (GFS/ECMWF/ICON), ~ = empirical fallback
+        val reliabLabel = if (d.reliabilityFromModels) "±${d.reliabilityPct}% affid." else "~${d.reliabilityPct}% affid."
         holder.tvReliab.text = reliabLabel
         holder.tvReliab.setTextColor(when {
             d.reliabilityPct >= 85 -> Color.parseColor("#4CAF50")

@@ -53,7 +53,7 @@ class AnalysisFragment : Fragment() {
             binding.layoutEvolution.visibility = if (showPast) View.GONE else View.VISIBLE
             if (!showPast) viewModel.loadEvolution()
         }
-        binding.btnPastWeather.isChecked = true
+        binding.btnEvolution.isChecked = true
 
         viewModel.isLoading.observe(viewLifecycleOwner) { loading ->
             binding.progressBar.visibility = if (loading) View.VISIBLE else View.GONE

@@ -96,6 +96,20 @@
 
     </PreferenceCategory>
 
+    <!-- LINGUA -->
+    <PreferenceCategory android:title="Lingua / Language">
+
+        <ListPreference
+            android:key="app_language"
+            android:title="Lingua / Language"
+            android:summary="Scegli la lingua dell\'app"
+            android:entries="@array/language_entries"
+            android:entryValues="@array/language_values"
+            android:defaultValue="it"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
     <!-- INFO -->
     <PreferenceCategory android:title="Informazioni">
 

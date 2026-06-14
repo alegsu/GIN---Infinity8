@@ -175,35 +175,46 @@
                         android:letterSpacing="0.12"
                         android:layout_marginBottom="8dp" />
 
-                    <HorizontalScrollView
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:scrollbars="none">
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
 
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="● BASSO" android:textColor="#4CAF50"
+                            android:textSize="11sp" android:textStyle="bold" />
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="● POSSIBILE" android:textColor="#FFC107"
+                            android:textSize="11sp" android:textStyle="bold" />
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="● MODERATO" android:textColor="#FF9800"
+                            android:textSize="11sp" android:textStyle="bold" />
 
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="● BASSO" android:textColor="#4CAF50"
-                                android:textSize="12sp" android:textStyle="bold" android:layout_marginEnd="10dp" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="● POSSIBILE" android:textColor="#FFC107"
-                                android:textSize="12sp" android:textStyle="bold" android:layout_marginEnd="10dp" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="● MODERATO" android:textColor="#FF9800"
-                                android:textSize="12sp" android:textStyle="bold" android:layout_marginEnd="10dp" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="● PERICOLO" android:textColor="#F44336"
-                                android:textSize="12sp" android:textStyle="bold" android:layout_marginEnd="10dp" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="● ESTREMO" android:textColor="#9C27B0"
-                                android:textSize="12sp" android:textStyle="bold" />
+                    </LinearLayout>
 
-                        </LinearLayout>
-                    </HorizontalScrollView>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="4dp">
+
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="● PERICOLO" android:textColor="#F44336"
+                            android:textSize="11sp" android:textStyle="bold" />
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="● ESTREMO" android:textColor="#9C27B0"
+                            android:textSize="11sp" android:textStyle="bold" />
+                        <View android:layout_width="0dp" android:layout_height="1dp"
+                            android:layout_weight="1" />
+
+                    </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"

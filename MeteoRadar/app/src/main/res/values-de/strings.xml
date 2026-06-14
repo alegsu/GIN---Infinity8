@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">GrandineAlert</string>
+    <string name="nav_radar">Radar</string>
+    <string name="nav_alerts">Warnungen</string>
+    <string name="alerts_title">Wetterwarnungen</string>
+    <string name="mark_all_read">Alle als gelesen markieren</string>
+    <string name="no_alerts">Keine aktiven Warnungen.\nDie App prüft die Bedingungen alle 15 Minuten.</string>
+    <string name="radar_loading">Radar wird geladen…</string>
+    <string name="error_network">Netzwerkfehler. Bitte erneut versuchen.</string>
+    <string name="permission_location">Standortzugriff erlauben, um lokale Warnungen zu erhalten.</string>
+    <string name="permission_notification">Benachrichtigungen erlauben, um Echtzeit-Warnungen zu erhalten.</string>
+    <string name="hail_risk">Hagelrisiko</string>
+    <string name="channel_alerts_name">Wetterwarnungen</string>
+    <string name="channel_alerts_desc">Benachrichtigungen für Gewitter, Hagel und Starkregen</string>
+    <string name="channel_info_name">Wetterinformationen</string>
+</resources>

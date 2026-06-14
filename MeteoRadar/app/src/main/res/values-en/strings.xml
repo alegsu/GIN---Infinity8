@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">GrandineAlert</string>
+    <string name="nav_radar">Radar</string>
+    <string name="nav_alerts">Alerts</string>
+    <string name="alerts_title">Weather Alerts</string>
+    <string name="mark_all_read">Mark all as read</string>
+    <string name="no_alerts">No active alerts.\nThe app checks conditions every 15 minutes.</string>
+    <string name="radar_loading">Loading radar…</string>
+    <string name="error_network">Network error. Please try again.</string>
+    <string name="permission_location">Allow location access to receive local alerts.</string>
+    <string name="permission_notification">Allow notifications to receive real-time alerts.</string>
+    <string name="hail_risk">Hail risk</string>
+    <string name="channel_alerts_name">Weather alerts</string>
+    <string name="channel_alerts_desc">Notifications for storms, hail and heavy rain</string>
+    <string name="channel_info_name">Weather info</string>
+</resources>

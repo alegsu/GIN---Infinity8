@@ -52,6 +52,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
             findNavController().navigate(R.id.action_settings_to_help)
             true
         }
+
+        findPreference<ListPreference>("app_language")?.setOnPreferenceChangeListener { _, _ ->
+            requireActivity().recreate()
+            true
+        }
     }
 
     private fun checkAndSendTestNotification() {
