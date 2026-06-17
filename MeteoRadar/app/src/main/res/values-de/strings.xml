@@ -31,11 +31,13 @@
 
     <string name="risk_next_6h">RISIKO NÄCHSTE 6 STD.</string>
     <string name="risk_scale_label">RISIKOSKALA</string>
-    <string name="risk_low">NIEDRIG</string>
-    <string name="risk_possible">MÖGLICH</string>
-    <string name="risk_moderate">MÄSSIG</string>
-    <string name="risk_danger">GEFAHR</string>
+    <string name="risk_low">SELTEN</string>
+    <string name="risk_possible">NIEDRIG</string>
+    <string name="risk_moderate">MÖGLICH</string>
+    <string name="risk_danger">WAHRSCH.</string>
     <string name="risk_extreme">EXTREM</string>
+    <string name="forecast_title">Nächste %1$d Stunden</string>
+    <string name="forecast_title_radius">Nächste %1$dh (schlimmster Fall in %2$d km)</string>
     <string name="forecast_next_24h">Nächste 24 Stunden</string>
 
     <string name="next_7_days">NÄCHSTE 7 TAGE</string>

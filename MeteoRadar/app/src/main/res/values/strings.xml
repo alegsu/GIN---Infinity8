@@ -36,11 +36,13 @@
     <!-- Radar screen -->
     <string name="risk_next_6h">RISCHIO PROSSIME 6 ORE</string>
     <string name="risk_scale_label">SCALA RISCHIO</string>
-    <string name="risk_low">BASSO</string>
-    <string name="risk_possible">POSSIBILE</string>
-    <string name="risk_moderate">MODERATO</string>
-    <string name="risk_danger">PERICOLO</string>
+    <string name="risk_low">RARO</string>
+    <string name="risk_possible">BASSO</string>
+    <string name="risk_moderate">POSSIBILE</string>
+    <string name="risk_danger">PROBABILE</string>
     <string name="risk_extreme">ESTREMO</string>
+    <string name="forecast_title">Prossime %1$d ore</string>
+    <string name="forecast_title_radius">Prossime %1$dh (peggiore entro %2$d km)</string>
     <string name="forecast_next_24h">Prossime 24 ore</string>
 
     <!-- Daily forecast -->

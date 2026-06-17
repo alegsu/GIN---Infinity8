@@ -53,7 +53,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Soglie score:\n🟢  0  = BASSO — nessun fenomeno rilevante\n🟡  1–2 = POSSIBILE — attenzione lieve\n🟠  3–4 = MODERATO — fenomeno significativo\n🔴  5–6 = PERICOLO — evento importante\n🟣  7–15 = ESTREMO — evento severo"
+            android:text="Soglie score:\n🟢  0  = RARO — nessun fenomeno rilevante\n🟡  1–2 = BASSO — attenzione lieve\n🟠  3–4 = POSSIBILE — fenomeno significativo\n🔴  5–6 = PROBABILE — evento importante\n🟣  7–15 = ESTREMO — evento severo"
             android:textColor="@color/text_secondary"
             android:textSize="13sp"
             android:lineSpacingExtra="3dp"
@@ -148,7 +148,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Raggio di monitoraggio: analizza il caso peggiore entro X km. Con 0 km analizza solo la tua posizione esatta.\n\nOre previsione oraria: quante ore visualizzare nel tab Previsioni (12/24/48).\n\nSoglia allerta: score minimo per ricevere notifica. Score 3 = MODERATO (temporali), score 5 = PERICOLO, score 7 = ESTREMO.\n\nDettagli tecnici: mostra CAPE, Lifted Index, livello zero termico e raffiche in ogni riga oraria — utile per chi ha familiarità con la meteorologia."
+            android:text="Raggio di monitoraggio: analizza il caso peggiore entro X km. Con 0 km analizza solo la tua posizione esatta.\n\nOre previsione oraria: quante ore visualizzare nel tab Previsioni (12/24/48).\n\nSoglia allerta: score minimo per ricevere notifica. Score 3 = POSSIBILE (temporali), score 5 = PROBABILE, score 7 = ESTREMO.\n\nDettagli tecnici: mostra CAPE, Lifted Index, livello zero termico e raffiche in ogni riga oraria — utile per chi ha familiarità con la meteorologia."
             android:textColor="@color/text_secondary"
             android:textSize="13sp"
             android:lineSpacingExtra="3dp"

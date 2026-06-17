@@ -31,11 +31,13 @@
 
     <string name="risk_next_6h">RISQUE 6 PROCHAINES H</string>
     <string name="risk_scale_label">ÉCHELLE DE RISQUE</string>
-    <string name="risk_low">FAIBLE</string>
-    <string name="risk_possible">POSSIBLE</string>
-    <string name="risk_moderate">MODÉRÉ</string>
-    <string name="risk_danger">DANGER</string>
+    <string name="risk_low">RARE</string>
+    <string name="risk_possible">FAIBLE</string>
+    <string name="risk_moderate">POSSIBLE</string>
+    <string name="risk_danger">PROBABLE</string>
     <string name="risk_extreme">EXTRÊME</string>
+    <string name="forecast_title">Prochaines %1$d heures</string>
+    <string name="forecast_title_radius">Prochaines %1$dh (pire dans %2$d km)</string>
     <string name="forecast_next_24h">Prochaines 24 heures</string>
 
     <string name="next_7_days">7 PROCHAINS JOURS</string>

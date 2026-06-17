@@ -179,17 +179,17 @@ class RadarFragment : Fragment() {
 
         val radius = prefs.getString(Prefs.RADIUS_KM, "0")?.toIntOrNull() ?: 0
         binding.tvForecastTitle.text = if (radius > 0)
-            "Prossime ${items.size}h (peggiore entro $radius km)"
+            getString(R.string.forecast_title_radius, items.size, radius)
         else
-            "Prossime ${items.size} ore"
+            getString(R.string.forecast_title, items.size)
     }
 
     private fun scoreToDisplay(score: Int): Pair<String, Int> = when {
-        score >= 7 -> "ESTREMO"   to Color.parseColor("#9C27B0")
-        score >= 5 -> "PERICOLO"  to Color.parseColor("#F44336")
-        score >= 3 -> "MODERATO"  to Color.parseColor("#FF9800")
-        score >= 1 -> "POSSIBILE" to Color.parseColor("#FFC107")
-        else       -> "BASSO"     to Color.parseColor("#4CAF50")
+        score >= 7 -> getString(R.string.risk_extreme)  to Color.parseColor("#9C27B0")
+        score >= 5 -> getString(R.string.risk_danger)   to Color.parseColor("#F44336")
+        score >= 3 -> getString(R.string.risk_moderate)  to Color.parseColor("#FF9800")
+        score >= 1 -> getString(R.string.risk_possible)  to Color.parseColor("#FFC107")
+        else       -> getString(R.string.risk_low)       to Color.parseColor("#4CAF50")
     }
 
     override fun onDestroyView() {
