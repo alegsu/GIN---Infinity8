@@ -9,6 +9,7 @@ object Prefs {
     const val CHECK_INTERVAL     = "check_interval_min"
     const val ALERT_THRESHOLD    = "alert_threshold"
     const val VIBRATION          = "vibration"
+    const val FORECAST_CHANGE_NOTIFICATIONS = "forecast_change_notifications"
     const val FORECAST_HOURS     = "forecast_hours"
     const val SHOW_TECH_DETAILS  = "show_tech_details"
 }

@@ -16,6 +16,7 @@ object NotificationHelper {
 
     private const val CHANNEL_ALERTS = "weather_alerts"
     private const val CHANNEL_INFO = "weather_info"
+    private const val CHANNEL_FORECAST = "forecast_changes"
 
     fun createChannels(context: Context) {
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -39,6 +40,16 @@ object NotificationHelper {
                 NotificationManager.IMPORTANCE_DEFAULT
             ).apply {
                 description = "Aggiornamenti meteo generali"
+            }
+        )
+
+        manager.createNotificationChannel(
+            NotificationChannel(
+                CHANNEL_FORECAST,
+                "Variazioni previsioni",
+                NotificationManager.IMPORTANCE_DEFAULT
+            ).apply {
+                description = "Notifiche quando le previsioni cambiano significativamente"
             }
         )
     }
@@ -75,6 +86,30 @@ object NotificationHelper {
         } catch (_: SecurityException) {
             // POST_NOTIFICATIONS permission not granted
         }
+    }
+
+    fun sendForecastChangeNotification(context: Context, title: String, body: String) {
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            context, 5000, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val notification = NotificationCompat.Builder(context, CHANNEL_FORECAST)
+            .setSmallIcon(R.drawable.ic_alert_info)
+            .setContentTitle(title)
+            .setContentText(body.lines().first())
+            .setStyle(NotificationCompat.BigTextStyle().bigText(body))
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+            .build()
+
+        try {
+            NotificationManagerCompat.from(context).notify(5001, notification)
+        } catch (_: SecurityException) { }
     }
 
     private fun alertIcon(level: AlertLevel): Int = when (level) {

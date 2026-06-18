@@ -15,14 +15,14 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
 
     private val linePaintMax = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#F44336")
-        strokeWidth = 4f
+        strokeWidth = 6f
         style = Paint.Style.STROKE
         strokeJoin = Paint.Join.ROUND
         strokeCap = Paint.Cap.ROUND
     }
     private val linePaintMin = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#42A5F5")
-        strokeWidth = 4f
+        strokeWidth = 6f
         style = Paint.Style.STROKE
         strokeJoin = Paint.Join.ROUND
         strokeCap = Paint.Cap.ROUND
@@ -134,8 +134,8 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
             val yMax = yOfMax(p.tempMax)
             val yMin = yOfMin(p.tempMin)
 
-            canvas.drawCircle(x, yMax, 7f, dotPaintMax)
-            canvas.drawCircle(x, yMin, 7f, dotPaintMin)
+            canvas.drawCircle(x, yMax, 8f, dotPaintMax)
+            canvas.drawCircle(x, yMin, 8f, dotPaintMin)
 
             canvas.drawText("${"%.1f".format(p.tempMax)}°", x, yMax - 14f, textPaint)
             canvas.drawText("${"%.1f".format(p.tempMin)}°", x, yMin + 30f, textPaint)

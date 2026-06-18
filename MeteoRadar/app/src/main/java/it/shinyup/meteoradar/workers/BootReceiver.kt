@@ -23,5 +23,15 @@ class BootReceiver : BroadcastReceiver() {
             ExistingPeriodicWorkPolicy.KEEP,
             request
         )
+
+        val forecastRequest = PeriodicWorkRequestBuilder<ForecastChangeWorker>(4, TimeUnit.HOURS)
+            .setConstraints(constraints)
+            .build()
+
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+            ForecastChangeWorker.WORK_NAME,
+            ExistingPeriodicWorkPolicy.KEEP,
+            forecastRequest
+        )
     }
 }

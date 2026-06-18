@@ -5,6 +5,7 @@ import androidx.preference.PreferenceManager
 import androidx.work.*
 import it.shinyup.meteoradar.utils.NotificationHelper
 import it.shinyup.meteoradar.utils.Prefs
+import it.shinyup.meteoradar.workers.ForecastChangeWorker
 import it.shinyup.meteoradar.workers.WeatherAlertWorker
 import java.util.concurrent.TimeUnit
 
@@ -14,6 +15,24 @@ class MeteoRadarApp : Application() {
         super.onCreate()
         NotificationHelper.createChannels(this)
         scheduleAlertWorker()
+        scheduleForecastChangeWorker()
+    }
+
+    private fun scheduleForecastChangeWorker() {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val request = PeriodicWorkRequestBuilder<ForecastChangeWorker>(4, TimeUnit.HOURS)
+            .setConstraints(constraints)
+            .setBackoffCriteria(BackoffPolicy.LINEAR, 15, TimeUnit.MINUTES)
+            .build()
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            ForecastChangeWorker.WORK_NAME,
+            ExistingPeriodicWorkPolicy.KEEP,
+            request
+        )
     }
 
     fun scheduleAlertWorker() {

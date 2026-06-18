@@ -74,6 +74,8 @@
     <string name="pref_alert_threshold_summary">Score minimum pour recevoir une notification</string>
     <string name="pref_vibration">Vibration</string>
     <string name="pref_vibration_summary">Vibre avec la notification d\'alerte</string>
+    <string name="pref_forecast_change">Changements de prévisions</string>
+    <string name="pref_forecast_change_summary">Notifier quand les températures prévues changent de ±1,5° ou plus</string>
     <string name="pref_test_notification">🔔  Envoyer notification test</string>
     <string name="pref_test_notification_summary">Affiche un exemple d\'alerte pour vérifier les notifications</string>
 

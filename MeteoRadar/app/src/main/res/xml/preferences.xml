@@ -89,6 +89,12 @@
             android:summary="@string/pref_vibration_summary"
             android:defaultValue="true" />
 
+        <SwitchPreferenceCompat
+            android:key="forecast_change_notifications"
+            android:title="@string/pref_forecast_change"
+            android:summary="@string/pref_forecast_change_summary"
+            android:defaultValue="true" />
+
         <Preference
             android:key="test_notification"
             android:title="@string/pref_test_notification"
