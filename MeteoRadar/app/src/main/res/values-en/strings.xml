@@ -75,7 +75,9 @@
     <string name="pref_vibration">Vibration</string>
     <string name="pref_vibration_summary">Vibrate with alert notification</string>
     <string name="pref_forecast_change">Forecast changes</string>
-    <string name="pref_forecast_change_summary">Notify when forecast temperatures change by ±1.5° or more</string>
+    <string name="pref_forecast_change_summary">Notify when forecast temperatures change significantly</string>
+    <string name="pref_forecast_threshold">Change threshold</string>
+    <string name="pref_forecast_threshold_summary">Minimum temperature difference to trigger a notification</string>
     <string name="pref_test_notification">🔔  Send test notification</string>
     <string name="pref_test_notification_summary">Show an example alert to verify notifications work</string>
 

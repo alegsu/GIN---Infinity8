@@ -23,7 +23,6 @@ class ForecastChangeWorker(context: Context, params: WorkerParameters) : Corouti
 
     companion object {
         const val WORK_NAME = "forecast_change_worker"
-        private const val TEMP_THRESHOLD = 1.5
     }
 
     private val repository = WeatherRepository()
@@ -33,6 +32,9 @@ class ForecastChangeWorker(context: Context, params: WorkerParameters) : Corouti
         val prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext)
         if (!prefs.getBoolean(Prefs.NOTIFICATIONS_ENABLED, true)) return Result.success()
         if (!prefs.getBoolean(Prefs.FORECAST_CHANGE_NOTIFICATIONS, true)) return Result.success()
+
+        val tempThreshold = prefs.getString(Prefs.FORECAST_CHANGE_THRESHOLD, "1.0")
+            ?.toDoubleOrNull() ?: 1.0
 
         val useGps = prefs.getBoolean(Prefs.USE_GPS, true)
         val location = if (useGps) LocationHelper.getCurrentLocation(applicationContext) else null
@@ -78,7 +80,7 @@ class ForecastChangeWorker(context: Context, params: WorkerParameters) : Corouti
             val old = oldByDate[snap.targetDate] ?: continue
             val maxDelta = snap.maxTemp - old.maxTemp
             val minDelta = snap.minTemp - old.minTemp
-            if (abs(maxDelta) >= TEMP_THRESHOLD || abs(minDelta) >= TEMP_THRESHOLD) {
+            if (abs(maxDelta) >= tempThreshold || abs(minDelta) >= tempThreshold) {
                 changes.add(DayChange(snap.targetDate, maxDelta, minDelta, snap.maxTemp, snap.minTemp))
             }
         }

@@ -75,7 +75,9 @@
     <string name="pref_vibration">Vibration</string>
     <string name="pref_vibration_summary">Bei Alarmbenachrichtigung vibrieren</string>
     <string name="pref_forecast_change">Vorhersageänderungen</string>
-    <string name="pref_forecast_change_summary">Benachrichtigen, wenn Temperaturprognosen sich um ±1,5° oder mehr ändern</string>
+    <string name="pref_forecast_change_summary">Benachrichtigen bei deutlichen Änderungen der Temperaturprognose</string>
+    <string name="pref_forecast_threshold">Änderungsschwelle</string>
+    <string name="pref_forecast_threshold_summary">Mindesttemperaturdifferenz für eine Benachrichtigung</string>
     <string name="pref_test_notification">🔔  Testbenachrichtigung senden</string>
     <string name="pref_test_notification_summary">Zeigt sofort ein Alarmbeispiel zur Überprüfung</string>
 

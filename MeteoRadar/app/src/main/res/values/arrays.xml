@@ -56,6 +56,20 @@
     </string-array>
 
 
+    <!-- Forecast change threshold options -->
+    <string-array name="forecast_threshold_entries">
+        <item>± 0.5°</item>
+        <item>± 1.0°</item>
+        <item>± 1.5°</item>
+        <item>± 2.0°</item>
+    </string-array>
+    <string-array name="forecast_threshold_values">
+        <item>0.5</item>
+        <item>1.0</item>
+        <item>1.5</item>
+        <item>2.0</item>
+    </string-array>
+
     <!-- Language options -->
     <string-array name="language_entries">
         <item>Italiano</item>

@@ -95,6 +95,16 @@
             android:summary="@string/pref_forecast_change_summary"
             android:defaultValue="true" />
 
+        <ListPreference
+            android:key="forecast_change_threshold"
+            android:title="@string/pref_forecast_threshold"
+            android:summary="@string/pref_forecast_threshold_summary"
+            android:entries="@array/forecast_threshold_entries"
+            android:entryValues="@array/forecast_threshold_values"
+            android:defaultValue="1.0"
+            android:dependency="forecast_change_notifications"
+            app:useSimpleSummaryProvider="true" />
+
         <Preference
             android:key="test_notification"
             android:title="@string/pref_test_notification"
