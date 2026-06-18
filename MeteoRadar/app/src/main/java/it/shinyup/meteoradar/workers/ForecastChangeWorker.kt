@@ -107,11 +107,11 @@ class ForecastChangeWorker(context: Context, params: WorkerParameters) : Corouti
             for (ch in changes) {
                 append("\n${formatDay(ch.date)}: ")
                 val parts = mutableListOf<String>()
-                if (abs(ch.maxDelta) >= TEMP_THRESHOLD) {
+                if (abs(ch.maxDelta) >= 0.1) {
                     val arrow = if (ch.maxDelta > 0) "↑" else "↓"
                     parts.add("Max ${ch.newMax.roundToInt()}° ($arrow${"%+.1f".format(ch.maxDelta)}°)")
                 }
-                if (abs(ch.minDelta) >= TEMP_THRESHOLD) {
+                if (abs(ch.minDelta) >= 0.1) {
                     val arrow = if (ch.minDelta > 0) "↑" else "↓"
                     parts.add("Min ${ch.newMin.roundToInt()}° ($arrow${"%+.1f".format(ch.minDelta)}°)")
                 }
