@@ -10,8 +10,10 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
 ) : View(context, attrs) {
 
     data class DataPoint(val xLabel: String, val tempMax: Float, val tempMin: Float, val location: String)
+    data class ScaleRange(val maxFloor: Float, val maxCeil: Float, val minFloor: Float, val minCeil: Float)
 
     private var points: List<DataPoint> = emptyList()
+    private var fixedScale: ScaleRange? = null
 
     private val linePaintMax = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#F44336")
@@ -37,12 +39,12 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
     }
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#E0E0E0")
-        textSize = 24f
+        textSize = 32f
         textAlign = Paint.Align.CENTER
     }
     private val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#8B949E")
-        textSize = 22f
+        textSize = 26f
         textAlign = Paint.Align.CENTER
     }
     private val gridPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -55,6 +57,10 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
         strokeWidth = 1f
         style = Paint.Style.STROKE
         pathEffect = DashPathEffect(floatArrayOf(8f, 6f), 0f)
+    }
+
+    fun setScale(scale: ScaleRange?) {
+        fixedScale = scale
     }
 
     fun setData(data: List<DataPoint>) {
@@ -70,8 +76,8 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
 
         val leftPad   = 20f
         val rightPad  = 20f
-        val topPad    = 50f
-        val bottomPad = 50f
+        val topPad    = 60f
+        val bottomPad = 55f
         val chartWidth  = width  - leftPad - rightPad
         val chartHeight = height - topPad  - bottomPad
 
@@ -80,20 +86,29 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
         val gapH  = chartHeight * 0.12f
         val minBandTop = topPad + bandH + gapH
 
-        val maxTemps = points.map { it.tempMax }
-        val minTemps = points.map { it.tempMin }
+        val scale = fixedScale
+        val maxBandMin: Float
+        val maxBandRange: Float
+        val minBandMin: Float
+        val minBandRange: Float
 
-        // Tmax band: centre ± halfRange, minimum 2° half-range so flat data still has room
-        val maxCenter    = (maxTemps.max() + maxTemps.min()) / 2f
-        val maxHalfRange = maxOf((maxTemps.max() - maxTemps.min()) / 2f + 0.8f, 2f)
-        val maxBandMin   = maxCenter - maxHalfRange
-        val maxBandRange = maxHalfRange * 2f
-
-        // Tmin band: same logic
-        val minCenter    = (minTemps.max() + minTemps.min()) / 2f
-        val minHalfRange = maxOf((minTemps.max() - minTemps.min()) / 2f + 0.8f, 2f)
-        val minBandMin   = minCenter - minHalfRange
-        val minBandRange = minHalfRange * 2f
+        if (scale != null) {
+            maxBandMin = scale.maxFloor
+            maxBandRange = scale.maxCeil - scale.maxFloor
+            minBandMin = scale.minFloor
+            minBandRange = scale.minCeil - scale.minFloor
+        } else {
+            val maxTemps = points.map { it.tempMax }
+            val minTemps = points.map { it.tempMin }
+            val maxCenter    = (maxTemps.max() + maxTemps.min()) / 2f
+            val maxHalfRange = maxOf((maxTemps.max() - maxTemps.min()) / 2f + 0.8f, 2f)
+            maxBandMin   = maxCenter - maxHalfRange
+            maxBandRange = maxHalfRange * 2f
+            val minCenter    = (minTemps.max() + minTemps.min()) / 2f
+            val minHalfRange = maxOf((minTemps.max() - minTemps.min()) / 2f + 0.8f, 2f)
+            minBandMin   = minCenter - minHalfRange
+            minBandRange = minHalfRange * 2f
+        }
 
         fun xOf(i: Int)    = leftPad + i * chartWidth / (points.size - 1)
         fun yOfMax(t: Float) = topPad     + bandH * (1f - (t - maxBandMin) / maxBandRange)
@@ -137,8 +152,8 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
             canvas.drawCircle(x, yMax, 8f, dotPaintMax)
             canvas.drawCircle(x, yMin, 8f, dotPaintMin)
 
-            canvas.drawText("${"%.1f".format(p.tempMax)}°", x, yMax - 14f, textPaint)
-            canvas.drawText("${"%.1f".format(p.tempMin)}°", x, yMin + 30f, textPaint)
+            canvas.drawText("${"%.1f".format(p.tempMax)}°", x, yMax - 18f, textPaint)
+            canvas.drawText("${"%.1f".format(p.tempMin)}°", x, yMin + 38f, textPaint)
             canvas.drawText(p.xLabel, x, height.toFloat() - 8f, labelPaint)
         }
     }

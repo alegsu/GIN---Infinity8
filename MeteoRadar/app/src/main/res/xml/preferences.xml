@@ -34,6 +34,20 @@
             android:defaultValue="0"
             app:useSimpleSummaryProvider="true" />
 
+        <EditTextPreference
+            android:key="second_city_lat"
+            android:title="@string/pref_second_city_lat"
+            android:summary="@string/pref_second_city_lat_summary"
+            android:defaultValue=""
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            android:key="second_city_lon"
+            android:title="@string/pref_second_city_lon"
+            android:summary="@string/pref_second_city_lon_summary"
+            android:defaultValue=""
+            app:useSimpleSummaryProvider="true" />
+
     </PreferenceCategory>
 
     <!-- PREVISIONI -->

@@ -45,7 +45,6 @@ class AnalysisFragment : Fragment() {
         binding.rvPastWeather.layoutManager = LinearLayoutManager(requireContext())
         binding.rvPastWeather.adapter = pastAdapter
 
-        // Toggle between the two modes
         binding.toggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (!isChecked) return@addOnButtonCheckedListener
             val showPast = checkedId == R.id.btnPastWeather
@@ -97,7 +96,24 @@ class AnalysisFragment : Fragment() {
     }
 
     private fun updateEvolutionUI(state: EvolutionState) {
-        // Rebuild date chip group
+        // City chips
+        if (state.availableCities.size > 1) {
+            binding.cityChipGroup.removeAllViews()
+            state.availableCities.forEach { city ->
+                val chip = Chip(requireContext()).apply {
+                    text = city
+                    isCheckable = true
+                    isChecked = city == state.selectedCity
+                    setOnClickListener { viewModel.selectCity(city) }
+                }
+                binding.cityChipGroup.addView(chip)
+            }
+            binding.cityChipGroup.visibility = View.VISIBLE
+        } else {
+            binding.cityChipGroup.visibility = View.GONE
+        }
+
+        // Date chips
         binding.dateChipGroup.removeAllViews()
         state.availableDates.forEach { date ->
             val chip = Chip(requireContext()).apply {
@@ -126,16 +142,16 @@ class AnalysisFragment : Fragment() {
         binding.tvChartLegend.visibility = if (state.hasEnoughData) View.VISIBLE else View.GONE
 
         if (state.hasEnoughData) {
+            binding.chartView.setScale(state.globalScale)
             binding.chartView.setData(state.points)
         }
     }
 
     private fun formatShortDate(iso: String): String = try {
         val d = java.time.LocalDate.parse(iso)
-        val dow = when (d.dayOfWeek.value) {
-            1 -> "Lun"; 2 -> "Mar"; 3 -> "Mer"; 4 -> "Gio"
-            5 -> "Ven"; 6 -> "Sab"; else -> "Dom"
-        }
+        val dow = d.dayOfWeek.getDisplayName(
+            java.time.format.TextStyle.SHORT, java.util.Locale.getDefault()
+        ).replaceFirstChar { it.uppercase() }
         "$dow ${d.dayOfMonth}"
     } catch (e: Exception) { iso }
 

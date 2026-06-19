@@ -66,6 +66,10 @@
     <string name="pref_lat_summary">Usata quando il GPS è disattivato</string>
     <string name="pref_lon">Longitudine manuale</string>
     <string name="pref_lon_summary">Usata quando il GPS è disattivato</string>
+    <string name="pref_second_city_lat">Seconda città — Latitudine</string>
+    <string name="pref_second_city_lat_summary">Latitudine della seconda città da monitorare (lascia vuoto per disattivare)</string>
+    <string name="pref_second_city_lon">Seconda città — Longitudine</string>
+    <string name="pref_second_city_lon_summary">Longitudine della seconda città da monitorare</string>
     <string name="pref_radius">Raggio di monitoraggio</string>
     <string name="pref_radius_summary">Cerca il peggior scenario entro questo raggio</string>
 

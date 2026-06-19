@@ -90,9 +90,64 @@ class ForecastChangeWorker(context: Context, params: WorkerParameters) : Corouti
         }
 
         snapshotDao.insertAll(newSnapshots)
+
+        checkSecondCity(prefs, tempThreshold)
+
         snapshotDao.deleteOlderThan(System.currentTimeMillis() - 30L * 24 * 60 * 60 * 1000L)
 
         return Result.success()
+    }
+
+    private suspend fun checkSecondCity(prefs: android.content.SharedPreferences, tempThreshold: Double) {
+        val lat2 = prefs.getString(Prefs.SECOND_CITY_LAT, "")?.toDoubleOrNull() ?: return
+        val lon2 = prefs.getString(Prefs.SECOND_CITY_LON, "")?.toDoubleOrNull() ?: return
+
+        val city2 = withContext(Dispatchers.IO) {
+            GeocoderHelper.cityName(applicationContext, lat2, lon2)
+        }
+
+        val lastFetch2 = snapshotDao.getLastFetchTimeForLocation(city2) ?: 0L
+        if (System.currentTimeMillis() - lastFetch2 < 4 * 60 * 60 * 1000L) return
+
+        val daily2 = repository.getDailyForecast(lat2, lon2).getOrNull()?.daily ?: return
+        val today = LocalDate.now().toString()
+        val oldSnapshots2 = snapshotDao.getSnapshotsFrom(today)
+            .filter { it.locationName == city2 }
+        val oldByDate2 = oldSnapshots2.groupBy { it.targetDate }
+            .mapValues { (_, snaps) -> snaps.maxByOrNull { it.fetchedAt } }
+
+        val fetchedAt2 = System.currentTimeMillis()
+        val newSnapshots2 = daily2.time.indices.mapNotNull { i ->
+            val date = daily2.time.getOrNull(i) ?: return@mapNotNull null
+            ForecastSnapshot(
+                fetchedAt = fetchedAt2,
+                targetDate = date,
+                locationName = city2,
+                minTemp = daily2.temperatureMin.getOrElse(i) { 0.0 },
+                maxTemp = daily2.temperatureMax.getOrElse(i) { 0.0 },
+                weatherCode = daily2.weatherCode.getOrElse(i) { 0 },
+                precipProb = daily2.precipitationProbabilityMax.getOrElse(i) { 0 },
+                precipSum = daily2.precipitationSum.getOrElse(i) { 0.0 }
+            )
+        }
+
+        if (newSnapshots2.isEmpty()) return
+
+        val changes2 = mutableListOf<DayChange>()
+        for (snap in newSnapshots2) {
+            val old = oldByDate2[snap.targetDate] ?: continue
+            val maxDelta = snap.maxTemp - old.maxTemp
+            val minDelta = snap.minTemp - old.minTemp
+            if (abs(maxDelta) >= tempThreshold || abs(minDelta) >= tempThreshold) {
+                changes2.add(DayChange(snap.targetDate, maxDelta, minDelta, snap.maxTemp, snap.minTemp))
+            }
+        }
+
+        if (changes2.isNotEmpty()) {
+            sendGroupedNotification(changes2, city2)
+        }
+
+        snapshotDao.insertAll(newSnapshots2)
     }
 
     private fun sendGroupedNotification(changes: List<DayChange>, city: String) {

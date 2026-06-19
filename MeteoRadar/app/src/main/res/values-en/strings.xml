@@ -58,6 +58,10 @@
     <string name="pref_lat_summary">Used when GPS is disabled</string>
     <string name="pref_lon">Manual longitude</string>
     <string name="pref_lon_summary">Used when GPS is disabled</string>
+    <string name="pref_second_city_lat">Second city — Latitude</string>
+    <string name="pref_second_city_lat_summary">Latitude of the second city to monitor (leave empty to disable)</string>
+    <string name="pref_second_city_lon">Second city — Longitude</string>
+    <string name="pref_second_city_lon_summary">Longitude of the second city to monitor</string>
     <string name="pref_radius">Monitoring radius</string>
     <string name="pref_radius_summary">Find worst case scenario within this radius</string>
 

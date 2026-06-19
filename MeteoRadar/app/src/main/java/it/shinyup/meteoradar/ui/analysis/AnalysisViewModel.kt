@@ -12,8 +12,11 @@ import it.shinyup.meteoradar.data.db.AppDatabase
 import it.shinyup.meteoradar.data.db.ForecastSnapshot
 import it.shinyup.meteoradar.data.models.DailyData
 import it.shinyup.meteoradar.data.models.WeatherCode
+import it.shinyup.meteoradar.utils.GeocoderHelper
 import it.shinyup.meteoradar.utils.Prefs
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
@@ -31,11 +34,14 @@ data class PastDayItem(
 )
 
 data class EvolutionState(
-    val availableDates: List<String>,     // ISO dates of future days that have snapshots
+    val availableDates: List<String>,
     val selectedDate: String?,
     val dateLabel: String,
     val points: List<ForecastEvolutionChartView.DataPoint>,
-    val hasEnoughData: Boolean            // need >= 2 points to draw chart
+    val hasEnoughData: Boolean,
+    val globalScale: ForecastEvolutionChartView.ScaleRange? = null,
+    val availableCities: List<String> = emptyList(),
+    val selectedCity: String? = null
 )
 
 class AnalysisViewModel(application: Application) : AndroidViewModel(application) {
@@ -52,6 +58,9 @@ class AnalysisViewModel(application: Application) : AndroidViewModel(application
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading
 
+    private var cachedGrouped: Map<String, List<ForecastSnapshot>> = emptyMap()
+    private var cachedGlobalScale: ForecastEvolutionChartView.ScaleRange? = null
+
     fun loadPastDays(location: Location?) {
         val useGps = prefs.getBoolean(Prefs.USE_GPS, true)
         val lat = if (useGps && location != null) location.latitude
@@ -61,11 +70,48 @@ class AnalysisViewModel(application: Application) : AndroidViewModel(application
 
         viewModelScope.launch {
             _isLoading.value = true
+
+            saveSecondCitySnapshots()
+
             repository.getPastDaysData(lat, lon).onSuccess { response ->
                 val daily = response.daily ?: return@onSuccess
                 _pastDays.value = buildPastItems(daily)
             }
             _isLoading.value = false
+        }
+    }
+
+    private suspend fun saveSecondCitySnapshots() {
+        val secondLat = prefs.getString(Prefs.SECOND_CITY_LAT, "")?.toDoubleOrNull() ?: return
+        val secondLon = prefs.getString(Prefs.SECOND_CITY_LON, "")?.toDoubleOrNull() ?: return
+
+        val city2 = withContext(Dispatchers.IO) {
+            GeocoderHelper.cityName(getApplication(), secondLat, secondLon)
+        }
+
+        val dao = AppDatabase.getInstance(getApplication()).snapshotDao()
+        val lastFetch = dao.getLastFetchTimeForLocation(city2) ?: 0L
+        if (System.currentTimeMillis() - lastFetch < 4 * 60 * 60 * 1000L) return
+
+        val result = repository.getDailyForecast(secondLat, secondLon)
+        val daily = result.getOrNull()?.daily ?: return
+
+        val fetchedAt = System.currentTimeMillis()
+        val snapshots = daily.time.indices.mapNotNull { i ->
+            val date = daily.time.getOrNull(i) ?: return@mapNotNull null
+            ForecastSnapshot(
+                fetchedAt = fetchedAt,
+                targetDate = date,
+                locationName = city2,
+                minTemp = daily.temperatureMin.getOrElse(i) { 0.0 },
+                maxTemp = daily.temperatureMax.getOrElse(i) { 0.0 },
+                weatherCode = daily.weatherCode.getOrElse(i) { 0 },
+                precipProb = daily.precipitationProbabilityMax.getOrElse(i) { 0 },
+                precipSum = daily.precipitationSum.getOrElse(i) { 0.0 }
+            )
+        }
+        if (snapshots.isNotEmpty()) {
+            dao.insertAll(snapshots)
         }
     }
 
@@ -75,32 +121,96 @@ class AnalysisViewModel(application: Application) : AndroidViewModel(application
             val today = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
             val all = dao.getSnapshotsFrom(today)
 
-            // Get future dates that have at least 1 snapshot
-            val grouped = all.groupBy { it.targetDate }
+            val allCities = all.map { it.locationName }.distinct().sorted()
+            val selectedCity = _evolution.value?.selectedCity?.takeIf { it in allCities }
+                ?: allCities.firstOrNull()
+
+            val filtered = if (selectedCity != null) all.filter { it.locationName == selectedCity } else all
+            val grouped = filtered.groupBy { it.targetDate }
+            cachedGrouped = grouped
+
+            cachedGlobalScale = computeGlobalScale(grouped)
+
             val validDates = grouped.keys.filter { (grouped[it]?.size ?: 0) >= 1 }.sorted()
 
             if (validDates.isEmpty()) {
-                _evolution.value = EvolutionState(emptyList(), null, "", emptyList(), false)
+                _evolution.value = EvolutionState(
+                    emptyList(), null, "", emptyList(), false,
+                    availableCities = allCities, selectedCity = selectedCity
+                )
                 return@launch
             }
 
-            // Default: first available date
             val current = _evolution.value?.selectedDate?.takeIf { it in validDates } ?: validDates.first()
-            loadEvolutionForDate(current, grouped)
+            loadEvolutionForDate(current, grouped, allCities, selectedCity)
         }
     }
 
     fun selectDate(date: String) {
+        val grouped = cachedGrouped
+        val state = _evolution.value ?: return
+        loadEvolutionForDate(date, grouped, state.availableCities, state.selectedCity)
+    }
+
+    fun selectCity(city: String) {
         viewModelScope.launch {
             val dao = AppDatabase.getInstance(getApplication()).snapshotDao()
             val today = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
             val all = dao.getSnapshotsFrom(today)
-            val grouped = all.groupBy { it.targetDate }
-            loadEvolutionForDate(date, grouped)
+
+            val allCities = all.map { it.locationName }.distinct().sorted()
+            val filtered = all.filter { it.locationName == city }
+            val grouped = filtered.groupBy { it.targetDate }
+            cachedGrouped = grouped
+            cachedGlobalScale = computeGlobalScale(grouped)
+
+            val validDates = grouped.keys.filter { (grouped[it]?.size ?: 0) >= 1 }.sorted()
+
+            if (validDates.isEmpty()) {
+                _evolution.value = EvolutionState(
+                    emptyList(), null, "", emptyList(), false,
+                    globalScale = cachedGlobalScale,
+                    availableCities = allCities, selectedCity = city
+                )
+                return@launch
+            }
+
+            val current = validDates.first()
+            loadEvolutionForDate(current, grouped, allCities, city)
         }
     }
 
-    private fun loadEvolutionForDate(date: String, grouped: Map<String, List<ForecastSnapshot>>) {
+    private fun computeGlobalScale(grouped: Map<String, List<ForecastSnapshot>>): ForecastEvolutionChartView.ScaleRange? {
+        val allSnapshots = grouped.values.flatten()
+        if (allSnapshots.isEmpty()) return null
+
+        val allMax = allSnapshots.map { it.maxTemp.toFloat() }
+        val allMin = allSnapshots.map { it.minTemp.toFloat() }
+
+        val maxFloor = allMax.min() - 1f
+        val maxCeil = allMax.max() + 1f
+        val minFloor = allMin.min() - 1f
+        val minCeil = allMin.max() + 1f
+
+        val maxRange = maxOf(maxCeil - maxFloor, 4f)
+        val minRange = maxOf(minCeil - minFloor, 4f)
+        val maxCenter = (maxFloor + maxCeil) / 2f
+        val minCenter = (minFloor + minCeil) / 2f
+
+        return ForecastEvolutionChartView.ScaleRange(
+            maxFloor = maxCenter - maxRange / 2f,
+            maxCeil = maxCenter + maxRange / 2f,
+            minFloor = minCenter - minRange / 2f,
+            minCeil = minCenter + minRange / 2f
+        )
+    }
+
+    private fun loadEvolutionForDate(
+        date: String,
+        grouped: Map<String, List<ForecastSnapshot>>,
+        allCities: List<String>,
+        selectedCity: String?
+    ) {
         val validDates = grouped.keys.filter { (grouped[it]?.size ?: 0) >= 1 }.sorted()
         val snapshots = grouped[date]?.sortedBy { it.fetchedAt } ?: emptyList()
 
@@ -115,9 +225,9 @@ class AnalysisViewModel(application: Application) : AndroidViewModel(application
 
         val label = try {
             val d = LocalDate.parse(date)
-            val dow = d.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.ITALIAN).replaceFirstChar { it.uppercase() }
+            val dow = d.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercase() }
             val day = d.dayOfMonth
-            val mon = d.month.getDisplayName(TextStyle.FULL, Locale.ITALIAN)
+            val mon = d.month.getDisplayName(TextStyle.FULL, Locale.getDefault())
             "$dow $day $mon"
         } catch (e: Exception) { date }
 
@@ -126,7 +236,10 @@ class AnalysisViewModel(application: Application) : AndroidViewModel(application
             selectedDate = date,
             dateLabel = label,
             points = points,
-            hasEnoughData = points.size >= 2
+            hasEnoughData = points.size >= 2,
+            globalScale = cachedGlobalScale,
+            availableCities = allCities,
+            selectedCity = selectedCity
         )
     }
 
@@ -137,8 +250,8 @@ class AnalysisViewModel(application: Application) : AndroidViewModel(application
             val code = daily.weatherCode.getOrElse(i) { 0 }
             val dateLabel = try {
                 val d = LocalDate.parse(dateStr)
-                val dow = d.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.ITALIAN).replaceFirstChar { it.uppercase() }
-                "$dow ${d.dayOfMonth} ${d.month.getDisplayName(TextStyle.SHORT, Locale.ITALIAN)}"
+                val dow = d.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()).replaceFirstChar { it.uppercase() }
+                "$dow ${d.dayOfMonth} ${d.month.getDisplayName(TextStyle.SHORT, Locale.getDefault())}"
             } catch (e: Exception) { dateStr }
 
             PastDayItem(
@@ -151,7 +264,7 @@ class AnalysisViewModel(application: Application) : AndroidViewModel(application
                 precipSum = daily.precipitationSum.getOrElse(i) { 0.0 },
                 weatherCode = code
             )
-        }.reversed() // most recent first
+        }.reversed()
     }
 
     private fun formatFetchAge(fetchedAt: Long): String {

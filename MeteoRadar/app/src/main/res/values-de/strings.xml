@@ -58,6 +58,10 @@
     <string name="pref_lat_summary">Wird verwendet, wenn GPS deaktiviert ist</string>
     <string name="pref_lon">Manuelle Länge</string>
     <string name="pref_lon_summary">Wird verwendet, wenn GPS deaktiviert ist</string>
+    <string name="pref_second_city_lat">Zweite Stadt — Breitengrad</string>
+    <string name="pref_second_city_lat_summary">Breitengrad der zweiten Stadt (leer lassen zum Deaktivieren)</string>
+    <string name="pref_second_city_lon">Zweite Stadt — Längengrad</string>
+    <string name="pref_second_city_lon_summary">Längengrad der zweiten Stadt</string>
     <string name="pref_radius">Überwachungsradius</string>
     <string name="pref_radius_summary">Schlimmsten Fall in diesem Radius suchen</string>
 
