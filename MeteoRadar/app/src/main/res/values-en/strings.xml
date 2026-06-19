@@ -58,10 +58,14 @@
     <string name="pref_lat_summary">Used when GPS is disabled</string>
     <string name="pref_lon">Manual longitude</string>
     <string name="pref_lon_summary">Used when GPS is disabled</string>
-    <string name="pref_second_city_lat">Second city — Latitude</string>
-    <string name="pref_second_city_lat_summary">Latitude of the second city to monitor (leave empty to disable)</string>
-    <string name="pref_second_city_lon">Second city — Longitude</string>
-    <string name="pref_second_city_lon_summary">Longitude of the second city to monitor</string>
+    <string name="pref_favorite_1">Favorite city 1</string>
+    <string name="pref_favorite_1_summary">Search and set the first city to monitor</string>
+    <string name="pref_delete_favorite_1">Remove favorite 1</string>
+    <string name="pref_delete_favorite_1_summary">Delete the first favorite city</string>
+    <string name="pref_favorite_2">Favorite city 2</string>
+    <string name="pref_favorite_2_summary">Search and set the second city to monitor</string>
+    <string name="pref_delete_favorite_2">Remove favorite 2</string>
+    <string name="pref_delete_favorite_2_summary">Delete the second favorite city</string>
     <string name="pref_radius">Monitoring radius</string>
     <string name="pref_radius_summary">Find worst case scenario within this radius</string>
 
@@ -93,4 +97,19 @@
     <string name="pref_data_source_summary">Open-Meteo.com — GFS + ECMWF + ICON, updated hourly</string>
     <string name="pref_help">📖  App guide</string>
     <string name="pref_help_summary">How the score, forecasts, history and notifications work</string>
+
+    <string name="pref_cat_charts">Charts</string>
+    <string name="pref_show_apparent_temp">Perceived temperature</string>
+    <string name="pref_show_apparent_temp_summary">Show perceived temperature in evolution charts</string>
+    <string name="pref_show_wind">Wind speed</string>
+    <string name="pref_show_wind_summary">Show max wind speed in charts</string>
+    <string name="pref_show_humidity">Humidity</string>
+    <string name="pref_show_humidity_summary">Show max relative humidity in charts</string>
+
+    <string name="city_search_title">Search city</string>
+    <string name="city_search_hint">City name…</string>
+    <string name="city_not_found">No city found</string>
+    <string name="city_saved">City saved: %s</string>
+    <string name="city_deleted">Favorite city removed</string>
+    <string name="favorite_set_to">Set: %s</string>
 </resources>

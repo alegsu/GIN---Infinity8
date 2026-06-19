@@ -1,5 +1,6 @@
 package it.shinyup.meteoradar.data
 
+import it.shinyup.meteoradar.data.api.GeocodingApi
 import it.shinyup.meteoradar.data.api.OpenMeteoApi
 import it.shinyup.meteoradar.data.api.RainViewerApi
 import it.shinyup.meteoradar.data.models.*
@@ -32,6 +33,19 @@ class WeatherRepository {
         .addConverterFactory(GsonConverterFactory.create())
         .build()
         .create(OpenMeteoApi::class.java)
+
+    private val geocodingApi: GeocodingApi = Retrofit.Builder()
+        .baseUrl(GeocodingApi.BASE_URL)
+        .client(httpClient)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+        .create(GeocodingApi::class.java)
+
+    suspend fun searchCities(query: String): List<GeocodingResult>? = try {
+        geocodingApi.search(name = query).results
+    } catch (e: Exception) {
+        null
+    }
 
     suspend fun getRadarFrames(): Result<RainViewerResponse> = runCatching {
         rainViewerApi.getWeatherMaps()

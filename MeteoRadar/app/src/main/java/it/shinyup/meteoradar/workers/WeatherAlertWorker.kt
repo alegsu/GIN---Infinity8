@@ -81,6 +81,45 @@ class WeatherAlertWorker(context: Context, params: WorkerParameters) : Coroutine
         }
 
         dao.deleteOlderThan(System.currentTimeMillis() - 48 * 60 * 60 * 1000L)
+
+        // Check favorite cities for alerts
+        checkFavoriteCityAlerts(prefs, thresholdLevel)
+
         return Result.success()
+    }
+
+    private suspend fun checkFavoriteCityAlerts(
+        prefs: android.content.SharedPreferences,
+        thresholdLevel: AlertLevel
+    ) {
+        val favorites = listOf(
+            Triple(Prefs.FAVORITE_1_LAT, Prefs.FAVORITE_1_LON, Prefs.FAVORITE_1_NAME),
+            Triple(Prefs.FAVORITE_2_LAT, Prefs.FAVORITE_2_LON, Prefs.FAVORITE_2_NAME)
+        )
+
+        val cutoff = System.currentTimeMillis() - 2 * 60 * 60 * 1000L
+
+        for ((latKey, lonKey, nameKey) in favorites) {
+            val favLat = prefs.getString(latKey, "")?.toDoubleOrNull() ?: continue
+            val favLon = prefs.getString(lonKey, "")?.toDoubleOrNull() ?: continue
+            val cityName = prefs.getString(nameKey, null)?.takeIf { it.isNotBlank() } ?: "Preferita"
+
+            val forecast = repository.getForecast(favLat, favLon).getOrNull() ?: continue
+            val alerts = repository.assessAlerts(forecast, favLat, favLon)
+
+            val recentAlerts = dao.getAlertsSince(cutoff)
+
+            for (alert in alerts) {
+                val prefixedAlert = alert.copy(
+                    title = "$cityName: ${alert.title}"
+                )
+                dao.insert(prefixedAlert)
+                val meetsThreshold = prefixedAlert.level.ordinal >= thresholdLevel.ordinal
+                val notRecentlySent = recentAlerts.none { it.level.ordinal >= prefixedAlert.level.ordinal }
+                if (meetsThreshold && notRecentlySent) {
+                    NotificationHelper.sendAlertNotification(applicationContext, prefixedAlert)
+                }
+            }
+        }
     }
 }

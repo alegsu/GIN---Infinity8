@@ -69,7 +69,11 @@ class ForecastChangeWorker(context: Context, params: WorkerParameters) : Corouti
                 maxTemp = daily.temperatureMax.getOrElse(i) { 0.0 },
                 weatherCode = daily.weatherCode.getOrElse(i) { 0 },
                 precipProb = daily.precipitationProbabilityMax.getOrElse(i) { 0 },
-                precipSum = daily.precipitationSum.getOrElse(i) { 0.0 }
+                precipSum = daily.precipitationSum.getOrElse(i) { 0.0 },
+                apparentTempMax = daily.apparentTemperatureMax?.getOrElse(i) { 0.0 } ?: 0.0,
+                apparentTempMin = daily.apparentTemperatureMin?.getOrElse(i) { 0.0 } ?: 0.0,
+                windSpeedMax = daily.windSpeedMax?.getOrElse(i) { 0.0 } ?: 0.0,
+                humidityMax = daily.humidityMax?.getOrElse(i) { 0 } ?: 0
             )
         }
 
@@ -91,63 +95,75 @@ class ForecastChangeWorker(context: Context, params: WorkerParameters) : Corouti
 
         snapshotDao.insertAll(newSnapshots)
 
-        checkSecondCity(prefs, tempThreshold)
+        checkFavoriteCities(prefs, tempThreshold)
 
         snapshotDao.deleteOlderThan(System.currentTimeMillis() - 30L * 24 * 60 * 60 * 1000L)
 
         return Result.success()
     }
 
-    private suspend fun checkSecondCity(prefs: android.content.SharedPreferences, tempThreshold: Double) {
-        val lat2 = prefs.getString(Prefs.SECOND_CITY_LAT, "")?.toDoubleOrNull() ?: return
-        val lon2 = prefs.getString(Prefs.SECOND_CITY_LON, "")?.toDoubleOrNull() ?: return
+    private suspend fun checkFavoriteCities(prefs: android.content.SharedPreferences, tempThreshold: Double) {
+        val favorites = listOf(
+            Triple(Prefs.FAVORITE_1_LAT, Prefs.FAVORITE_1_LON, Prefs.FAVORITE_1_NAME),
+            Triple(Prefs.FAVORITE_2_LAT, Prefs.FAVORITE_2_LON, Prefs.FAVORITE_2_NAME)
+        )
 
-        val city2 = withContext(Dispatchers.IO) {
-            GeocoderHelper.cityName(applicationContext, lat2, lon2)
-        }
+        for ((latKey, lonKey, nameKey) in favorites) {
+            val favLat = prefs.getString(latKey, "")?.toDoubleOrNull() ?: continue
+            val favLon = prefs.getString(lonKey, "")?.toDoubleOrNull() ?: continue
 
-        val lastFetch2 = snapshotDao.getLastFetchTimeForLocation(city2) ?: 0L
-        if (System.currentTimeMillis() - lastFetch2 < 4 * 60 * 60 * 1000L) return
+            val cityName = prefs.getString(nameKey, null)?.takeIf { it.isNotBlank() }
+                ?: withContext(Dispatchers.IO) {
+                    GeocoderHelper.cityName(applicationContext, favLat, favLon)
+                }
 
-        val daily2 = repository.getDailyForecast(lat2, lon2).getOrNull()?.daily ?: return
-        val today = LocalDate.now().toString()
-        val oldSnapshots2 = snapshotDao.getSnapshotsFrom(today)
-            .filter { it.locationName == city2 }
-        val oldByDate2 = oldSnapshots2.groupBy { it.targetDate }
-            .mapValues { (_, snaps) -> snaps.maxByOrNull { it.fetchedAt } }
+            val lastFetchFav = snapshotDao.getLastFetchTimeForLocation(cityName) ?: 0L
+            if (System.currentTimeMillis() - lastFetchFav < 4 * 60 * 60 * 1000L) continue
 
-        val fetchedAt2 = System.currentTimeMillis()
-        val newSnapshots2 = daily2.time.indices.mapNotNull { i ->
-            val date = daily2.time.getOrNull(i) ?: return@mapNotNull null
-            ForecastSnapshot(
-                fetchedAt = fetchedAt2,
-                targetDate = date,
-                locationName = city2,
-                minTemp = daily2.temperatureMin.getOrElse(i) { 0.0 },
-                maxTemp = daily2.temperatureMax.getOrElse(i) { 0.0 },
-                weatherCode = daily2.weatherCode.getOrElse(i) { 0 },
-                precipProb = daily2.precipitationProbabilityMax.getOrElse(i) { 0 },
-                precipSum = daily2.precipitationSum.getOrElse(i) { 0.0 }
-            )
-        }
+            val dailyFav = repository.getDailyForecast(favLat, favLon).getOrNull()?.daily ?: continue
+            val today = LocalDate.now().toString()
+            val oldSnapshotsFav = snapshotDao.getSnapshotsFrom(today)
+                .filter { it.locationName == cityName }
+            val oldByDateFav = oldSnapshotsFav.groupBy { it.targetDate }
+                .mapValues { (_, snaps) -> snaps.maxByOrNull { it.fetchedAt } }
 
-        if (newSnapshots2.isEmpty()) return
-
-        val changes2 = mutableListOf<DayChange>()
-        for (snap in newSnapshots2) {
-            val old = oldByDate2[snap.targetDate] ?: continue
-            val maxDelta = snap.maxTemp - old.maxTemp
-            val minDelta = snap.minTemp - old.minTemp
-            if (abs(maxDelta) >= tempThreshold || abs(minDelta) >= tempThreshold) {
-                changes2.add(DayChange(snap.targetDate, maxDelta, minDelta, snap.maxTemp, snap.minTemp))
+            val fetchedAtFav = System.currentTimeMillis()
+            val newSnapshotsFav = dailyFav.time.indices.mapNotNull { i ->
+                val date = dailyFav.time.getOrNull(i) ?: return@mapNotNull null
+                ForecastSnapshot(
+                    fetchedAt = fetchedAtFav,
+                    targetDate = date,
+                    locationName = cityName,
+                    minTemp = dailyFav.temperatureMin.getOrElse(i) { 0.0 },
+                    maxTemp = dailyFav.temperatureMax.getOrElse(i) { 0.0 },
+                    weatherCode = dailyFav.weatherCode.getOrElse(i) { 0 },
+                    precipProb = dailyFav.precipitationProbabilityMax.getOrElse(i) { 0 },
+                    precipSum = dailyFav.precipitationSum.getOrElse(i) { 0.0 },
+                    apparentTempMax = dailyFav.apparentTemperatureMax?.getOrElse(i) { 0.0 } ?: 0.0,
+                    apparentTempMin = dailyFav.apparentTemperatureMin?.getOrElse(i) { 0.0 } ?: 0.0,
+                    windSpeedMax = dailyFav.windSpeedMax?.getOrElse(i) { 0.0 } ?: 0.0,
+                    humidityMax = dailyFav.humidityMax?.getOrElse(i) { 0 } ?: 0
+                )
             }
-        }
 
-        if (changes2.isNotEmpty()) {
-            sendGroupedNotification(changes2, city2)
-        }
+            if (newSnapshotsFav.isEmpty()) continue
 
-        snapshotDao.insertAll(newSnapshots2)
+            val changesFav = mutableListOf<DayChange>()
+            for (snap in newSnapshotsFav) {
+                val old = oldByDateFav[snap.targetDate] ?: continue
+                val maxDelta = snap.maxTemp - old.maxTemp
+                val minDelta = snap.minTemp - old.minTemp
+                if (abs(maxDelta) >= tempThreshold || abs(minDelta) >= tempThreshold) {
+                    changesFav.add(DayChange(snap.targetDate, maxDelta, minDelta, snap.maxTemp, snap.minTemp))
+                }
+            }
+
+            if (changesFav.isNotEmpty()) {
+                sendGroupedNotification(changesFav, cityName)
+            }
+
+            snapshotDao.insertAll(newSnapshotsFav)
+        }
     }
 
     private fun sendGroupedNotification(changes: List<DayChange>, city: String) {

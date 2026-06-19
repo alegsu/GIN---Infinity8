@@ -40,7 +40,11 @@ data class DailyData(
     @SerializedName("temperature_2m_min") val temperatureMin: List<Double>,
     @SerializedName("weathercode") val weatherCode: List<Int>,
     @SerializedName("precipitation_sum") val precipitationSum: List<Double>,
-    @SerializedName("precipitation_probability_max") val precipitationProbabilityMax: List<Int>
+    @SerializedName("precipitation_probability_max") val precipitationProbabilityMax: List<Int>,
+    @SerializedName("apparent_temperature_max") val apparentTemperatureMax: List<Double>?,
+    @SerializedName("apparent_temperature_min") val apparentTemperatureMin: List<Double>?,
+    @SerializedName("windspeed_10m_max") val windSpeedMax: List<Double>?,
+    @SerializedName("relative_humidity_2m_max") val humidityMax: List<Int>?
 )
 
 /** Response from multi-model comparison endpoint */

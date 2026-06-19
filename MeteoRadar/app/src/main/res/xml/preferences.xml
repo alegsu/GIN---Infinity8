@@ -34,19 +34,25 @@
             android:defaultValue="0"
             app:useSimpleSummaryProvider="true" />
 
-        <EditTextPreference
-            android:key="second_city_lat"
-            android:title="@string/pref_second_city_lat"
-            android:summary="@string/pref_second_city_lat_summary"
-            android:defaultValue=""
-            app:useSimpleSummaryProvider="true" />
+        <Preference
+            android:key="search_favorite_1"
+            android:title="@string/pref_favorite_1"
+            android:summary="@string/pref_favorite_1_summary" />
 
-        <EditTextPreference
-            android:key="second_city_lon"
-            android:title="@string/pref_second_city_lon"
-            android:summary="@string/pref_second_city_lon_summary"
-            android:defaultValue=""
-            app:useSimpleSummaryProvider="true" />
+        <Preference
+            android:key="delete_favorite_1"
+            android:title="@string/pref_delete_favorite_1"
+            android:summary="@string/pref_delete_favorite_1_summary" />
+
+        <Preference
+            android:key="search_favorite_2"
+            android:title="@string/pref_favorite_2"
+            android:summary="@string/pref_favorite_2_summary" />
+
+        <Preference
+            android:key="delete_favorite_2"
+            android:title="@string/pref_delete_favorite_2"
+            android:summary="@string/pref_delete_favorite_2_summary" />
 
     </PreferenceCategory>
 
@@ -123,6 +129,29 @@
             android:key="test_notification"
             android:title="@string/pref_test_notification"
             android:summary="@string/pref_test_notification_summary" />
+
+    </PreferenceCategory>
+
+    <!-- GRAFICI -->
+    <PreferenceCategory android:title="@string/pref_cat_charts">
+
+        <SwitchPreferenceCompat
+            android:key="show_apparent_temp"
+            android:title="@string/pref_show_apparent_temp"
+            android:summary="@string/pref_show_apparent_temp_summary"
+            android:defaultValue="false" />
+
+        <SwitchPreferenceCompat
+            android:key="show_wind"
+            android:title="@string/pref_show_wind"
+            android:summary="@string/pref_show_wind_summary"
+            android:defaultValue="false" />
+
+        <SwitchPreferenceCompat
+            android:key="show_humidity"
+            android:title="@string/pref_show_humidity"
+            android:summary="@string/pref_show_humidity_summary"
+            android:defaultValue="false" />
 
     </PreferenceCategory>
 

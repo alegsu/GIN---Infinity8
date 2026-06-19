@@ -9,11 +9,23 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
 ) : View(context, attrs) {
 
-    data class DataPoint(val xLabel: String, val tempMax: Float, val tempMin: Float, val location: String)
+    data class DataPoint(
+        val xLabel: String,
+        val tempMax: Float,
+        val tempMin: Float,
+        val location: String,
+        val apparentMax: Float = 0f,
+        val apparentMin: Float = 0f,
+        val windSpeed: Float = 0f,
+        val humidity: Int = 0
+    )
     data class ScaleRange(val maxFloor: Float, val maxCeil: Float, val minFloor: Float, val minCeil: Float)
 
     private var points: List<DataPoint> = emptyList()
     private var fixedScale: ScaleRange? = null
+    private var showApparentTemp: Boolean = false
+    private var showWind: Boolean = false
+    private var showHumidity: Boolean = false
 
     private val linePaintMax = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#F44336")
@@ -58,6 +70,27 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
         style = Paint.Style.STROKE
         pathEffect = DashPathEffect(floatArrayOf(8f, 6f), 0f)
     }
+    private val dashedMaxPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#FF9800") // orange for apparent max
+        strokeWidth = 3f
+        style = Paint.Style.STROKE
+        strokeJoin = Paint.Join.ROUND
+        strokeCap = Paint.Cap.ROUND
+        pathEffect = DashPathEffect(floatArrayOf(10f, 8f), 0f)
+    }
+    private val dashedMinPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#00BCD4") // cyan for apparent min
+        strokeWidth = 3f
+        style = Paint.Style.STROKE
+        strokeJoin = Paint.Join.ROUND
+        strokeCap = Paint.Cap.ROUND
+        pathEffect = DashPathEffect(floatArrayOf(10f, 8f), 0f)
+    }
+    private val overlayTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#B0BEC5")
+        textSize = 22f
+        textAlign = Paint.Align.CENTER
+    }
 
     fun setScale(scale: ScaleRange?) {
         fixedScale = scale
@@ -65,6 +98,13 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
 
     fun setData(data: List<DataPoint>) {
         points = data
+        invalidate()
+    }
+
+    fun setOverlays(apparentTemp: Boolean, wind: Boolean, humidity: Boolean) {
+        showApparentTemp = apparentTemp
+        showWind = wind
+        showHumidity = humidity
         invalidate()
     }
 
@@ -143,7 +183,25 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
         canvas.drawPath(pathMin, linePaintMin)
         canvas.drawPath(pathMax, linePaintMax)
 
-        // Dots + 1-decimal labels + x-axis labels
+        // Apparent temp dashed overlay
+        if (showApparentTemp) {
+            val pathAppMax = Path()
+            val pathAppMin = Path()
+            points.forEachIndexed { i, p ->
+                val x = xOf(i)
+                if (i == 0) {
+                    pathAppMax.moveTo(x, yOfMax(p.apparentMax))
+                    pathAppMin.moveTo(x, yOfMin(p.apparentMin))
+                } else {
+                    pathAppMax.lineTo(x, yOfMax(p.apparentMax))
+                    pathAppMin.lineTo(x, yOfMin(p.apparentMin))
+                }
+            }
+            canvas.drawPath(pathAppMax, dashedMaxPaint)
+            canvas.drawPath(pathAppMin, dashedMinPaint)
+        }
+
+        // Dots + 1-decimal labels + x-axis labels + overlay info
         points.forEachIndexed { i, p ->
             val x    = xOf(i)
             val yMax = yOfMax(p.tempMax)
@@ -155,6 +213,16 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
             canvas.drawText("${"%.1f".format(p.tempMax)}°", x, yMax - 18f, textPaint)
             canvas.drawText("${"%.1f".format(p.tempMin)}°", x, yMin + 38f, textPaint)
             canvas.drawText(p.xLabel, x, height.toFloat() - 8f, labelPaint)
+
+            // Wind speed text next to max dot
+            if (showWind && p.windSpeed > 0f) {
+                canvas.drawText("${"%.0f".format(p.windSpeed)} km/h", x, yMax - 42f, overlayTextPaint)
+            }
+
+            // Humidity text next to min dot
+            if (showHumidity && p.humidity > 0) {
+                canvas.drawText("${p.humidity}%", x, yMin + 58f, overlayTextPaint)
+            }
         }
     }
 }

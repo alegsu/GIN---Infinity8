@@ -21,7 +21,7 @@ import it.shinyup.meteoradar.data.models.WeatherAlert
 import it.shinyup.meteoradar.utils.NotificationHelper
 import it.shinyup.meteoradar.utils.Prefs
 
-class SettingsFragment : PreferenceFragmentCompat() {
+class SettingsFragment : PreferenceFragmentCompat(), android.content.SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val notificationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -62,6 +62,85 @@ class SettingsFragment : PreferenceFragmentCompat() {
             requireActivity().recreate()
             true
         }
+
+        // Favorite city 1 — search
+        findPreference<Preference>("search_favorite_1")?.setOnPreferenceClickListener {
+            val dialog = CitySearchDialogFragment.newInstance("favorite_1")
+            dialog.show(childFragmentManager, "city_search_1")
+            true
+        }
+
+        // Favorite city 1 — delete
+        findPreference<Preference>("delete_favorite_1")?.setOnPreferenceClickListener {
+            PreferenceManager.getDefaultSharedPreferences(requireContext()).edit()
+                .remove(Prefs.FAVORITE_1_NAME)
+                .remove(Prefs.FAVORITE_1_LAT)
+                .remove(Prefs.FAVORITE_1_LON)
+                .apply()
+            Toast.makeText(requireContext(), getString(R.string.city_deleted), Toast.LENGTH_SHORT).show()
+            updateFavoriteSummaries()
+            true
+        }
+
+        // Favorite city 2 — search
+        findPreference<Preference>("search_favorite_2")?.setOnPreferenceClickListener {
+            val dialog = CitySearchDialogFragment.newInstance("favorite_2")
+            dialog.show(childFragmentManager, "city_search_2")
+            true
+        }
+
+        // Favorite city 2 — delete
+        findPreference<Preference>("delete_favorite_2")?.setOnPreferenceClickListener {
+            PreferenceManager.getDefaultSharedPreferences(requireContext()).edit()
+                .remove(Prefs.FAVORITE_2_NAME)
+                .remove(Prefs.FAVORITE_2_LAT)
+                .remove(Prefs.FAVORITE_2_LON)
+                .apply()
+            Toast.makeText(requireContext(), getString(R.string.city_deleted), Toast.LENGTH_SHORT).show()
+            updateFavoriteSummaries()
+            true
+        }
+
+        updateFavoriteSummaries()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        PreferenceManager.getDefaultSharedPreferences(requireContext())
+            .registerOnSharedPreferenceChangeListener(this)
+        updateFavoriteSummaries()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        PreferenceManager.getDefaultSharedPreferences(requireContext())
+            .unregisterOnSharedPreferenceChangeListener(this)
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: android.content.SharedPreferences?, key: String?) {
+        if (key in listOf(Prefs.FAVORITE_1_NAME, Prefs.FAVORITE_2_NAME)) {
+            updateFavoriteSummaries()
+        }
+    }
+
+    private fun updateFavoriteSummaries() {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        val name1 = prefs.getString(Prefs.FAVORITE_1_NAME, null)
+        val name2 = prefs.getString(Prefs.FAVORITE_2_NAME, null)
+
+        findPreference<Preference>("search_favorite_1")?.summary = if (!name1.isNullOrBlank()) {
+            getString(R.string.favorite_set_to, name1)
+        } else {
+            getString(R.string.pref_favorite_1_summary)
+        }
+        findPreference<Preference>("delete_favorite_1")?.isVisible = !name1.isNullOrBlank()
+
+        findPreference<Preference>("search_favorite_2")?.summary = if (!name2.isNullOrBlank()) {
+            getString(R.string.favorite_set_to, name2)
+        } else {
+            getString(R.string.pref_favorite_2_summary)
+        }
+        findPreference<Preference>("delete_favorite_2")?.isVisible = !name2.isNullOrBlank()
     }
 
     private fun checkAndSendTestNotification() {

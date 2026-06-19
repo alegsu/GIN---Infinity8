@@ -58,10 +58,14 @@
     <string name="pref_lat_summary">Utilisée quand le GPS est désactivé</string>
     <string name="pref_lon">Longitude manuelle</string>
     <string name="pref_lon_summary">Utilisée quand le GPS est désactivé</string>
-    <string name="pref_second_city_lat">Deuxième ville — Latitude</string>
-    <string name="pref_second_city_lat_summary">Latitude de la deuxième ville à surveiller (vide pour désactiver)</string>
-    <string name="pref_second_city_lon">Deuxième ville — Longitude</string>
-    <string name="pref_second_city_lon_summary">Longitude de la deuxième ville à surveiller</string>
+    <string name="pref_favorite_1">Ville favorite 1</string>
+    <string name="pref_favorite_1_summary">Rechercher et définir la première ville à surveiller</string>
+    <string name="pref_delete_favorite_1">Supprimer favorite 1</string>
+    <string name="pref_delete_favorite_1_summary">Supprimer la première ville favorite</string>
+    <string name="pref_favorite_2">Ville favorite 2</string>
+    <string name="pref_favorite_2_summary">Rechercher et définir la deuxième ville à surveiller</string>
+    <string name="pref_delete_favorite_2">Supprimer favorite 2</string>
+    <string name="pref_delete_favorite_2_summary">Supprimer la deuxième ville favorite</string>
     <string name="pref_radius">Rayon de surveillance</string>
     <string name="pref_radius_summary">Trouver le pire cas dans ce rayon</string>
 
@@ -93,4 +97,19 @@
     <string name="pref_data_source_summary">Open-Meteo.com — GFS + ECMWF + ICON, mis à jour toutes les heures</string>
     <string name="pref_help">📖  Guide de l\'app</string>
     <string name="pref_help_summary">Comment fonctionnent le score, les prévisions, l\'historique et les notifications</string>
+
+    <string name="pref_cat_charts">Graphiques</string>
+    <string name="pref_show_apparent_temp">Température ressentie</string>
+    <string name="pref_show_apparent_temp_summary">Afficher la température ressentie dans les graphiques d\'évolution</string>
+    <string name="pref_show_wind">Vitesse du vent</string>
+    <string name="pref_show_wind_summary">Afficher la vitesse maximale du vent dans les graphiques</string>
+    <string name="pref_show_humidity">Humidité</string>
+    <string name="pref_show_humidity_summary">Afficher l\'humidité relative maximale dans les graphiques</string>
+
+    <string name="city_search_title">Rechercher une ville</string>
+    <string name="city_search_hint">Nom de la ville…</string>
+    <string name="city_not_found">Aucune ville trouvée</string>
+    <string name="city_saved">Ville enregistrée : %s</string>
+    <string name="city_deleted">Ville favorite supprimée</string>
+    <string name="favorite_set_to">Définie : %s</string>
 </resources>

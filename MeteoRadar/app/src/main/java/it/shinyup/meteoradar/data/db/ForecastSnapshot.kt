@@ -13,5 +13,9 @@ data class ForecastSnapshot(
     val maxTemp: Double,
     val weatherCode: Int,
     val precipProb: Int,
-    val precipSum: Double
+    val precipSum: Double,
+    val apparentTempMax: Double = 0.0,
+    val apparentTempMin: Double = 0.0,
+    val windSpeedMax: Double = 0.0,
+    val humidityMax: Int = 0
 )

@@ -71,7 +71,7 @@ class AnalysisViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch {
             _isLoading.value = true
 
-            saveSecondCitySnapshots()
+            saveFavoriteCitySnapshots()
 
             repository.getPastDaysData(lat, lon).onSuccess { response ->
                 val daily = response.daily ?: return@onSuccess
@@ -81,37 +81,51 @@ class AnalysisViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    private suspend fun saveSecondCitySnapshots() {
-        val secondLat = prefs.getString(Prefs.SECOND_CITY_LAT, "")?.toDoubleOrNull() ?: return
-        val secondLon = prefs.getString(Prefs.SECOND_CITY_LON, "")?.toDoubleOrNull() ?: return
-
-        val city2 = withContext(Dispatchers.IO) {
-            GeocoderHelper.cityName(getApplication(), secondLat, secondLon)
-        }
-
+    private suspend fun saveFavoriteCitySnapshots() {
         val dao = AppDatabase.getInstance(getApplication()).snapshotDao()
-        val lastFetch = dao.getLastFetchTimeForLocation(city2) ?: 0L
-        if (System.currentTimeMillis() - lastFetch < 4 * 60 * 60 * 1000L) return
 
-        val result = repository.getDailyForecast(secondLat, secondLon)
-        val daily = result.getOrNull()?.daily ?: return
+        // Process both favorite slots
+        val favorites = listOf(
+            Triple(Prefs.FAVORITE_1_LAT, Prefs.FAVORITE_1_LON, Prefs.FAVORITE_1_NAME),
+            Triple(Prefs.FAVORITE_2_LAT, Prefs.FAVORITE_2_LON, Prefs.FAVORITE_2_NAME)
+        )
 
-        val fetchedAt = System.currentTimeMillis()
-        val snapshots = daily.time.indices.mapNotNull { i ->
-            val date = daily.time.getOrNull(i) ?: return@mapNotNull null
-            ForecastSnapshot(
-                fetchedAt = fetchedAt,
-                targetDate = date,
-                locationName = city2,
-                minTemp = daily.temperatureMin.getOrElse(i) { 0.0 },
-                maxTemp = daily.temperatureMax.getOrElse(i) { 0.0 },
-                weatherCode = daily.weatherCode.getOrElse(i) { 0 },
-                precipProb = daily.precipitationProbabilityMax.getOrElse(i) { 0 },
-                precipSum = daily.precipitationSum.getOrElse(i) { 0.0 }
-            )
-        }
-        if (snapshots.isNotEmpty()) {
-            dao.insertAll(snapshots)
+        for ((latKey, lonKey, nameKey) in favorites) {
+            val favLat = prefs.getString(latKey, "")?.toDoubleOrNull() ?: continue
+            val favLon = prefs.getString(lonKey, "")?.toDoubleOrNull() ?: continue
+
+            val cityName = prefs.getString(nameKey, null)?.takeIf { it.isNotBlank() }
+                ?: withContext(Dispatchers.IO) {
+                    GeocoderHelper.cityName(getApplication(), favLat, favLon)
+                }
+
+            val lastFetch = dao.getLastFetchTimeForLocation(cityName) ?: 0L
+            if (System.currentTimeMillis() - lastFetch < 4 * 60 * 60 * 1000L) continue
+
+            val result = repository.getDailyForecast(favLat, favLon)
+            val daily = result.getOrNull()?.daily ?: continue
+
+            val fetchedAt = System.currentTimeMillis()
+            val snapshots = daily.time.indices.mapNotNull { i ->
+                val date = daily.time.getOrNull(i) ?: return@mapNotNull null
+                ForecastSnapshot(
+                    fetchedAt = fetchedAt,
+                    targetDate = date,
+                    locationName = cityName,
+                    minTemp = daily.temperatureMin.getOrElse(i) { 0.0 },
+                    maxTemp = daily.temperatureMax.getOrElse(i) { 0.0 },
+                    weatherCode = daily.weatherCode.getOrElse(i) { 0 },
+                    precipProb = daily.precipitationProbabilityMax.getOrElse(i) { 0 },
+                    precipSum = daily.precipitationSum.getOrElse(i) { 0.0 },
+                    apparentTempMax = daily.apparentTemperatureMax?.getOrElse(i) { 0.0 } ?: 0.0,
+                    apparentTempMin = daily.apparentTemperatureMin?.getOrElse(i) { 0.0 } ?: 0.0,
+                    windSpeedMax = daily.windSpeedMax?.getOrElse(i) { 0.0 } ?: 0.0,
+                    humidityMax = daily.humidityMax?.getOrElse(i) { 0 } ?: 0
+                )
+            }
+            if (snapshots.isNotEmpty()) {
+                dao.insertAll(snapshots)
+            }
         }
     }
 
@@ -219,7 +233,11 @@ class AnalysisViewModel(application: Application) : AndroidViewModel(application
                 xLabel = formatFetchAge(snap.fetchedAt),
                 tempMax = snap.maxTemp.toFloat(),
                 tempMin = snap.minTemp.toFloat(),
-                location = snap.locationName
+                location = snap.locationName,
+                apparentMax = snap.apparentTempMax.toFloat(),
+                apparentMin = snap.apparentTempMin.toFloat(),
+                windSpeed = snap.windSpeedMax.toFloat(),
+                humidity = snap.humidityMax
             )
         }
 

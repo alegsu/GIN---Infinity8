@@ -106,7 +106,11 @@ class DailyViewModel(application: Application) : AndroidViewModel(application) {
                 maxTemp = daily.temperatureMax.getOrElse(i) { 0.0 },
                 weatherCode = daily.weatherCode.getOrElse(i) { 0 },
                 precipProb = daily.precipitationProbabilityMax.getOrElse(i) { 0 },
-                precipSum = daily.precipitationSum.getOrElse(i) { 0.0 }
+                precipSum = daily.precipitationSum.getOrElse(i) { 0.0 },
+                apparentTempMax = daily.apparentTemperatureMax?.getOrElse(i) { 0.0 } ?: 0.0,
+                apparentTempMin = daily.apparentTemperatureMin?.getOrElse(i) { 0.0 } ?: 0.0,
+                windSpeedMax = daily.windSpeedMax?.getOrElse(i) { 0.0 } ?: 0.0,
+                humidityMax = daily.humidityMax?.getOrElse(i) { 0 } ?: 0
             )
         }
         if (snapshots.isNotEmpty()) {

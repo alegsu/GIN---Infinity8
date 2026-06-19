@@ -14,9 +14,11 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.chip.Chip
+import androidx.preference.PreferenceManager
 import it.shinyup.meteoradar.R
 import it.shinyup.meteoradar.databinding.FragmentAnalysisBinding
 import it.shinyup.meteoradar.utils.LocationHelper
+import it.shinyup.meteoradar.utils.Prefs
 import kotlinx.coroutines.launch
 
 class AnalysisFragment : Fragment() {
@@ -144,6 +146,14 @@ class AnalysisFragment : Fragment() {
         if (state.hasEnoughData) {
             binding.chartView.setScale(state.globalScale)
             binding.chartView.setData(state.points)
+
+            // Read chart overlay preferences
+            val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+            binding.chartView.setOverlays(
+                apparentTemp = prefs.getBoolean(Prefs.SHOW_APPARENT_TEMP, false),
+                wind = prefs.getBoolean(Prefs.SHOW_WIND, false),
+                humidity = prefs.getBoolean(Prefs.SHOW_HUMIDITY, false)
+            )
         }
     }
 

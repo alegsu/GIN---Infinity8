@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import it.shinyup.meteoradar.data.models.WeatherAlert
 
-@Database(entities = [WeatherAlert::class, ForecastSnapshot::class], version = 3, exportSchema = false)
+@Database(entities = [WeatherAlert::class, ForecastSnapshot::class], version = 4, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
 
