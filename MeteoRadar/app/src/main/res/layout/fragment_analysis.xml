@@ -137,14 +137,44 @@
                 android:text="● Tmax"
                 android:textColor="#F44336"
                 android:textSize="12sp"
-                android:layout_marginEnd="16dp" />
+                android:layout_marginEnd="12dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="● Tmin"
                 android:textColor="#42A5F5"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                android:layout_marginEnd="12dp" />
+
+            <TextView
+                android:id="@+id/legendApparent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="┄ Percepita"
+                android:textColor="#FF9800"
+                android:textSize="12sp"
+                android:layout_marginEnd="12dp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/legendWind"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="💨 Vento"
+                android:textColor="#B0BEC5"
+                android:textSize="12sp"
+                android:layout_marginEnd="12dp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/legendHumidity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="💧 Umidità"
+                android:textColor="#B0BEC5"
+                android:textSize="12sp"
+                android:visibility="gone" />
 
         </LinearLayout>
 

@@ -38,6 +38,13 @@ class ForecastChangeWorker(context: Context, params: WorkerParameters) : Corouti
 
         val useGps = prefs.getBoolean(Prefs.USE_GPS, true)
         val location = if (useGps) LocationHelper.getCurrentLocation(applicationContext) else null
+
+        if (useGps && location == null) {
+            checkFavoriteCities(prefs, tempThreshold)
+            snapshotDao.deleteOlderThan(System.currentTimeMillis() - 30L * 24 * 60 * 60 * 1000L)
+            return Result.success()
+        }
+
         val lat = if (useGps && location != null) location.latitude
                   else prefs.getString(Prefs.MANUAL_LAT, "41.9028")?.toDoubleOrNull() ?: LocationHelper.DEFAULT_LAT
         val lon = if (useGps && location != null) location.longitude

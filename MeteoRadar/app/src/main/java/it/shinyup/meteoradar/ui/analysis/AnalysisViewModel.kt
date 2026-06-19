@@ -129,11 +129,15 @@ class AnalysisViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    private fun normalizeCity(name: String): String = name.substringBefore(",").trim()
+
     fun loadEvolution() {
         viewModelScope.launch {
             val dao = AppDatabase.getInstance(getApplication()).snapshotDao()
             val today = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
-            val all = dao.getSnapshotsFrom(today)
+            val rawAll = dao.getSnapshotsFrom(today)
+
+            val all = rawAll.map { it.copy(locationName = normalizeCity(it.locationName)) }
 
             val allCities = all.map { it.locationName }.distinct().sorted()
             val selectedCity = _evolution.value?.selectedCity?.takeIf { it in allCities }
@@ -170,7 +174,8 @@ class AnalysisViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch {
             val dao = AppDatabase.getInstance(getApplication()).snapshotDao()
             val today = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
-            val all = dao.getSnapshotsFrom(today)
+            val rawAll = dao.getSnapshotsFrom(today)
+            val all = rawAll.map { it.copy(locationName = normalizeCity(it.locationName)) }
 
             val allCities = all.map { it.locationName }.distinct().sorted()
             val filtered = all.filter { it.locationName == city }

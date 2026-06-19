@@ -136,7 +136,7 @@ class CitySearchDialogFragment : DialogFragment() {
         }
 
         prefs.edit()
-            .putString(nameKey, result.displayName())
+            .putString(nameKey, result.name)
             .putString(latKey, result.latitude.toString())
             .putString(lonKey, result.longitude.toString())
             .apply()

@@ -47,6 +47,7 @@ class DailyViewModel(application: Application) : AndroidViewModel(application) {
         if (!forceRefresh && _days.value?.isSuccess == true && now - lastSuccessfulFetchMs < CACHE_MS) return
 
         val useGps = prefs.getBoolean(Prefs.USE_GPS, true)
+        val hasRealLocation = !useGps || location != null
         val lat: Double
         val lon: Double
         if (useGps && location != null) {
@@ -64,7 +65,6 @@ class DailyViewModel(application: Application) : AndroidViewModel(application) {
             }
             _locationName.value = city
 
-            // Fire both requests concurrently
             val dailyDeferred      = async { repository.getDailyForecast(lat, lon) }
             val comparisonDeferred = async { repository.getModelComparison(lat, lon) }
             val result      = dailyDeferred.await()
@@ -75,7 +75,9 @@ class DailyViewModel(application: Application) : AndroidViewModel(application) {
                 if (daily != null) {
                     _days.value = Result.success(buildItems(daily, comparison))
                     lastSuccessfulFetchMs = System.currentTimeMillis()
-                    saveSnapshots(response, city)
+                    if (hasRealLocation) {
+                        saveSnapshots(response, city)
+                    }
                 } else if (_days.value?.isSuccess != true) {
                     _days.value = Result.success(emptyList())
                 }
