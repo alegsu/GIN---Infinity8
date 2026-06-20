@@ -51,12 +51,13 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
     }
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#E0E0E0")
-        textSize = 32f
+        textSize = 36f
         textAlign = Paint.Align.CENTER
+        typeface = Typeface.DEFAULT_BOLD
     }
     private val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#8B949E")
-        textSize = 26f
+        textSize = 28f
         textAlign = Paint.Align.CENTER
     }
     private val gridPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -71,24 +72,39 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
         pathEffect = DashPathEffect(floatArrayOf(8f, 6f), 0f)
     }
     private val dashedMaxPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#FF9800") // orange for apparent max
-        strokeWidth = 3f
+        color = Color.parseColor("#FF9800")
+        strokeWidth = 4f
         style = Paint.Style.STROKE
         strokeJoin = Paint.Join.ROUND
         strokeCap = Paint.Cap.ROUND
         pathEffect = DashPathEffect(floatArrayOf(10f, 8f), 0f)
     }
     private val dashedMinPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#00BCD4") // cyan for apparent min
-        strokeWidth = 3f
+        color = Color.parseColor("#00BCD4")
+        strokeWidth = 4f
         style = Paint.Style.STROKE
         strokeJoin = Paint.Join.ROUND
         strokeCap = Paint.Cap.ROUND
         pathEffect = DashPathEffect(floatArrayOf(10f, 8f), 0f)
     }
-    private val overlayTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#B0BEC5")
-        textSize = 22f
+    private val apparentTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#FF9800")
+        textSize = 28f
+        textAlign = Paint.Align.CENTER
+    }
+    private val windBarPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#66BB6A")
+        style = Paint.Style.FILL
+    }
+    private val windTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#A5D6A7")
+        textSize = 26f
+        textAlign = Paint.Align.CENTER
+        typeface = Typeface.DEFAULT_BOLD
+    }
+    private val humidityTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#4FC3F7")
+        textSize = 28f
         textAlign = Paint.Align.CENTER
     }
 
@@ -116,15 +132,20 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
 
         val leftPad   = 20f
         val rightPad  = 20f
-        val topPad    = 60f
-        val bottomPad = 55f
+        val topPad    = 65f
+        val bottomPad = 60f
         val chartWidth  = width  - leftPad - rightPad
         val chartHeight = height - topPad  - bottomPad
 
-        // Split layout: Tmax top 45%, gap 10%, Tmin bottom 45%
-        val bandH = chartHeight * 0.44f
-        val gapH  = chartHeight * 0.12f
-        val minBandTop = topPad + bandH + gapH
+        val hasGapContent = showWind
+        val maxBandPct = if (hasGapContent) 0.38f else 0.44f
+        val gapPct     = if (hasGapContent) 0.24f else 0.12f
+        val minBandPct = if (hasGapContent) 0.38f else 0.44f
+
+        val bandHMax = chartHeight * maxBandPct
+        val gapH     = chartHeight * gapPct
+        val bandHMin = chartHeight * minBandPct
+        val minBandTop = topPad + bandHMax + gapH
 
         val scale = fixedScale
         val maxBandMin: Float
@@ -150,29 +171,58 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
             minBandRange = minHalfRange * 2f
         }
 
-        fun xOf(i: Int)    = leftPad + i * chartWidth / (points.size - 1)
-        fun yOfMax(t: Float) = topPad     + bandH * (1f - (t - maxBandMin) / maxBandRange)
-        fun yOfMin(t: Float) = minBandTop + bandH * (1f - (t - minBandMin) / minBandRange)
+        fun xOf(i: Int) = leftPad + i * chartWidth / (points.size - 1)
+        fun yOfMax(t: Float) = topPad + bandHMax * (1f - (t - maxBandMin) / maxBandRange)
+        fun yOfMin(t: Float) = minBandTop + bandHMin * (1f - (t - minBandMin) / minBandRange)
 
-        // Grid lines every 1° inside each band
+        // Grid lines
         for (g in kotlin.math.floor(maxBandMin.toDouble()).toInt()..
                   kotlin.math.ceil((maxBandMin + maxBandRange).toDouble()).toInt()) {
             val y = yOfMax(g.toFloat())
-            if (y in topPad..(topPad + bandH))
+            if (y in topPad..(topPad + bandHMax))
                 canvas.drawLine(leftPad, y, leftPad + chartWidth, y, gridPaint)
         }
         for (g in kotlin.math.floor(minBandMin.toDouble()).toInt()..
                   kotlin.math.ceil((minBandMin + minBandRange).toDouble()).toInt()) {
             val y = yOfMin(g.toFloat())
-            if (y in minBandTop..(minBandTop + bandH))
+            if (y in minBandTop..(minBandTop + bandHMin))
                 canvas.drawLine(leftPad, y, leftPad + chartWidth, y, gridPaint)
         }
 
-        // Dashed separator between the two bands
-        val sepY = topPad + bandH + gapH / 2f
+        // Separator
+        val sepY = topPad + bandHMax + gapH / 2f
         canvas.drawLine(leftPad, sepY, leftPad + chartWidth, sepY, separatorPaint)
 
-        // Draw lines
+        // Wind histogram in the gap
+        if (showWind) {
+            val maxWind = points.maxOf { it.windSpeed }.coerceAtLeast(1f)
+            val gapTop = topPad + bandHMax + 8f
+            val gapBottom = minBandTop - 8f
+            val barMaxH = gapBottom - gapTop - 24f
+            val barWidth = (chartWidth / points.size * 0.5f).coerceAtMost(40f)
+
+            points.forEachIndexed { i, p ->
+                if (p.windSpeed > 0f) {
+                    val x = xOf(i)
+                    val barH = (p.windSpeed / maxWind) * barMaxH
+                    val rect = RectF(
+                        x - barWidth / 2f,
+                        gapBottom - barH,
+                        x + barWidth / 2f,
+                        gapBottom
+                    )
+                    canvas.drawRoundRect(rect, 4f, 4f, windBarPaint)
+                    canvas.drawText(
+                        "${"%.0f".format(p.windSpeed)}",
+                        x,
+                        gapBottom - barH - 6f,
+                        windTextPaint
+                    )
+                }
+            }
+        }
+
+        // Main temperature lines
         val pathMax = Path()
         val pathMin = Path()
         points.forEachIndexed { i, p ->
@@ -183,7 +233,7 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
         canvas.drawPath(pathMin, linePaintMin)
         canvas.drawPath(pathMax, linePaintMax)
 
-        // Apparent temp dashed overlay
+        // Apparent temp dashed overlay + values
         if (showApparentTemp) {
             val pathAppMax = Path()
             val pathAppMin = Path()
@@ -201,28 +251,39 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
             canvas.drawPath(pathAppMin, dashedMinPaint)
         }
 
-        // Dots + 1-decimal labels + x-axis labels + overlay info
+        // Dots + labels
         points.forEachIndexed { i, p ->
             val x    = xOf(i)
             val yMax = yOfMax(p.tempMax)
             val yMin = yOfMin(p.tempMin)
 
-            canvas.drawCircle(x, yMax, 8f, dotPaintMax)
-            canvas.drawCircle(x, yMin, 8f, dotPaintMin)
+            canvas.drawCircle(x, yMax, 9f, dotPaintMax)
+            canvas.drawCircle(x, yMin, 9f, dotPaintMin)
 
-            canvas.drawText("${"%.1f".format(p.tempMax)}°", x, yMax - 18f, textPaint)
-            canvas.drawText("${"%.1f".format(p.tempMin)}°", x, yMin + 38f, textPaint)
-            canvas.drawText(p.xLabel, x, height.toFloat() - 8f, labelPaint)
+            // Main temperature values
+            canvas.drawText("${"%.1f".format(p.tempMax)}°", x, yMax - 20f, textPaint)
+            canvas.drawText("${"%.1f".format(p.tempMin)}°", x, yMin + 44f, textPaint)
 
-            // Wind speed text next to max dot
-            if (showWind && p.windSpeed > 0f) {
-                canvas.drawText("${"%.0f".format(p.windSpeed)} km/h", x, yMax - 42f, overlayTextPaint)
+            // Apparent temp values (below max label, above min label)
+            if (showApparentTemp) {
+                canvas.drawText(
+                    "${"%.0f".format(p.apparentMax)}°",
+                    x, yMax - 52f, apparentTextPaint
+                )
+                canvas.drawText(
+                    "${"%.0f".format(p.apparentMin)}°",
+                    x, yMin + 74f, apparentTextPaint
+                )
             }
 
-            // Humidity text next to min dot
+            // Humidity below Tmin apparent (or below Tmin value)
             if (showHumidity && p.humidity > 0) {
-                canvas.drawText("${p.humidity}%", x, yMin + 58f, overlayTextPaint)
+                val humY = if (showApparentTemp) yMin + 100f else yMin + 74f
+                canvas.drawText("${p.humidity}%", x, humY, humidityTextPaint)
             }
+
+            // X-axis labels
+            canvas.drawText(p.xLabel, x, height.toFloat() - 10f, labelPaint)
         }
     }
 }

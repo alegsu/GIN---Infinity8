@@ -161,8 +161,8 @@
                 android:id="@+id/legendWind"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="💨 Vento"
-                android:textColor="#B0BEC5"
+                android:text="▮ Vento km/h"
+                android:textColor="#66BB6A"
                 android:textSize="12sp"
                 android:layout_marginEnd="12dp"
                 android:visibility="gone" />
@@ -171,8 +171,8 @@
                 android:id="@+id/legendHumidity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="💧 Umidità"
-                android:textColor="#B0BEC5"
+                android:text="💧 Umidità %"
+                android:textColor="#4FC3F7"
                 android:textSize="12sp"
                 android:visibility="gone" />
 
