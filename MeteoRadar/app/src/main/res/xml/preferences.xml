@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- POSIZIONE -->
+    <PreferenceCategory android:title="@string/pref_cat_location">
+
+        <SwitchPreferenceCompat
+            android:key="use_gps"
+            android:title="@string/pref_use_gps"
+            android:summary="@string/pref_use_gps_summary"
+            android:defaultValue="true" />
+
+        <EditTextPreference
+            android:key="manual_lat"
+            android:title="@string/pref_lat"
+            android:summary="@string/pref_lat_summary"
+            android:defaultValue="41.9028"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            android:key="manual_lon"
+            android:title="@string/pref_lon"
+            android:summary="@string/pref_lon_summary"
+            android:defaultValue="12.4964"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            android:key="radius_km"
+            android:title="@string/pref_radius"
+            android:summary="@string/pref_radius_summary"
+            android:entries="@array/radius_entries"
+            android:entryValues="@array/radius_values"
+            android:defaultValue="0"
+            app:useSimpleSummaryProvider="true" />
+
+        <Preference
+            android:key="search_favorite_1"
+            android:title="@string/pref_favorite_1"
+            android:summary="@string/pref_favorite_1_summary" />
+
+        <Preference
+            android:key="delete_favorite_1"
+            android:title="@string/pref_delete_favorite_1"
+            android:summary="@string/pref_delete_favorite_1_summary" />
+
+        <Preference
+            android:key="search_favorite_2"
+            android:title="@string/pref_favorite_2"
+            android:summary="@string/pref_favorite_2_summary" />
+
+        <Preference
+            android:key="delete_favorite_2"
+            android:title="@string/pref_delete_favorite_2"
+            android:summary="@string/pref_delete_favorite_2_summary" />
+
+    </PreferenceCategory>
+
+    <!-- PREVISIONI -->
+    <PreferenceCategory android:title="@string/pref_cat_forecast">
+
+        <ListPreference
+            android:key="forecast_hours"
+            android:title="@string/pref_forecast_hours"
+            android:summary="@string/pref_forecast_hours_summary"
+            android:entries="@array/forecast_hours_entries"
+            android:entryValues="@array/forecast_hours_values"
+            android:defaultValue="24"
+            app:useSimpleSummaryProvider="true" />
+
+        <SwitchPreferenceCompat
+            android:key="show_tech_details"
+            android:title="@string/pref_tech_details"
+            android:summary="@string/pref_tech_details_summary"
+            android:defaultValue="false" />
+
+    </PreferenceCategory>
+
+    <!-- NOTIFICHE -->
+    <PreferenceCategory android:title="@string/pref_cat_notifications">
+
+        <SwitchPreferenceCompat
+            android:key="notifications_enabled"
+            android:title="@string/pref_notifications_enabled"
+            android:summary="@string/pref_notifications_enabled_summary"
+            android:defaultValue="true" />
+
+        <ListPreference
+            android:key="check_interval_min"
+            android:title="@string/pref_check_interval"
+            android:summary="@string/pref_check_interval_summary"
+            android:entries="@array/interval_entries"
+            android:entryValues="@array/interval_values"
+            android:defaultValue="30"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            android:key="alert_threshold"
+            android:title="@string/pref_alert_threshold"
+            android:summary="@string/pref_alert_threshold_summary"
+            android:entries="@array/threshold_entries"
+            android:entryValues="@array/threshold_values"
+            android:defaultValue="3"
+            app:useSimpleSummaryProvider="true" />
+
+        <SwitchPreferenceCompat
+            android:key="vibration"
+            android:title="@string/pref_vibration"
+            android:summary="@string/pref_vibration_summary"
+            android:defaultValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="forecast_change_notifications"
+            android:title="@string/pref_forecast_change"
+            android:summary="@string/pref_forecast_change_summary"
+            android:defaultValue="true" />
+
+        <ListPreference
+            android:key="forecast_change_threshold"
+            android:title="@string/pref_forecast_threshold"
+            android:summary="@string/pref_forecast_threshold_summary"
+            android:entries="@array/forecast_threshold_entries"
+            android:entryValues="@array/forecast_threshold_values"
+            android:defaultValue="1.0"
+            android:dependency="forecast_change_notifications"
+            app:useSimpleSummaryProvider="true" />
+
+        <Preference
+            android:key="test_notification"
+            android:title="@string/pref_test_notification"
+            android:summary="@string/pref_test_notification_summary" />
+
+    </PreferenceCategory>
+
+    <!-- GRAFICI -->
+    <PreferenceCategory android:title="@string/pref_cat_charts">
+
+        <SwitchPreferenceCompat
+            android:key="show_apparent_temp"
+            android:title="@string/pref_show_apparent_temp"
+            android:summary="@string/pref_show_apparent_temp_summary"
+            android:defaultValue="false" />
+
+        <SwitchPreferenceCompat
+            android:key="show_wind"
+            android:title="@string/pref_show_wind"
+            android:summary="@string/pref_show_wind_summary"
+            android:defaultValue="false" />
+
+        <SwitchPreferenceCompat
+            android:key="show_humidity"
+            android:title="@string/pref_show_humidity"
+            android:summary="@string/pref_show_humidity_summary"
+            android:defaultValue="false" />
+
+    </PreferenceCategory>
+
+    <!-- LINGUA -->
+    <PreferenceCategory android:title="@string/pref_cat_language">
+
+        <ListPreference
+            android:key="app_language"
+            android:title="@string/pref_language_title"
+            android:summary="@string/pref_language_summary"
+            android:entries="@array/language_entries"
+            android:entryValues="@array/language_values"
+            android:defaultValue="it"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+    <!-- INFO -->
+    <PreferenceCategory android:title="@string/pref_cat_info">
+
+        <Preference
+            android:key="version_info"
+            android:title="@string/pref_version"
+            android:selectable="false" />
+
+        <Preference
+            android:key="data_source"
+            android:title="@string/pref_data_source"
+            android:summary="@string/pref_data_source_summary"
+            android:selectable="false" />
+
+        <Preference
+            android:key="open_help"
+            android:title="@string/pref_help"
+            android:summary="@string/pref_help_summary" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

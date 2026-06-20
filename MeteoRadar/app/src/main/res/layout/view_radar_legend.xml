@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginTop="4dp">
+
+    <!-- Each row: color swatch + label -->
+    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal">
+        <View android:layout_width="16dp" android:layout_height="12dp" android:background="#6495ED" android:layout_marginEnd="4dp" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="&lt;20 Debole" android:textColor="#CCCCCC" android:textSize="9sp" />
+    </LinearLayout>
+    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal">
+        <View android:layout_width="16dp" android:layout_height="12dp" android:background="#00FF00" android:layout_marginEnd="4dp" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="20-35 Moderata" android:textColor="#CCCCCC" android:textSize="9sp" />
+    </LinearLayout>
+    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal">
+        <View android:layout_width="16dp" android:layout_height="12dp" android:background="#FFFF00" android:layout_marginEnd="4dp" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="35-45 Forte" android:textColor="#CCCCCC" android:textSize="9sp" />
+    </LinearLayout>
+    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal">
+        <View android:layout_width="16dp" android:layout_height="12dp" android:background="#FF8C00" android:layout_marginEnd="4dp" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="45-55 Intensa" android:textColor="#CCCCCC" android:textSize="9sp" />
+    </LinearLayout>
+    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal">
+        <View android:layout_width="16dp" android:layout_height="12dp" android:background="#FF0000" android:layout_marginEnd="4dp" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="55-65 Molto intensa" android:textColor="#CCCCCC" android:textSize="9sp" />
+    </LinearLayout>
+    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal">
+        <View android:layout_width="16dp" android:layout_height="12dp" android:background="#FF00FF" android:layout_marginEnd="4dp" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="&gt;65 Grandine" android:textColor="#CCCCCC" android:textSize="9sp" />
+    </LinearLayout>
+
+</LinearLayout>

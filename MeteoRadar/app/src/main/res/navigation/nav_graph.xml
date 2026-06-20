@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/radarFragment">
+
+    <fragment android:id="@+id/radarFragment"
+        android:name="it.shinyup.meteoradar.ui.radar.RadarFragment"
+        android:label="@string/nav_previsioni" />
+
+    <fragment android:id="@+id/dailyFragment"
+        android:name="it.shinyup.meteoradar.ui.daily.DailyFragment"
+        android:label="@string/nav_7giorni" />
+
+    <fragment android:id="@+id/analysisFragment"
+        android:name="it.shinyup.meteoradar.ui.analysis.AnalysisFragment"
+        android:label="@string/nav_analisi" />
+
+    <fragment android:id="@+id/settingsFragment"
+        android:name="it.shinyup.meteoradar.ui.settings.SettingsFragment"
+        android:label="@string/nav_impostazioni">
+        <action android:id="@+id/action_settings_to_help"
+            app:destination="@id/helpFragment" />
+    </fragment>
+
+    <fragment android:id="@+id/helpFragment"
+        android:name="it.shinyup.meteoradar.ui.help.HelpFragment"
+        android:label="@string/nav_guida" />
+</navigation>

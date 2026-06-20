@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">GrandineAlert</string>
+
+    <string name="nav_previsioni">Vorhersage</string>
+    <string name="nav_7giorni">7 Tage</string>
+    <string name="nav_analisi">Analyse</string>
+    <string name="nav_impostazioni">Einstellungen</string>
+    <string name="nav_guida">Handbuch</string>
+
+    <string name="nav_radar">Vorhersage</string>
+    <string name="nav_alerts">Warnungen</string>
+    <string name="alerts_title">Wetterwarnungen</string>
+    <string name="mark_all_read">Alle als gelesen markieren</string>
+    <string name="no_alerts">Keine aktiven Warnungen.\nDie App prüft die Bedingungen alle 15 Minuten.</string>
+    <string name="radar_loading">Radar wird geladen…</string>
+    <string name="error_network">Netzwerkfehler. Bitte erneut versuchen.</string>
+    <string name="permission_location">Standortzugriff erlauben, um lokale Warnungen zu erhalten.</string>
+    <string name="permission_notification">Benachrichtigungen erlauben, um Echtzeit-Warnungen zu erhalten.</string>
+    <string name="hail_risk">Hagelrisiko</string>
+    <string name="channel_alerts_name">Wetterwarnungen</string>
+    <string name="channel_alerts_desc">Benachrichtigungen für Gewitter, Hagel und Starkregen</string>
+    <string name="channel_info_name">Wetterinformationen</string>
+
+    <string name="tab_evolution">Prognoseentwicklung</string>
+    <string name="tab_past_weather">Letzte 7 Tage</string>
+
+    <string name="evolution_no_data">Keine Daten verfügbar.\nÖffnen Sie den Tab \"7 Tage\", um mit der Erfassung zu beginnen.\nDer Verlauf wird alle 4 Stunden aktualisiert.</string>
+    <string name="evolution_need_more">Eine zweite Messung wird benötigt (alle 4 Stunden), um das Diagramm anzuzeigen.</string>
+    <string name="evolution_selected_date">Vorhersagen für: %s</string>
+
+    <string name="risk_next_6h">RISIKO NÄCHSTE 6 STD.</string>
+    <string name="risk_scale_label">RISIKOSKALA</string>
+    <string name="risk_low">SELTEN</string>
+    <string name="risk_possible">NIEDRIG</string>
+    <string name="risk_moderate">MÖGLICH</string>
+    <string name="risk_danger">WAHRSCH.</string>
+    <string name="risk_extreme">EXTREM</string>
+    <string name="forecast_title">Nächste %1$d Stunden</string>
+    <string name="forecast_title_radius">Nächste %1$dh (schlimmster Fall in %2$d km)</string>
+    <string name="forecast_next_24h">Nächste 24 Stunden</string>
+
+    <string name="next_7_days">NÄCHSTE 7 TAGE</string>
+    <string name="label_precip_prob">🌧 Prob.</string>
+    <string name="vs_weekly_avg">vs Wochenmittel</string>
+    <string name="reliability_suffix">Zuverl.</string>
+    <string name="legend_trend">↑ steigt vs gestern  ↓ fällt  ─ stabil · ±X% = GFS/ECMWF/ICON-Streuung · ~X% = Schätzung</string>
+
+    <string name="pref_cat_location">Standort</string>
+    <string name="pref_cat_forecast">Vorhersagen</string>
+    <string name="pref_cat_notifications">Benachrichtigungen</string>
+    <string name="pref_cat_language">Lingua / Language</string>
+    <string name="pref_cat_info">Informationen</string>
+
+    <string name="pref_use_gps">GPS verwenden</string>
+    <string name="pref_use_gps_summary">Aktuellen Standort automatisch erkennen</string>
+    <string name="pref_lat">Manuelle Breite</string>
+    <string name="pref_lat_summary">Wird verwendet, wenn GPS deaktiviert ist</string>
+    <string name="pref_lon">Manuelle Länge</string>
+    <string name="pref_lon_summary">Wird verwendet, wenn GPS deaktiviert ist</string>
+    <string name="pref_favorite_1">Lieblingsstadt 1</string>
+    <string name="pref_favorite_1_summary">Erste Stadt zum Überwachen suchen und festlegen</string>
+    <string name="pref_delete_favorite_1">Lieblingsstadt 1 entfernen</string>
+    <string name="pref_delete_favorite_1_summary">Erste Lieblingsstadt löschen</string>
+    <string name="pref_favorite_2">Lieblingsstadt 2</string>
+    <string name="pref_favorite_2_summary">Zweite Stadt zum Überwachen suchen und festlegen</string>
+    <string name="pref_delete_favorite_2">Lieblingsstadt 2 entfernen</string>
+    <string name="pref_delete_favorite_2_summary">Zweite Lieblingsstadt löschen</string>
+    <string name="pref_radius">Überwachungsradius</string>
+    <string name="pref_radius_summary">Schlimmsten Fall in diesem Radius suchen</string>
+
+    <string name="pref_forecast_hours">Stunden Stundenvorhersage</string>
+    <string name="pref_forecast_hours_summary">Anzahl der Stunden im Vorhersage-Tab</string>
+    <string name="pref_tech_details">Technische Details anzeigen</string>
+    <string name="pref_tech_details_summary">CAPE, Lifted Index, Gefriergrenze, Windböen</string>
+
+    <string name="pref_notifications_enabled">Benachrichtigungen aktivieren</string>
+    <string name="pref_notifications_enabled_summary">Warnungen bei bedeutenden Wetterereignissen senden</string>
+    <string name="pref_check_interval">Prüfhäufigkeit</string>
+    <string name="pref_check_interval_summary">Wie oft die Wetterbedingungen prüfen</string>
+    <string name="pref_alert_threshold">Warnschwelle</string>
+    <string name="pref_alert_threshold_summary">Mindestscore für eine Benachrichtigung</string>
+    <string name="pref_vibration">Vibration</string>
+    <string name="pref_vibration_summary">Bei Alarmbenachrichtigung vibrieren</string>
+    <string name="pref_forecast_change">Vorhersageänderungen</string>
+    <string name="pref_forecast_change_summary">Benachrichtigen bei deutlichen Änderungen der Temperaturprognose</string>
+    <string name="pref_forecast_threshold">Änderungsschwelle</string>
+    <string name="pref_forecast_threshold_summary">Mindesttemperaturdifferenz für eine Benachrichtigung</string>
+    <string name="pref_test_notification">🔔  Testbenachrichtigung senden</string>
+    <string name="pref_test_notification_summary">Zeigt sofort ein Alarmbeispiel zur Überprüfung</string>
+
+    <string name="pref_language_title">Lingua / Language</string>
+    <string name="pref_language_summary">App-Sprache auswählen</string>
+
+    <string name="pref_version">App-Version</string>
+    <string name="pref_data_source">Datenquelle</string>
+    <string name="pref_data_source_summary">Open-Meteo.com — GFS + ECMWF + ICON, stündlich aktualisiert</string>
+    <string name="pref_help">📖  App-Anleitung</string>
+    <string name="pref_help_summary">Wie Score, Vorhersagen, Verlauf und Benachrichtigungen funktionieren</string>
+
+    <string name="pref_cat_charts">Diagramme</string>
+    <string name="pref_show_apparent_temp">Gefühlte Temperatur</string>
+    <string name="pref_show_apparent_temp_summary">Gefühlte Temperatur in Entwicklungsdiagrammen anzeigen</string>
+    <string name="pref_show_wind">Windgeschwindigkeit</string>
+    <string name="pref_show_wind_summary">Maximale Windgeschwindigkeit in Diagrammen anzeigen</string>
+    <string name="pref_show_humidity">Luftfeuchtigkeit</string>
+    <string name="pref_show_humidity_summary">Maximale relative Luftfeuchtigkeit in Diagrammen anzeigen</string>
+
+    <string name="city_search_title">Stadt suchen</string>
+    <string name="city_search_hint">Stadtname…</string>
+    <string name="city_not_found">Keine Stadt gefunden</string>
+    <string name="city_saved">Stadt gespeichert: %s</string>
+    <string name="city_deleted">Lieblingsstadt entfernt</string>
+    <string name="favorite_set_to">Eingestellt: %s</string>
+</resources>

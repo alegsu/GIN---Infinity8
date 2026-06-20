@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:padding="16dp"
+    android:clipToPadding="false">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- INTRO -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Come funziona GrandineAlert"
+            android:textColor="@color/text_primary"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="GrandineAlert usa dati di Open-Meteo.com, un servizio gratuito che combina tre modelli meteorologici indipendenti: GFS (NOAA, USA), ECMWF (Centro Europeo) e ICON (DWD, Germania). I dati vengono aggiornati ogni ora e funzionano in tutto il mondo."
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            android:lineSpacingExtra="4dp"
+            android:layout_marginBottom="20dp" />
+
+        <!-- SCORE -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="⚡  Scala del rischio (0–15)"
+            android:textColor="@color/text_primary"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="6dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ogni ora viene calcolato uno score da 0 a 15 combinando 7 indicatori meteorologici:\n\n• Codice WMO (tipo di evento): 0–5 pt\n• CAPE (energia convettiva disponibile): 0–3 pt\n• Lifted Index (instabilità): 0–2 pt\n• Livello zero termico (rischio grandine): 0–2 pt\n• Raffiche di vento: 0–1 pt\n• Piogge convettive (showers): 0–1 pt\n• Precipitazione intensa: 0–1 pt"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp"
+            android:lineSpacingExtra="3dp"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Soglie score:\n🟢  0  = RARO — nessun fenomeno rilevante\n🟡  1–2 = BASSO — attenzione lieve\n🟠  3–4 = POSSIBILE — fenomeno significativo\n🔴  5–6 = PROBABILE — evento importante\n🟣  7–15 = ESTREMO — evento severo"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp"
+            android:lineSpacingExtra="3dp"
+            android:layout_marginBottom="20dp" />
+
+        <!-- TAB PREVISIONI -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🕐  Tab Previsioni"
+            android:textColor="@color/text_primary"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="6dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Mostra le previsioni ora per ora a partire dall\'ora corrente. Ogni riga include:\n\n• Emoji meteo + orario\n• Descrizione del fenomeno\n• Score del rischio con barra colorata (0–15)\n• 💧 Probabilità precipitazione\n• (opzionale) Dettagli tecnici: CAPE, LI, livello zero, raffiche\n\nIl riquadro in cima mostra le condizioni attuali e il rischio massimo nelle prossime 6 ore.\n\nL\'app si aggiorna automaticamente quando la apri (max ogni 3 minuti). Usa il tasto 🔄 per forzare il refresh."
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp"
+            android:lineSpacingExtra="3dp"
+            android:layout_marginBottom="20dp" />
+
+        <!-- TAB 7 GIORNI -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📅  Tab 7 Giorni"
+            android:textColor="@color/text_primary"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="6dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Previsioni giornaliere per i prossimi 7 giorni. Per ogni giorno:\n\n• Min° ↑↓─  ───  ↑↓─ Max° : temperatura min/max con freccia tendenza vs giorno precedente\n• ↑ rosso = più caldo di ieri · ↓ blu = più freddo · ─ grigio = stabile\n• +X° / -X° vs media sett. : scostamento dalla media dei 7 giorni\n• Colonna destra: % precipitazione (verde/giallo/arancio/rosso) + mm attesi\n\nAttendibilità (±X% o ~X%):\n• ±X% calcolata dalla dispersione tra GFS, ECMWF e ICON: se i 3 modelli concordano = alta attendibilità, se divergono = bassa\n• ~X% fallback empirico usato solo se la rete non permette il confronto modelli"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp"
+            android:lineSpacingExtra="3dp"
+            android:layout_marginBottom="20dp" />
+
+        <!-- TAB STORICO -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🕰  Tab Storico"
+            android:textColor="@color/text_primary"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="6dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Mostra come sono cambiate le previsioni nel tempo per ogni giorno futuro. Esempio: ieri per venerdì prevedevano 32°, oggi ne prevedono 35° → Max ↑3°.\n\nLo storico si costruisce automaticamente: ogni volta che apri il tab 7 Giorni viene salvato uno snapshot (massimo 1 ogni 4 ore per non duplicare). Dopo la prima apertura ci vorrà almeno 4 ore prima di vedere i cambiamenti.\n\nOgni card mostra:\n• Data del giorno futuro\n• Previsione più recente (con città 📍)\n• Previsione precedente (con quanto tempo fa)\n• Variazione: ↑ rosso se salito, ↓ blu se sceso, grigio se stabile\n• Numero di rilevazioni disponibili\n\nSe cambi posizione geografica, i dati vengono tracciati separatamente per ogni città."
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp"
+            android:lineSpacingExtra="3dp"
+            android:layout_marginBottom="20dp" />
+
+        <!-- NOTIFICHE -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🔔  Notifiche in background"
+            android:textColor="@color/text_primary"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="6dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="L\'app controlla le condizioni meteo in background ogni 15, 30 o 60 minuti (configurabile nelle impostazioni). Se lo score supera la soglia impostata, ricevi una notifica.\n\nIl controllo usa gli stessi 7 indicatori del tab Previsioni. Se hai impostato un raggio di monitoraggio, vengono analizzati anche i punti cardinali attorno alla tua posizione e viene usato il caso peggiore."
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp"
+            android:lineSpacingExtra="3dp"
+            android:layout_marginBottom="20dp" />
+
+        <!-- IMPOSTAZIONI -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="⚙️  Impostazioni principali"
+            android:textColor="@color/text_primary"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="6dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Raggio di monitoraggio: analizza il caso peggiore entro X km. Con 0 km analizza solo la tua posizione esatta.\n\nOre previsione oraria: quante ore visualizzare nel tab Previsioni (12/24/48).\n\nSoglia allerta: score minimo per ricevere notifica. Score 3 = POSSIBILE (temporali), score 5 = PROBABILE, score 7 = ESTREMO.\n\nDettagli tecnici: mostra CAPE, Lifted Index, livello zero termico e raffiche in ogni riga oraria — utile per chi ha familiarità con la meteorologia."
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp"
+            android:lineSpacingExtra="3dp"
+            android:layout_marginBottom="24dp" />
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

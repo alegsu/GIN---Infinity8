@@ -1,0 +1,25 @@
+package it.shinyup.meteoradar.utils
+
+object Prefs {
+    const val RADIUS_KM          = "radius_km"
+    const val USE_GPS            = "use_gps"
+    const val MANUAL_LAT         = "manual_lat"
+    const val MANUAL_LON         = "manual_lon"
+    const val FAVORITE_1_NAME    = "favorite_1_name"
+    const val FAVORITE_1_LAT     = "favorite_1_lat"
+    const val FAVORITE_1_LON     = "favorite_1_lon"
+    const val FAVORITE_2_NAME    = "favorite_2_name"
+    const val FAVORITE_2_LAT     = "favorite_2_lat"
+    const val FAVORITE_2_LON     = "favorite_2_lon"
+    const val SHOW_APPARENT_TEMP = "show_apparent_temp"
+    const val SHOW_WIND          = "show_wind"
+    const val SHOW_HUMIDITY      = "show_humidity"
+    const val NOTIFICATIONS_ENABLED = "notifications_enabled"
+    const val CHECK_INTERVAL     = "check_interval_min"
+    const val ALERT_THRESHOLD    = "alert_threshold"
+    const val VIBRATION          = "vibration"
+    const val FORECAST_CHANGE_NOTIFICATIONS = "forecast_change_notifications"
+    const val FORECAST_CHANGE_THRESHOLD    = "forecast_change_threshold"
+    const val FORECAST_HOURS     = "forecast_hours"
+    const val SHOW_TECH_DETAILS  = "show_tech_details"
+}

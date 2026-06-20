@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!-- Today highlight background -->
+    <View
+        android:id="@+id/todayHighlight"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#141565C0"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:gravity="center_vertical">
+
+        <!-- Date column -->
+        <TextView
+            android:id="@+id/tvDayDate"
+            android:layout_width="52dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_primary"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:gravity="center_horizontal" />
+
+        <!-- Emoji -->
+        <TextView
+            android:id="@+id/tvDayEmoji"
+            android:layout_width="44dp"
+            android:layout_height="wrap_content"
+            android:textSize="26sp"
+            android:gravity="center"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp" />
+
+        <!-- Temp range column -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginStart="4dp">
+
+            <!-- Max + arrow | Min + arrow -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <!-- Min -->
+                <TextView
+                    android:id="@+id/tvMinTemp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/accent_light"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/tvMinArrow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="8dp" />
+
+                <!-- Spacer -->
+                <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1"
+                    android:background="@color/text_secondary" android:alpha="0.3" />
+
+                <!-- Max -->
+                <TextView
+                    android:id="@+id/tvMaxArrow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginStart="8dp" />
+
+                <TextView
+                    android:id="@+id/tvMaxTemp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_primary"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <!-- Average reference -->
+            <TextView
+                android:id="@+id/tvAvgRef"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_secondary"
+                android:textSize="10sp"
+                android:layout_marginTop="3dp" />
+
+        </LinearLayout>
+
+        <!-- Right column: probability + precip + reliability -->
+        <LinearLayout
+            android:layout_width="72dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="end"
+            android:layout_marginStart="8dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_precip_prob"
+                android:textSize="8sp"
+                android:textColor="@color/text_secondary"
+                android:gravity="end" />
+
+            <TextView
+                android:id="@+id/tvPrecipProb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:gravity="end"
+                android:layout_gravity="end" />
+
+            <TextView
+                android:id="@+id/tvPrecipSum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_secondary"
+                android:textSize="10sp"
+                android:gravity="end"
+                android:layout_gravity="end" />
+
+            <TextView
+                android:id="@+id/tvReliability"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="10sp"
+                android:gravity="end"
+                android:layout_gravity="end"
+                android:layout_marginTop="2dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</FrameLayout>
