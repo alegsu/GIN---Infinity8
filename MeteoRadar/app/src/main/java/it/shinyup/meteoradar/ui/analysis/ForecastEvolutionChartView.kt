@@ -51,13 +51,13 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
     }
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#E0E0E0")
-        textSize = 36f
+        textSize = 42f
         textAlign = Paint.Align.CENTER
         typeface = Typeface.DEFAULT_BOLD
     }
     private val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#8B949E")
-        textSize = 28f
+        textSize = 30f
         textAlign = Paint.Align.CENTER
     }
     private val gridPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -89,7 +89,7 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
     }
     private val apparentTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#FF9800")
-        textSize = 28f
+        textSize = 32f
         textAlign = Paint.Align.CENTER
     }
     private val windBarPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -98,13 +98,13 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
     }
     private val windTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#A5D6A7")
-        textSize = 26f
+        textSize = 30f
         textAlign = Paint.Align.CENTER
         typeface = Typeface.DEFAULT_BOLD
     }
     private val humidityTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#4FC3F7")
-        textSize = 28f
+        textSize = 32f
         textAlign = Paint.Align.CENTER
     }
 
@@ -130,10 +130,10 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
             return
         }
 
-        val leftPad   = 20f
-        val rightPad  = 20f
-        val topPad    = 65f
-        val bottomPad = 60f
+        val leftPad   = 80f
+        val rightPad  = 80f
+        val topPad    = 75f
+        val bottomPad = 65f
         val chartWidth  = width  - leftPad - rightPad
         val chartHeight = height - topPad  - bottomPad
 
@@ -261,24 +261,24 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
             canvas.drawCircle(x, yMin, 9f, dotPaintMin)
 
             // Main temperature values
-            canvas.drawText("${"%.1f".format(p.tempMax)}°", x, yMax - 20f, textPaint)
-            canvas.drawText("${"%.1f".format(p.tempMin)}°", x, yMin + 44f, textPaint)
+            canvas.drawText("${"%.1f".format(p.tempMax)}°", x, yMax - 22f, textPaint)
+            canvas.drawText("${"%.1f".format(p.tempMin)}°", x, yMin + 50f, textPaint)
 
             // Apparent temp values (below max label, above min label)
             if (showApparentTemp) {
                 canvas.drawText(
                     "${"%.0f".format(p.apparentMax)}°",
-                    x, yMax - 52f, apparentTextPaint
+                    x, yMax - 58f, apparentTextPaint
                 )
                 canvas.drawText(
                     "${"%.0f".format(p.apparentMin)}°",
-                    x, yMin + 74f, apparentTextPaint
+                    x, yMin + 82f, apparentTextPaint
                 )
             }
 
             // Humidity below Tmin apparent (or below Tmin value)
             if (showHumidity && p.humidity > 0) {
-                val humY = if (showApparentTemp) yMin + 100f else yMin + 74f
+                val humY = if (showApparentTemp) yMin + 112f else yMin + 82f
                 canvas.drawText("${p.humidity}%", x, humY, humidityTextPaint)
             }
 

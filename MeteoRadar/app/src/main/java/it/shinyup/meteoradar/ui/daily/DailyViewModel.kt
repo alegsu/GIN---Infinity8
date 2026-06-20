@@ -8,11 +8,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.preference.PreferenceManager
 import it.shinyup.meteoradar.data.WeatherRepository
-import it.shinyup.meteoradar.data.db.AppDatabase
-import it.shinyup.meteoradar.data.db.ForecastSnapshot
 import it.shinyup.meteoradar.data.models.DailyData
 import it.shinyup.meteoradar.data.models.DayForecastItem
-import it.shinyup.meteoradar.data.models.OpenMeteoResponse
 import it.shinyup.meteoradar.data.models.WeatherCode
 import it.shinyup.meteoradar.data.models.ModelComparisonDaily
 import it.shinyup.meteoradar.utils.GeocoderHelper
@@ -47,7 +44,6 @@ class DailyViewModel(application: Application) : AndroidViewModel(application) {
         if (!forceRefresh && _days.value?.isSuccess == true && now - lastSuccessfulFetchMs < CACHE_MS) return
 
         val useGps = prefs.getBoolean(Prefs.USE_GPS, true)
-        val hasRealLocation = !useGps || location != null
         val lat: Double
         val lon: Double
         if (useGps && location != null) {
@@ -75,9 +71,6 @@ class DailyViewModel(application: Application) : AndroidViewModel(application) {
                 if (daily != null) {
                     _days.value = Result.success(buildItems(daily, comparison))
                     lastSuccessfulFetchMs = System.currentTimeMillis()
-                    if (hasRealLocation) {
-                        saveSnapshots(response, city)
-                    }
                 } else if (_days.value?.isSuccess != true) {
                     _days.value = Result.success(emptyList())
                 }
@@ -87,37 +80,6 @@ class DailyViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }
             _isLoading.value = false
-        }
-    }
-
-    private suspend fun saveSnapshots(response: OpenMeteoResponse, locationName: String) {
-        val daily = response.daily ?: return
-        val dao = AppDatabase.getInstance(getApplication()).snapshotDao()
-
-        val lastFetch = dao.getLastFetchTimeForLocation(locationName) ?: 0L
-        if (System.currentTimeMillis() - lastFetch < 4 * 60 * 60 * 1000L) return
-
-        val fetchedAt = System.currentTimeMillis()
-        val snapshots = daily.time.indices.mapNotNull { i ->
-            val date = daily.time.getOrNull(i) ?: return@mapNotNull null
-            ForecastSnapshot(
-                fetchedAt = fetchedAt,
-                targetDate = date,
-                locationName = locationName,
-                minTemp = daily.temperatureMin.getOrElse(i) { 0.0 },
-                maxTemp = daily.temperatureMax.getOrElse(i) { 0.0 },
-                weatherCode = daily.weatherCode.getOrElse(i) { 0 },
-                precipProb = daily.precipitationProbabilityMax.getOrElse(i) { 0 },
-                precipSum = daily.precipitationSum.getOrElse(i) { 0.0 },
-                apparentTempMax = daily.apparentTemperatureMax?.getOrElse(i) { 0.0 } ?: 0.0,
-                apparentTempMin = daily.apparentTemperatureMin?.getOrElse(i) { 0.0 } ?: 0.0,
-                windSpeedMax = daily.windSpeedMax?.getOrElse(i) { 0.0 } ?: 0.0,
-                humidityMax = daily.humidityMax?.getOrElse(i) { 0 } ?: 0
-            )
-        }
-        if (snapshots.isNotEmpty()) {
-            dao.insertAll(snapshots)
-            dao.deleteOlderThan(System.currentTimeMillis() - 30L * 24 * 60 * 60 * 1000L)
         }
     }
 
