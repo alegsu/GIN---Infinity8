@@ -30,7 +30,10 @@ data class PastDayItem(
     val tempMax: Double,
     val tempMin: Double,
     val precipSum: Double,
-    val weatherCode: Int
+    val weatherCode: Int,
+    val forecastMax: Double? = null,
+    val forecastMin: Double? = null,
+    val accuracyPct: Int? = null
 )
 
 data class EvolutionState(
@@ -75,7 +78,13 @@ class AnalysisViewModel(application: Application) : AndroidViewModel(application
 
             repository.getPastDaysData(lat, lon).onSuccess { response ->
                 val daily = response.daily ?: return@onSuccess
-                _pastDays.value = buildPastItems(daily)
+                val dao = AppDatabase.getInstance(getApplication()).snapshotDao()
+                val pastDates = daily.time.toList()
+                val snapshots = if (pastDates.isNotEmpty()) dao.getSnapshotsForDates(pastDates) else emptyList()
+                val lastForecastByDate = snapshots
+                    .groupBy { it.targetDate }
+                    .mapValues { (_, snaps) -> snaps.maxByOrNull { it.fetchedAt } }
+                _pastDays.value = buildPastItems(daily, lastForecastByDate)
             }
             _isLoading.value = false
         }
@@ -266,7 +275,10 @@ class AnalysisViewModel(application: Application) : AndroidViewModel(application
         )
     }
 
-    private fun buildPastItems(daily: DailyData): List<PastDayItem> {
+    private fun buildPastItems(
+        daily: DailyData,
+        forecasts: Map<String, ForecastSnapshot?> = emptyMap()
+    ): List<PastDayItem> {
         val yesterday = LocalDate.now().minusDays(1).toString()
         return daily.time.indices.mapNotNull { i ->
             val dateStr = daily.time.getOrNull(i) ?: return@mapNotNull null
@@ -277,15 +289,29 @@ class AnalysisViewModel(application: Application) : AndroidViewModel(application
                 "$dow ${d.dayOfMonth} ${d.month.getDisplayName(TextStyle.SHORT, Locale.getDefault())}"
             } catch (e: Exception) { dateStr }
 
+            val actualMax = daily.temperatureMax.getOrElse(i) { 0.0 }
+            val actualMin = daily.temperatureMin.getOrElse(i) { 0.0 }
+            val forecast = forecasts[dateStr]
+
+            val accuracy = if (forecast != null) {
+                val errMax = kotlin.math.abs(forecast.maxTemp - actualMax)
+                val errMin = kotlin.math.abs(forecast.minTemp - actualMin)
+                val avgErr = (errMax + errMin) / 2.0
+                (100 - avgErr * 10).coerceIn(0.0, 100.0).toInt()
+            } else null
+
             PastDayItem(
                 dateLabel = dateLabel,
                 isYesterday = dateStr == yesterday,
                 emoji = WeatherCode.emoji(code),
                 description = WeatherCode.description(code),
-                tempMax = daily.temperatureMax.getOrElse(i) { 0.0 },
-                tempMin = daily.temperatureMin.getOrElse(i) { 0.0 },
+                tempMax = actualMax,
+                tempMin = actualMin,
                 precipSum = daily.precipitationSum.getOrElse(i) { 0.0 },
-                weatherCode = code
+                weatherCode = code,
+                forecastMax = forecast?.maxTemp,
+                forecastMin = forecast?.minTemp,
+                accuracyPct = accuracy
             )
         }.reversed()
     }

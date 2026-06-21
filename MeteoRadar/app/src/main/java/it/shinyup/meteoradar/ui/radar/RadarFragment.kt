@@ -23,6 +23,7 @@ import it.shinyup.meteoradar.data.models.OpenMeteoResponse
 import it.shinyup.meteoradar.data.models.WeatherCode
 import it.shinyup.meteoradar.databinding.FragmentRadarBinding
 import it.shinyup.meteoradar.utils.LocationHelper
+import kotlin.math.roundToInt
 import it.shinyup.meteoradar.utils.Prefs
 import kotlinx.coroutines.launch
 
@@ -122,7 +123,7 @@ class RadarFragment : Fragment() {
 
         binding.tvWeatherEmoji.text = WeatherCode.emoji(code)
         binding.tvWeatherDesc.text  = WeatherCode.description(code)
-        binding.tvTemperature.text  = "${temp.toInt()}°C"
+        binding.tvTemperature.text  = "${temp.roundToInt()}°C"
 
         val hourly = data.hourly
         val maxScore = if (hourly != null) {

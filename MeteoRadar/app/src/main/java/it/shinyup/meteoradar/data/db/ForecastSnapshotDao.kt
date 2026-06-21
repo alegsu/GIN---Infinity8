@@ -18,4 +18,7 @@ interface ForecastSnapshotDao {
 
     @Query("SELECT * FROM forecast_snapshots WHERE targetDate = :date ORDER BY fetchedAt ASC")
     suspend fun getSnapshotsForDate(date: String): List<ForecastSnapshot>
+
+    @Query("SELECT * FROM forecast_snapshots WHERE targetDate IN (:dates) ORDER BY targetDate ASC, fetchedAt ASC")
+    suspend fun getSnapshotsForDates(dates: List<String>): List<ForecastSnapshot>
 }
