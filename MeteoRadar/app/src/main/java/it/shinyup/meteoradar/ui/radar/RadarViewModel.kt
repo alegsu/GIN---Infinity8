@@ -49,6 +49,7 @@ class RadarViewModel(application: Application) : AndroidViewModel(application) {
 
         val radius = prefs.getString(Prefs.RADIUS_KM, "0")?.toIntOrNull() ?: 0
         val forecastHours = prefs.getString(Prefs.FORECAST_HOURS, "24")?.toIntOrNull() ?: 24
+        val forecastDays = (forecastHours / 24) + 1
 
         val points = mutableListOf(lat to lon)
         if (radius > 0) {
@@ -69,7 +70,7 @@ class RadarViewModel(application: Application) : AndroidViewModel(application) {
             _locationName.value = city
 
             val results = points.map { (la, lo) ->
-                async { repository.getForecast(la, lo, forecastHours).getOrNull() }
+                async { repository.getForecast(la, lo, forecastDays).getOrNull() }
             }.awaitAll().filterNotNull()
 
             if (results.isEmpty()) {

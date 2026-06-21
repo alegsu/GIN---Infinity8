@@ -16,7 +16,7 @@ interface OpenMeteoApi {
             "lifted_index,windgusts_10m,freezing_level_height,showers",
         @Query("current_weather") currentWeather: Boolean = true,
         @Query("timezone") timezone: String = "auto",
-        @Query("forecast_hours") forecastHours: Int = 24
+        @Query("forecast_days") forecastDays: Int = 3
     ): OpenMeteoResponse
 
     @GET("v1/forecast")
