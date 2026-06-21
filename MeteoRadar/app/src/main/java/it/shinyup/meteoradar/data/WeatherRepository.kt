@@ -51,9 +51,9 @@ class WeatherRepository {
         rainViewerApi.getWeatherMaps()
     }
 
-    suspend fun getForecast(latitude: Double, longitude: Double, forecastHours: Int = 24): Result<OpenMeteoResponse> =
+    suspend fun getForecast(latitude: Double, longitude: Double, forecastDays: Int = 3): Result<OpenMeteoResponse> =
         runCatching {
-            openMeteoApi.getForecast(latitude, longitude, forecastHours = forecastHours)
+            openMeteoApi.getForecast(latitude, longitude, forecastDays = forecastDays)
         }
 
     suspend fun getDailyForecast(latitude: Double, longitude: Double): Result<OpenMeteoResponse> =

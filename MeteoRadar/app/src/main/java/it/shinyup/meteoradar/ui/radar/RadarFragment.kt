@@ -157,8 +157,10 @@ class RadarFragment : Fragment() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         adapter.showTechDetails = prefs.getBoolean(Prefs.SHOW_TECH_DETAILS, false)
 
+        val forecastHours = prefs.getString(Prefs.FORECAST_HOURS, "24")?.toIntOrNull() ?: 24
         val start = nowStartIndex(hourly.time)
-        val items = (start until hourly.time.size).map { i ->
+        val end = minOf(start + forecastHours, hourly.time.size)
+        val items = (start until end).map { i ->
             val code       = hourly.weatherCode.getOrElse(i) { 0 }
             val precip     = hourly.precipitation.getOrElse(i) { 0.0 }
             val precipProb = hourly.precipitationProbability.getOrElse(i) { 0 }
@@ -180,9 +182,9 @@ class RadarFragment : Fragment() {
 
         val radius = prefs.getString(Prefs.RADIUS_KM, "0")?.toIntOrNull() ?: 0
         binding.tvForecastTitle.text = if (radius > 0)
-            getString(R.string.forecast_title_radius, items.size, radius)
+            getString(R.string.forecast_title_radius, forecastHours, radius)
         else
-            getString(R.string.forecast_title, items.size)
+            getString(R.string.forecast_title, forecastHours)
     }
 
     private fun scoreToDisplay(score: Int): Pair<String, Int> = when {
