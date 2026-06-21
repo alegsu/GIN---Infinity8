@@ -142,6 +142,7 @@ class AnalysisFragment : Fragment() {
         binding.tvSelectedDateLabel.text = getString(R.string.evolution_selected_date, state.dateLabel)
         binding.chartView.visibility = if (state.hasEnoughData) View.VISIBLE else View.GONE
         binding.tvChartLegend.visibility = if (state.hasEnoughData) View.VISIBLE else View.GONE
+        binding.tvModelSources.visibility = if (state.hasEnoughData) View.VISIBLE else View.GONE
 
         if (state.hasEnoughData) {
             binding.chartView.setScale(state.globalScale)

@@ -59,6 +59,15 @@
                         android:text="–" />
 
                     <TextView
+                        android:id="@+id/tvModelSources"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="10sp"
+                        android:layout_marginTop="2dp"
+                        android:text="Fonti: ECMWF · GFS · ICON · ICON-EU · ICON-D2 (COSMO)" />
+
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/text_secondary"
