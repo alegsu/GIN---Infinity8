@@ -8,6 +8,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.preference.PreferenceManager
 import it.shinyup.meteoradar.data.WeatherRepository
+import it.shinyup.meteoradar.data.db.AppDatabase
+import it.shinyup.meteoradar.data.db.ForecastSnapshot
 import it.shinyup.meteoradar.data.models.DailyData
 import it.shinyup.meteoradar.data.models.DayForecastItem
 import it.shinyup.meteoradar.data.models.WeatherCode
@@ -79,7 +81,50 @@ class DailyViewModel(application: Application) : AndroidViewModel(application) {
                     _days.value = Result.failure(error)
                 }
             }
+
+            saveFavoriteCitySnapshots()
+
             _isLoading.value = false
+        }
+    }
+
+    private suspend fun saveFavoriteCitySnapshots() {
+        val dao = AppDatabase.getInstance(getApplication()).snapshotDao()
+        val favorites = listOf(
+            Triple(Prefs.FAVORITE_1_LAT, Prefs.FAVORITE_1_LON, Prefs.FAVORITE_1_NAME),
+            Triple(Prefs.FAVORITE_2_LAT, Prefs.FAVORITE_2_LON, Prefs.FAVORITE_2_NAME)
+        )
+        for ((latKey, lonKey, nameKey) in favorites) {
+            val favLat = prefs.getString(latKey, "")?.toDoubleOrNull() ?: continue
+            val favLon = prefs.getString(lonKey, "")?.toDoubleOrNull() ?: continue
+            val cityName = prefs.getString(nameKey, null)?.takeIf { it.isNotBlank() }
+                ?: withContext(Dispatchers.IO) {
+                    GeocoderHelper.cityName(getApplication(), favLat, favLon)
+                }
+            val lastFetch = dao.getLastFetchTimeForLocation(cityName) ?: 0L
+            if (System.currentTimeMillis() - lastFetch < 1 * 60 * 60 * 1000L) continue
+            val daily = repository.getDailyForecast(favLat, favLon).getOrNull()?.daily ?: continue
+            val fetchedAt = System.currentTimeMillis()
+            val snapshots = daily.time.indices.mapNotNull { i ->
+                val date = daily.time.getOrNull(i) ?: return@mapNotNull null
+                ForecastSnapshot(
+                    fetchedAt = fetchedAt,
+                    targetDate = date,
+                    locationName = cityName,
+                    minTemp = daily.temperatureMin.getOrElse(i) { 0.0 },
+                    maxTemp = daily.temperatureMax.getOrElse(i) { 0.0 },
+                    weatherCode = daily.weatherCode.getOrElse(i) { 0 },
+                    precipProb = daily.precipitationProbabilityMax.getOrElse(i) { 0 },
+                    precipSum = daily.precipitationSum.getOrElse(i) { 0.0 },
+                    apparentTempMax = daily.apparentTemperatureMax?.getOrElse(i) { 0.0 } ?: 0.0,
+                    apparentTempMin = daily.apparentTemperatureMin?.getOrElse(i) { 0.0 } ?: 0.0,
+                    windSpeedMax = daily.windSpeedMax?.getOrElse(i) { 0.0 } ?: 0.0,
+                    humidityMax = daily.humidityMax?.getOrElse(i) { 0 } ?: 0
+                )
+            }
+            if (snapshots.isNotEmpty()) {
+                dao.insertAll(snapshots)
+            }
         }
     }
 
