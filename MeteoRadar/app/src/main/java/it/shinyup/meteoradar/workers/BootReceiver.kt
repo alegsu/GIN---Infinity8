@@ -24,7 +24,7 @@ class BootReceiver : BroadcastReceiver() {
             request
         )
 
-        val forecastRequest = PeriodicWorkRequestBuilder<ForecastChangeWorker>(4, TimeUnit.HOURS)
+        val forecastRequest = PeriodicWorkRequestBuilder<ForecastChangeWorker>(1, TimeUnit.HOURS)
             .setConstraints(constraints)
             .build()
 
