@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import it.shinyup.meteoradar.R
 import it.shinyup.meteoradar.data.models.WeatherCode
+import kotlin.math.roundToInt
 
 class HistoryAdapter : ListAdapter<DayHistory, HistoryAdapter.VH>(DIFF) {
 
@@ -33,20 +34,20 @@ class HistoryAdapter : ListAdapter<DayHistory, HistoryAdapter.VH>(DIFF) {
 
         val latestEmoji = WeatherCode.emoji(latest.weatherCode)
         val latestLoc = if (latest.locationName.isNotBlank()) " · 📍${latest.locationName}" else ""
-        holder.tvLatest.text = "Ora: $latestEmoji  ${latest.minTemp.toInt()}° / ${latest.maxTemp.toInt()}°  💧${latest.precipProb}%$latestLoc"
+        holder.tvLatest.text = "Ora: $latestEmoji  ${latest.minTemp.roundToInt()}° / ${latest.maxTemp.roundToInt()}°  💧${latest.precipProb}%$latestLoc"
 
         val prevTime = formatTime(prev.fetchedAt)
         val prevLoc = if (prev.locationName.isNotBlank() && prev.locationName != latest.locationName) " · 📍${prev.locationName}" else ""
-        holder.tvPrev.text = "$prevTime: ${WeatherCode.emoji(prev.weatherCode)}  ${prev.minTemp.toInt()}° / ${prev.maxTemp.toInt()}°$prevLoc"
+        holder.tvPrev.text = "$prevTime: ${WeatherCode.emoji(prev.weatherCode)}  ${prev.minTemp.roundToInt()}° / ${prev.maxTemp.roundToInt()}°$prevLoc"
 
         val deltaMax = latest.maxTemp - prev.maxTemp
         when {
             deltaMax >= 1.0 -> {
-                holder.tvChange.text = "Max ↑${"%.1f".format(deltaMax)}° rispetto a $prevTime"
+                holder.tvChange.text = "Max ↑${deltaMax.roundToInt()}° rispetto a $prevTime"
                 holder.tvChange.setTextColor(Color.parseColor("#F44336"))
             }
             deltaMax <= -1.0 -> {
-                holder.tvChange.text = "Max ↓${"%.1f".format(-deltaMax)}° rispetto a $prevTime"
+                holder.tvChange.text = "Max ↓${(-deltaMax).roundToInt()}° rispetto a $prevTime"
                 holder.tvChange.setTextColor(Color.parseColor("#42A5F5"))
             }
             else -> {

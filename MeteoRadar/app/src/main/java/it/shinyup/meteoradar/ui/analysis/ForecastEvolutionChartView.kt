@@ -261,8 +261,8 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
             canvas.drawCircle(x, yMin, 9f, dotPaintMin)
 
             // Main temperature values
-            canvas.drawText("${"%.1f".format(p.tempMax)}°", x, yMax - 22f, textPaint)
-            canvas.drawText("${"%.1f".format(p.tempMin)}°", x, yMin + 50f, textPaint)
+            canvas.drawText("${"%.0f".format(p.tempMax)}°", x, yMax - 22f, textPaint)
+            canvas.drawText("${"%.0f".format(p.tempMin)}°", x, yMin + 50f, textPaint)
 
             // Apparent temp values (below max label, above min label)
             if (showApparentTemp) {

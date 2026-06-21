@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import it.shinyup.meteoradar.R
 import it.shinyup.meteoradar.data.models.DayForecastItem
+import kotlin.math.roundToInt
 
 class DailyForecastAdapter : RecyclerView.Adapter<DailyForecastAdapter.ViewHolder>() {
 
@@ -45,8 +46,8 @@ class DailyForecastAdapter : RecyclerView.Adapter<DailyForecastAdapter.ViewHolde
         holder.tvDate.text  = d.dateLabel
         holder.tvEmoji.text = d.emoji
 
-        holder.tvMax.text = "${d.temperatureMax.toInt()}°"
-        holder.tvMin.text = "${d.temperatureMin.toInt()}°"
+        holder.tvMax.text = "${d.temperatureMax.roundToInt()}°"
+        holder.tvMin.text = "${d.temperatureMin.roundToInt()}°"
 
         holder.tvMaxArrow.text = trendArrow(d.maxTrend)
         holder.tvMaxArrow.setTextColor(trendColor(d.maxTrend))

@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import kotlin.math.roundToInt
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -61,7 +62,7 @@ class DailyFragment : Fragment() {
                 binding.cardDaily.visibility = View.VISIBLE
                 if (items.isNotEmpty()) {
                     binding.tvAvgSummary.text =
-                        "Media 7 giorni: max ${items[0].avgMax.toInt()}° · min ${items[0].avgMin.toInt()}°"
+                        "Media 7 giorni: max ${items[0].avgMax.roundToInt()}° · min ${items[0].avgMin.roundToInt()}°"
                 }
             }.onFailure {
                 Toast.makeText(context, "Errore caricamento dati", Toast.LENGTH_SHORT).show()
