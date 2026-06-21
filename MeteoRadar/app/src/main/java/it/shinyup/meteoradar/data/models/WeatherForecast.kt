@@ -56,18 +56,21 @@ data class ModelComparisonDaily(
     val time: List<String>,
     @SerializedName("temperature_2m_max_gfs_seamless")    val maxGfs: List<Double>?,
     @SerializedName("temperature_2m_max_ecmwf_ifs025")    val maxEcmwf: List<Double>?,
-    @SerializedName("temperature_2m_max_icon_seamless")   val maxIcon: List<Double>?
+    @SerializedName("temperature_2m_max_icon_seamless")   val maxIcon: List<Double>?,
+    @SerializedName("temperature_2m_max_icon_eu")         val maxIconEu: List<Double>?,
+    @SerializedName("temperature_2m_max_icon_d2")         val maxIconD2: List<Double>?
 ) {
     /** Returns reliability % for day [i] based on inter-model spread. */
     fun reliability(i: Int): Int {
         val values = listOfNotNull(
             maxGfs?.getOrNull(i),
             maxEcmwf?.getOrNull(i),
-            maxIcon?.getOrNull(i)
+            maxIcon?.getOrNull(i),
+            maxIconEu?.getOrNull(i),
+            maxIconD2?.getOrNull(i)
         ).filterNot { it.isNaN() }
-        if (values.size < 2) return -1 // unavailable
+        if (values.size < 2) return -1
         val spread = values.max() - values.min()
-        // 0°C spread = 100%, 8°C spread = 50%
         return maxOf(50, minOf(100, (100 - spread * 6.25).toInt()))
     }
 }
@@ -86,7 +89,7 @@ data class DayForecastItem(
     val precipitationSum: Double,
     val precipitationProbabilityMax: Int,
     val reliabilityPct: Int,          // % from inter-model spread (real) or empirical decay (fallback)
-    val reliabilityFromModels: Boolean // true = GFS/ECMWF/ICON spread; false = empirical
+    val reliabilityFromModels: Boolean // true = GFS/ECMWF/ICON/ICON-EU/ICON-D2 spread; false = empirical
 )
 
 object WeatherCode {

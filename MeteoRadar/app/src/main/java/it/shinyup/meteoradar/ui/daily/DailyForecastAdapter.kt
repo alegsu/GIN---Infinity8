@@ -81,7 +81,7 @@ class DailyForecastAdapter : RecyclerView.Adapter<DailyForecastAdapter.ViewHolde
             holder.tvPrecip.visibility = View.GONE
         }
 
-        // ± = inter-model spread (GFS/ECMWF/ICON), ~ = empirical fallback
+        // ± = inter-model spread (GFS/ECMWF/ICON/ICON-EU/ICON-D2), ~ = empirical fallback
         val suffix = holder.itemView.context.getString(R.string.reliability_suffix)
         val reliabLabel = if (d.reliabilityFromModels) "±${d.reliabilityPct}% $suffix" else "~${d.reliabilityPct}% $suffix"
         holder.tvReliab.text = reliabLabel
