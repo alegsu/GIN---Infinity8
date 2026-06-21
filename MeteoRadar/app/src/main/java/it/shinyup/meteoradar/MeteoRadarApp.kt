@@ -23,14 +23,14 @@ class MeteoRadarApp : Application() {
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
-        val request = PeriodicWorkRequestBuilder<ForecastChangeWorker>(4, TimeUnit.HOURS)
+        val request = PeriodicWorkRequestBuilder<ForecastChangeWorker>(1, TimeUnit.HOURS)
             .setConstraints(constraints)
             .setBackoffCriteria(BackoffPolicy.LINEAR, 15, TimeUnit.MINUTES)
             .build()
 
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(
             ForecastChangeWorker.WORK_NAME,
-            ExistingPeriodicWorkPolicy.KEEP,
+            ExistingPeriodicWorkPolicy.UPDATE,
             request
         )
     }
