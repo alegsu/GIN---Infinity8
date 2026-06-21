@@ -100,7 +100,7 @@ class AnalysisViewModel(application: Application) : AndroidViewModel(application
                 }
 
             val lastFetch = dao.getLastFetchTimeForLocation(cityName) ?: 0L
-            if (System.currentTimeMillis() - lastFetch < 4 * 60 * 60 * 1000L) continue
+            if (System.currentTimeMillis() - lastFetch < 1 * 60 * 60 * 1000L) continue
 
             val result = repository.getDailyForecast(favLat, favLon)
             val daily = result.getOrNull()?.daily ?: continue

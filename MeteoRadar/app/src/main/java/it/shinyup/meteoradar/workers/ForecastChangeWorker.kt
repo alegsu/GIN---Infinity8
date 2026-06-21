@@ -58,7 +58,7 @@ class ForecastChangeWorker(context: Context, params: WorkerParameters) : Corouti
         val daily = dailyResult.getOrNull()?.daily ?: return Result.retry()
 
         val lastFetch = snapshotDao.getLastFetchTimeForLocation(city) ?: 0L
-        if (System.currentTimeMillis() - lastFetch < 4 * 60 * 60 * 1000L) return Result.success()
+        if (System.currentTimeMillis() - lastFetch < 1 * 60 * 60 * 1000L) return Result.success()
 
         val today = LocalDate.now().toString()
         val oldSnapshots = snapshotDao.getSnapshotsFrom(today)
@@ -125,7 +125,7 @@ class ForecastChangeWorker(context: Context, params: WorkerParameters) : Corouti
                 }
 
             val lastFetchFav = snapshotDao.getLastFetchTimeForLocation(cityName) ?: 0L
-            if (System.currentTimeMillis() - lastFetchFav < 4 * 60 * 60 * 1000L) continue
+            if (System.currentTimeMillis() - lastFetchFav < 1 * 60 * 60 * 1000L) continue
 
             val dailyFav = repository.getDailyForecast(favLat, favLon).getOrNull()?.daily ?: continue
             val today = LocalDate.now().toString()
