@@ -17,11 +17,13 @@
 
     <!-- Forecast hours options -->
     <string-array name="forecast_hours_entries">
+        <item>6 ore</item>
         <item>12 ore</item>
         <item>24 ore</item>
         <item>48 ore</item>
     </string-array>
     <string-array name="forecast_hours_values">
+        <item>6</item>
         <item>12</item>
         <item>24</item>
         <item>48</item>

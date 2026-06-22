@@ -30,11 +30,16 @@ class RadarViewModel(application: Application) : AndroidViewModel(application) {
     val isLoading: LiveData<Boolean> = _isLoading
 
     private var lastSuccessfulFetchMs = 0L
+    private var lastForecastHours = 0
     private val CACHE_MS = 3 * 60 * 1000L
 
     fun loadData(location: Location?, forceRefresh: Boolean = false) {
         val now = System.currentTimeMillis()
-        if (!forceRefresh && _forecast.value?.isSuccess == true && now - lastSuccessfulFetchMs < CACHE_MS) return
+        val forecastHours = prefs.getString(Prefs.FORECAST_HOURS, "24")?.toIntOrNull() ?: 24
+        val prefsChanged = forecastHours != lastForecastHours && lastForecastHours != 0
+
+        if (!forceRefresh && !prefsChanged && _forecast.value?.isSuccess == true && now - lastSuccessfulFetchMs < CACHE_MS) return
+        lastForecastHours = forecastHours
 
         val useGps = prefs.getBoolean(Prefs.USE_GPS, true)
         val lat: Double
@@ -48,7 +53,6 @@ class RadarViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         val radius = prefs.getString(Prefs.RADIUS_KM, "0")?.toIntOrNull() ?: 0
-        val forecastHours = prefs.getString(Prefs.FORECAST_HOURS, "24")?.toIntOrNull() ?: 24
         val forecastDays = maxOf(3, (forecastHours + 23) / 24)
 
         val points = mutableListOf(lat to lon)
