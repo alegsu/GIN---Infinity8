@@ -26,6 +26,8 @@ import it.shinyup.meteoradar.utils.LocationHelper
 import kotlin.math.roundToInt
 import it.shinyup.meteoradar.utils.Prefs
 import kotlinx.coroutines.launch
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 class RadarFragment : Fragment() {
 
@@ -55,10 +57,17 @@ class RadarFragment : Fragment() {
         binding.rvForecast.layoutManager = LinearLayoutManager(requireContext())
         binding.rvForecast.adapter = adapter
 
-        binding.btnRefresh.setOnClickListener { viewModel.loadData(lastLocation, forceRefresh = true) }
+        binding.btnRefresh.setOnClickListener { forceRefresh() }
+        binding.btnRefreshBig.setOnClickListener { forceRefresh() }
 
         viewModel.isLoading.observe(viewLifecycleOwner) { loading ->
             binding.progressBar.visibility = if (loading) View.VISIBLE else View.GONE
+            binding.btnRefreshBig.isEnabled = !loading
+            if (loading) {
+                binding.btnRefreshBig.text = "Aggiornamento in corso..."
+            } else {
+                binding.btnRefreshBig.text = "🔄  AGGIORNA ORA"
+            }
         }
 
         viewModel.locationName.observe(viewLifecycleOwner) { city ->
@@ -69,18 +78,28 @@ class RadarFragment : Fragment() {
             result.onSuccess { data ->
                 updateCurrentConditions(data)
                 updateForecastList(data.hourly)
+                showLastUpdate()
             }.onFailure {
                 Toast.makeText(context, "Errore aggiornamento dati", Toast.LENGTH_SHORT).show()
-                // Previous data stays visible — do not clear cards
             }
         }
 
         checkLocationAndLoad()
     }
 
+    private fun forceRefresh() {
+        viewModel.loadData(lastLocation, forceRefresh = true)
+        Toast.makeText(context, "Aggiornamento...", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun showLastUpdate() {
+        val time = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))
+        binding.tvLastUpdate.text = "Aggiornato alle $time"
+        binding.tvLastUpdate.visibility = View.VISIBLE
+    }
+
     override fun onResume() {
         super.onResume()
-        // Refresh settings-dependent UI and reload data on every resume
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         adapter.showTechDetails = prefs.getBoolean(Prefs.SHOW_TECH_DETAILS, false)
         adapter.notifyDataSetChanged()

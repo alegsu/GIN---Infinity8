@@ -95,6 +95,17 @@
 
                     </LinearLayout>
 
+                    <!-- Last update timestamp -->
+                    <TextView
+                        android:id="@+id/tvLastUpdate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="11sp"
+                        android:gravity="end"
+                        android:layout_marginTop="4dp"
+                        android:visibility="gone" />
+
                     <!-- Divider -->
                     <View
                         android:layout_width="match_parent"
@@ -236,6 +247,17 @@
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
+
+            <!-- REFRESH BUTTON -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRefreshBig"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="🔄  AGGIORNA ORA"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
             <!-- HOURLY FORECAST LIST -->
             <com.google.android.material.card.MaterialCardView
