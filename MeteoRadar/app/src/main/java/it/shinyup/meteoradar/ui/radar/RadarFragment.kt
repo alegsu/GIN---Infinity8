@@ -26,8 +26,11 @@ import it.shinyup.meteoradar.utils.LocationHelper
 import kotlin.math.roundToInt
 import it.shinyup.meteoradar.utils.Prefs
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
+import java.util.Locale
 
 class RadarFragment : Fragment() {
 
@@ -102,7 +105,12 @@ class RadarFragment : Fragment() {
         super.onResume()
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         adapter.showTechDetails = prefs.getBoolean(Prefs.SHOW_TECH_DETAILS, false)
-        adapter.notifyDataSetChanged()
+
+        viewModel.forecast.value?.getOrNull()?.let { data ->
+            updateCurrentConditions(data)
+            updateForecastList(data.hourly)
+        }
+
         checkLocationAndLoad()
     }
 
@@ -179,6 +187,7 @@ class RadarFragment : Fragment() {
         val forecastHours = prefs.getString(Prefs.FORECAST_HOURS, "24")?.toIntOrNull() ?: 24
         val start = nowStartIndex(hourly.time)
         val end = minOf(start + forecastHours, hourly.time.size)
+        val today = LocalDate.now().toString()
         val items = (start until end).map { i ->
             val code       = hourly.weatherCode.getOrElse(i) { 0 }
             val precip     = hourly.precipitation.getOrElse(i) { 0.0 }
@@ -188,7 +197,19 @@ class RadarFragment : Fragment() {
             val gusts      = hourly.windGusts?.getOrElse(i) { 0.0 } ?: 0.0
             val fz         = hourly.freezingLevelHeight?.getOrElse(i) { 3000.0 } ?: 3000.0
             val showers    = hourly.showers?.getOrElse(i) { 0.0 } ?: 0.0
-            val timeStr    = hourly.time[i].substringAfter("T").take(5)
+
+            val rawTime = hourly.time[i]
+            val datePart = rawTime.substringBefore("T")
+            val hourPart = rawTime.substringAfter("T").take(5)
+            val timeStr = if (datePart == today) {
+                hourPart
+            } else {
+                try {
+                    val d = LocalDate.parse(datePart)
+                    val dayName = d.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
+                    "$dayName $hourPart"
+                } catch (_: Exception) { hourPart }
+            }
 
             val score = WeatherCode.computeSeverityScore(code, cape, li, gusts, fz, precip, showers, precipProb)
             val (label, color) = scoreToDisplay(score)
