@@ -5,6 +5,7 @@
     <string name="nav_previsioni">Prévisions</string>
     <string name="nav_7giorni">7 Jours</string>
     <string name="nav_analisi">Analyse</string>
+    <string name="nav_monitor">Moniteur</string>
     <string name="nav_impostazioni">Paramètres</string>
     <string name="nav_guida">Guide</string>
 
@@ -105,6 +106,12 @@
     <string name="pref_show_wind_summary">Afficher la vitesse maximale du vent dans les graphiques</string>
     <string name="pref_show_humidity">Humidité</string>
     <string name="pref_show_humidity_summary">Afficher l\'humidité relative maximale dans les graphiques</string>
+
+    <string name="monitor_title">Moniteur de Température</string>
+    <string name="monitor_subtitle">Variations détectées dans les prévisions des prochains jours, en comparant les relevés successifs d\'ECMWF, GFS, ICON, ICON-EU et ICON-D2 (COSMO).</string>
+    <string name="monitor_empty">Aucune variation significative détectée.\nLes variations apparaissent lorsque les prévisions sont mises à jour (toutes les heures) et que la température change par rapport au relevé précédent.</string>
+    <string name="monitor_notif_on">Les notifications de variation sont actives (seuil ±%s°)</string>
+    <string name="monitor_notif_off">Les notifications de variation sont désactivées. Activez-les dans les Paramètres.</string>
 
     <string name="city_search_title">Rechercher une ville</string>
     <string name="city_search_hint">Nom de la ville…</string>

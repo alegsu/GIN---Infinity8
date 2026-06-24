@@ -6,6 +6,7 @@
     <string name="nav_previsioni">Previsioni</string>
     <string name="nav_7giorni">7 Giorni</string>
     <string name="nav_analisi">Analisi</string>
+    <string name="nav_monitor">Monitor</string>
     <string name="nav_impostazioni">Impostazioni</string>
     <string name="nav_guida">Guida</string>
 
@@ -118,6 +119,13 @@
     <string name="pref_show_wind_summary">Mostra la velocità massima del vento nei grafici</string>
     <string name="pref_show_humidity">Umidità</string>
     <string name="pref_show_humidity_summary">Mostra l\'umidità relativa massima nei grafici</string>
+
+    <!-- Monitor tab -->
+    <string name="monitor_title">Monitor Temperature</string>
+    <string name="monitor_subtitle">Variazioni rilevate nelle previsioni dei prossimi giorni, confrontando rilevazioni successive da ECMWF, GFS, ICON, ICON-EU e ICON-D2 (COSMO).</string>
+    <string name="monitor_empty">Nessuna variazione significativa rilevata.\nLe variazioni compaiono quando le previsioni vengono aggiornate (ogni ora) e la temperatura cambia rispetto alla rilevazione precedente.</string>
+    <string name="monitor_notif_on">Le notifiche di variazione sono attive (soglia ±%s°)</string>
+    <string name="monitor_notif_off">Le notifiche di variazione sono disattivate. Attivale nelle Impostazioni.</string>
 
     <!-- City search -->
     <string name="city_search_title">Cerca città</string>

@@ -16,6 +16,10 @@
         android:name="it.shinyup.meteoradar.ui.analysis.AnalysisFragment"
         android:label="@string/nav_analisi" />
 
+    <fragment android:id="@+id/monitorFragment"
+        android:name="it.shinyup.meteoradar.ui.monitor.MonitorFragment"
+        android:label="@string/nav_monitor" />
+
     <fragment android:id="@+id/settingsFragment"
         android:name="it.shinyup.meteoradar.ui.settings.SettingsFragment"
         android:label="@string/nav_impostazioni">
