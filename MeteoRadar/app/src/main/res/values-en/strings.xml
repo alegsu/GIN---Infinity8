@@ -5,6 +5,7 @@
     <string name="nav_previsioni">Forecast</string>
     <string name="nav_7giorni">7 Days</string>
     <string name="nav_analisi">Analysis</string>
+    <string name="nav_monitor">Monitor</string>
     <string name="nav_impostazioni">Settings</string>
     <string name="nav_guida">Guide</string>
 
@@ -105,6 +106,12 @@
     <string name="pref_show_wind_summary">Show max wind speed in charts</string>
     <string name="pref_show_humidity">Humidity</string>
     <string name="pref_show_humidity_summary">Show max relative humidity in charts</string>
+
+    <string name="monitor_title">Temperature Monitor</string>
+    <string name="monitor_subtitle">Changes detected in upcoming forecasts, comparing successive readings from ECMWF, GFS, ICON, ICON-EU and ICON-D2 (COSMO).</string>
+    <string name="monitor_empty">No significant changes detected.\nChanges appear when forecasts are updated (hourly) and temperatures shift from the previous reading.</string>
+    <string name="monitor_notif_on">Change notifications are active (threshold ±%s°)</string>
+    <string name="monitor_notif_off">Change notifications are disabled. Enable them in Settings.</string>
 
     <string name="city_search_title">Search city</string>
     <string name="city_search_hint">City name…</string>
