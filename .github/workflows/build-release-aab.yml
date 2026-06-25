@@ -60,13 +60,18 @@ jobs:
           KEY_ALIAS: meteoradar
         run: |
           BUILD_NUM=${{ github.run_number }}
-          ./gradlew bundleRelease -PbuildNumber=$BUILD_NUM --stacktrace
+          ./gradlew bundleRelease assembleRelease -PbuildNumber=$BUILD_NUM --stacktrace
 
       - name: Rename AAB
         run: |
           mkdir -p /tmp/aab-out
           cp MeteoRadar/app/build/outputs/bundle/release/app-release.aab \
              /tmp/aab-out/MeteoRadar-release.aab
+
+      - name: Rename APK
+        run: |
+          cp MeteoRadar/app/build/outputs/apk/release/app-release.apk \
+             /tmp/aab-out/MeteoRadar-v1.${{ github.run_number }}.apk
 
       - name: Upload AAB as artifact
         uses: actions/upload-artifact@v4
@@ -75,20 +80,27 @@ jobs:
           path: /tmp/aab-out/MeteoRadar-release.aab
           retention-days: 90
 
-      - name: Create GitHub Release with AAB
+      - name: Upload APK as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MeteoRadar-release-apk
+          path: /tmp/aab-out/MeteoRadar-v1.${{ github.run_number }}.apk
+          retention-days: 90
+
+      - name: Create GitHub Release with AAB + APK
         uses: softprops/action-gh-release@v2
         with:
           tag_name: release-${{ github.run_number }}
           name: "MeteoRadar v1.${{ github.run_number }} — Release"
           body: |
-            ## MeteoRadar v1.${{ github.run_number }} — Play Store Release
+            ## MeteoRadar v1.${{ github.run_number }}
 
-            Questo AAB firmato è pronto per essere caricato sul Google Play Store.
+            ### Test rapido
+            Scarica `MeteoRadar-v1.${{ github.run_number }}.apk` e installalo direttamente sul dispositivo.
 
-            **Come caricare:**
-            1. Vai su [Google Play Console](https://play.google.com/console)
-            2. Seleziona l'app MeteoRadar
-            3. Produzione → Crea nuova versione
-            4. Carica `MeteoRadar-release.aab`
-          files: /tmp/aab-out/MeteoRadar-release.aab
+            ### Play Store
+            Carica `MeteoRadar-release.aab` su [Google Play Console](https://play.google.com/console) → Produzione → Crea nuova versione.
+          files: |
+            /tmp/aab-out/MeteoRadar-release.aab
+            /tmp/aab-out/MeteoRadar-v1.${{ github.run_number }}.apk
           prerelease: false
