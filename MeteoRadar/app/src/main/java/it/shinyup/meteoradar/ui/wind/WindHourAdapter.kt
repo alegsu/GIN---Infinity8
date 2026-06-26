@@ -13,7 +13,7 @@ data class WindHourItem(
     val time: String,
     val temperature: Double,
     val windSpeed: Double,
-    val windDirection: Int,
+    val windDirection: Double,
     val windGusts: Double
 )
 
@@ -57,9 +57,10 @@ class WindHourAdapter : RecyclerView.Adapter<WindHourAdapter.ViewHolder>() {
 
     override fun getItemCount() = items.size
 
-    private fun directionLabel(degrees: Int): String {
+    private fun directionLabel(degrees: Double): String {
         val dirs = arrayOf("↓ N", "↙ NE", "← E", "↖ SE", "↑ S", "↗ SW", "→ W", "↘ NW")
-        return dirs[((degrees + 22) % 360) / 45]
+        val d = ((degrees.toInt() + 22) % 360) / 45
+        return dirs[d.coerceIn(0, 7)]
     }
 
     private fun speedColor(speed: Double): Int = when {

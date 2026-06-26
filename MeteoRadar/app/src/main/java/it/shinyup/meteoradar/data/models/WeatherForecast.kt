@@ -56,7 +56,7 @@ data class WindForecastResponse(
 data class HourlyWindData(
     val time: List<String>,
     @SerializedName("wind_speed_10m") val windSpeed: List<Double>,
-    @SerializedName("wind_direction_10m") val windDirection: List<Int>,
+    @SerializedName("wind_direction_10m") val windDirection: List<Double>,
     @SerializedName("windgusts_10m") val windGusts: List<Double>,
     @SerializedName("temperature_2m") val temperature: List<Double>
 )
