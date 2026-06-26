@@ -127,9 +127,9 @@ class WindViewModel(application: Application) : AndroidViewModel(application) {
     fun formatDayLabel(iso: String): String = try {
         val d = LocalDate.parse(iso)
         val today = LocalDate.now()
-        when {
-            d == today -> "Oggi"
-            d == today.plusDays(1) -> "Dom"
+        when (d) {
+            today -> "Oggi"
+            today.plusDays(1) -> "Domani"
             else -> d.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
                 .replaceFirstChar { it.uppercase() } + " ${d.dayOfMonth}"
         }
