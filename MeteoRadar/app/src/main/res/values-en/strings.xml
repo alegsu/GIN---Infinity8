@@ -5,7 +5,20 @@
     <string name="nav_previsioni">Forecast</string>
     <string name="nav_7giorni">7 Days</string>
     <string name="nav_analisi">Analysis</string>
+    <string name="nav_vento">Wind</string>
     <string name="nav_monitor">Monitor</string>
+
+    <!-- Wind tab -->
+    <string name="wind_summary_title">Summary %s</string>
+    <string name="wind_avg">Avg wind</string>
+    <string name="wind_max_gust">Max gust</string>
+    <string name="wind_temp_range">Temp.</string>
+    <string name="wind_col_time">Time</string>
+    <string name="wind_col_temp">Temp</string>
+    <string name="wind_col_speed">Wind</string>
+    <string name="wind_col_dir">Dir</string>
+    <string name="wind_col_gust">Gust</string>
+
     <string name="nav_impostazioni">Settings</string>
     <string name="nav_guida">Guide</string>
 

@@ -5,7 +5,20 @@
     <string name="nav_previsioni">Vorhersage</string>
     <string name="nav_7giorni">7 Tage</string>
     <string name="nav_analisi">Analyse</string>
+    <string name="nav_vento">Wind</string>
     <string name="nav_monitor">Monitor</string>
+
+    <!-- Wind tab -->
+    <string name="wind_summary_title">Zusammenfassung %s</string>
+    <string name="wind_avg">Ø Wind</string>
+    <string name="wind_max_gust">Max. Böe</string>
+    <string name="wind_temp_range">Temp.</string>
+    <string name="wind_col_time">Zeit</string>
+    <string name="wind_col_temp">Temp</string>
+    <string name="wind_col_speed">Wind</string>
+    <string name="wind_col_dir">Richt.</string>
+    <string name="wind_col_gust">Böe</string>
+
     <string name="nav_impostazioni">Einstellungen</string>
     <string name="nav_guida">Handbuch</string>
 

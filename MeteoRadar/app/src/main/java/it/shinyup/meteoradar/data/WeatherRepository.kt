@@ -66,6 +66,11 @@ class WeatherRepository {
             openMeteoApi.getModelComparison(latitude, longitude)
         }
 
+    suspend fun getHourlyWind(latitude: Double, longitude: Double): Result<WindForecastResponse> =
+        runCatching {
+            openMeteoApi.getHourlyWind(latitude, longitude)
+        }
+
     suspend fun getPastDaysData(latitude: Double, longitude: Double): Result<OpenMeteoResponse> =
         runCatching {
             openMeteoApi.getPastDaysData(latitude, longitude)

@@ -12,6 +12,10 @@
         android:name="it.shinyup.meteoradar.ui.daily.DailyFragment"
         android:label="@string/nav_7giorni" />
 
+    <fragment android:id="@+id/windFragment"
+        android:name="it.shinyup.meteoradar.ui.wind.WindFragment"
+        android:label="@string/nav_vento" />
+
     <fragment android:id="@+id/analysisFragment"
         android:name="it.shinyup.meteoradar.ui.analysis.AnalysisFragment"
         android:label="@string/nav_analisi" />

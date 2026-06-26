@@ -6,7 +6,19 @@
     <string name="nav_previsioni">Previsioni</string>
     <string name="nav_7giorni">7 Giorni</string>
     <string name="nav_analisi">Analisi</string>
+    <string name="nav_vento">Vento</string>
     <string name="nav_monitor">Monitor</string>
+
+    <!-- Wind tab -->
+    <string name="wind_summary_title">Riepilogo %s</string>
+    <string name="wind_avg">Vento medio</string>
+    <string name="wind_max_gust">Raffica max</string>
+    <string name="wind_temp_range">Temp.</string>
+    <string name="wind_col_time">Ora</string>
+    <string name="wind_col_temp">Temp</string>
+    <string name="wind_col_speed">Vento</string>
+    <string name="wind_col_dir">Dir</string>
+    <string name="wind_col_gust">Raff.</string>
     <string name="nav_impostazioni">Impostazioni</string>
     <string name="nav_guida">Guida</string>
 
