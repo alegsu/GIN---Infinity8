@@ -14,7 +14,8 @@ data class WindHourItem(
     val temperature: Double,
     val windSpeed: Double,
     val windDirection: Double,
-    val windGusts: Double
+    val windGusts: Double,
+    val isCurrentHour: Boolean = false
 )
 
 class WindHourAdapter : RecyclerView.Adapter<WindHourAdapter.ViewHolder>() {
@@ -41,6 +42,8 @@ class WindHourAdapter : RecyclerView.Adapter<WindHourAdapter.ViewHolder>() {
         return ViewHolder(view)
     }
 
+    fun currentHourPosition(): Int = items.indexOfFirst { it.isCurrentHour }
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
 
@@ -53,6 +56,15 @@ class WindHourAdapter : RecyclerView.Adapter<WindHourAdapter.ViewHolder>() {
         val color = speedColor(item.windSpeed)
         holder.strip.setBackgroundColor(color)
         holder.tvSpeed.setTextColor(color)
+
+        if (item.isCurrentHour) {
+            holder.itemView.setBackgroundColor(Color.parseColor("#1A42A5F5"))
+            holder.tvTime.setTextColor(Color.parseColor("#42A5F5"))
+            holder.tvTime.text = "▸ ${item.time}"
+        } else {
+            holder.itemView.setBackgroundColor(Color.TRANSPARENT)
+            holder.tvTime.setTextColor(Color.parseColor("#8B949E"))
+        }
     }
 
     override fun getItemCount() = items.size

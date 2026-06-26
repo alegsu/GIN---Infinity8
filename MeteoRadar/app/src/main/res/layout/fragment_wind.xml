@@ -151,6 +151,42 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Wind speed color scale -->
+            <LinearLayout
+                android:id="@+id/layoutWindScale"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:paddingVertical="6dp"
+                android:layout_marginBottom="4dp"
+                android:visibility="gone">
+
+                <View android:layout_width="12dp" android:layout_height="12dp"
+                    android:background="#66BB6A" android:layout_marginEnd="3dp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="&lt; 15" android:textColor="@color/text_secondary" android:textSize="10sp"
+                    android:layout_marginEnd="12dp" />
+
+                <View android:layout_width="12dp" android:layout_height="12dp"
+                    android:background="#FFC107" android:layout_marginEnd="3dp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="15–25" android:textColor="@color/text_secondary" android:textSize="10sp"
+                    android:layout_marginEnd="12dp" />
+
+                <View android:layout_width="12dp" android:layout_height="12dp"
+                    android:background="#FF9800" android:layout_marginEnd="3dp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="25–40" android:textColor="@color/text_secondary" android:textSize="10sp"
+                    android:layout_marginEnd="12dp" />
+
+                <View android:layout_width="12dp" android:layout_height="12dp"
+                    android:background="#F44336" android:layout_marginEnd="3dp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="&gt; 40 km/h" android:textColor="@color/text_secondary" android:textSize="10sp" />
+
+            </LinearLayout>
+
             <!-- Column header -->
             <LinearLayout
                 android:id="@+id/layoutHeader"

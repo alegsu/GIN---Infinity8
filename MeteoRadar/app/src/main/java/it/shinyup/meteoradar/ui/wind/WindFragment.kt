@@ -96,6 +96,7 @@ class WindFragment : Fragment() {
             binding.tvMaxGust.text = "${summary.maxGust} km/h"
             binding.tvTempRange.text = "${summary.tempMin}°/${summary.tempMax}°"
             binding.cardSummary.visibility = View.VISIBLE
+            binding.layoutWindScale.visibility = View.VISIBLE
             binding.layoutHeader.visibility = View.VISIBLE
             binding.cardWindList.visibility = View.VISIBLE
         }
@@ -103,6 +104,14 @@ class WindFragment : Fragment() {
         for (i in 0 until binding.chipGroupDay.childCount) {
             val chip = binding.chipGroupDay.getChildAt(i) as? Chip
             chip?.isChecked = chip?.tag == day
+        }
+
+        val currentPos = adapter.currentHourPosition()
+        if (currentPos >= 0) {
+            binding.rvWind.post {
+                (binding.rvWind.layoutManager as? LinearLayoutManager)
+                    ?.scrollToPositionWithOffset(currentPos, 0)
+            }
         }
     }
 
