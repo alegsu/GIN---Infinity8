@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.TextStyle
 import java.util.Locale
 import kotlin.math.roundToInt
@@ -102,13 +103,17 @@ class WindViewModel(application: Application) : AndroidViewModel(application) {
 
     fun getHoursForDay(day: String): List<WindHourItem> {
         val data = cachedData ?: return emptyList()
+        val nowHour = LocalDateTime.now().hour
+        val isToday = day == LocalDate.now().toString()
         return data.time.indices.filter { data.time[it].startsWith(day) }.map { i ->
+            val hour = data.time[i].substringAfter("T").take(2).toIntOrNull() ?: -1
             WindHourItem(
                 time = data.time[i].substringAfter("T").take(5),
                 temperature = data.temperature[i],
                 windSpeed = data.windSpeed[i],
                 windDirection = data.windDirection[i],
-                windGusts = data.windGusts[i]
+                windGusts = data.windGusts[i],
+                isCurrentHour = isToday && hour == nowHour
             )
         }
     }
