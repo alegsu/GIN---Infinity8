@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/radarFragment"    android:icon="@drawable/ic_radar"    android:title="@string/nav_previsioni" />
     <item android:id="@+id/dailyFragment"    android:icon="@drawable/ic_calendar" android:title="@string/nav_7giorni" />
+    <item android:id="@+id/windFragment"     android:icon="@drawable/ic_wind"     android:title="@string/nav_vento" />
     <item android:id="@+id/analysisFragment" android:icon="@drawable/ic_history"  android:title="@string/nav_analisi" />
     <item android:id="@+id/monitorFragment"  android:icon="@drawable/ic_monitor"  android:title="@string/nav_monitor" />
-    <item android:id="@+id/settingsFragment" android:icon="@drawable/ic_settings" android:title="@string/nav_impostazioni" />
 </menu>

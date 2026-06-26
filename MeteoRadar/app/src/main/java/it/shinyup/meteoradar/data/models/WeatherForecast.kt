@@ -47,6 +47,20 @@ data class DailyData(
     @SerializedName("relative_humidity_2m_max") val humidityMax: List<Int>?
 )
 
+data class WindForecastResponse(
+    val latitude: Double,
+    val longitude: Double,
+    val hourly: HourlyWindData?
+)
+
+data class HourlyWindData(
+    val time: List<String>,
+    @SerializedName("wind_speed_10m") val windSpeed: List<Double>,
+    @SerializedName("wind_direction_10m") val windDirection: List<Int>,
+    @SerializedName("windgusts_10m") val windGusts: List<Double>,
+    @SerializedName("temperature_2m") val temperature: List<Double>
+)
+
 /** Response from multi-model comparison endpoint */
 data class ModelComparisonResponse(
     val daily: ModelComparisonDaily?

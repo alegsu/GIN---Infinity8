@@ -2,6 +2,7 @@ package it.shinyup.meteoradar.data.api
 
 import it.shinyup.meteoradar.data.models.ModelComparisonResponse
 import it.shinyup.meteoradar.data.models.OpenMeteoResponse
+import it.shinyup.meteoradar.data.models.WindForecastResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -52,6 +53,16 @@ interface OpenMeteoApi {
         @Query("timezone") timezone: String = "auto",
         @Query("forecast_days") forecastDays: Int = 7
     ): ModelComparisonResponse
+
+    @GET("v1/forecast")
+    suspend fun getHourlyWind(
+        @Query("latitude") latitude: Double,
+        @Query("longitude") longitude: Double,
+        @Query("hourly") hourly: String =
+            "wind_speed_10m,wind_direction_10m,windgusts_10m,temperature_2m",
+        @Query("timezone") timezone: String = "auto",
+        @Query("forecast_days") forecastDays: Int = 7
+    ): WindForecastResponse
 
     companion object {
         const val BASE_URL = "https://api.open-meteo.com/"
