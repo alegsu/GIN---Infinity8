@@ -163,10 +163,10 @@ class WeatherRepository {
         if (maxScore == 0) return emptyList()
 
         val level = when {
-            maxScore >= 7 -> AlertLevel.EXTREME
-            maxScore >= 5 -> AlertLevel.DANGER
-            maxScore >= 3 -> AlertLevel.WARNING
-            else          -> AlertLevel.INFO
+            maxScore >= 10 -> AlertLevel.EXTREME
+            maxScore >= 7  -> AlertLevel.DANGER
+            maxScore >= 4  -> AlertLevel.WARNING
+            else           -> AlertLevel.INFO
         }
 
         val type = when {

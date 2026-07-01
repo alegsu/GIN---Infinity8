@@ -30,18 +30,13 @@ class WeatherAlertWorker(context: Context, params: WorkerParameters) : Coroutine
         if (!prefs.getBoolean(Prefs.NOTIFICATIONS_ENABLED, true)) return Result.success()
 
         val radius = prefs.getString(Prefs.RADIUS_KM, "0")?.toIntOrNull() ?: 0
-        val threshold = prefs.getString(Prefs.ALERT_THRESHOLD, "3")?.toIntOrNull() ?: 3
+        val threshold = prefs.getString(Prefs.ALERT_THRESHOLD, "4")?.toIntOrNull() ?: 4
 
         val useGps = prefs.getBoolean(Prefs.USE_GPS, true)
         val location = if (useGps) LocationHelper.getCurrentLocation(applicationContext) else null
 
         if (useGps && location == null) {
-            checkFavoriteCityAlerts(prefs, when {
-                threshold >= 7 -> AlertLevel.EXTREME
-                threshold >= 5 -> AlertLevel.DANGER
-                threshold >= 3 -> AlertLevel.WARNING
-                else           -> AlertLevel.INFO
-            })
+            checkFavoriteCityAlerts(prefs, thresholdLevel(threshold))
             return Result.success()
         }
 
@@ -72,20 +67,18 @@ class WeatherAlertWorker(context: Context, params: WorkerParameters) : Coroutine
         val alerts = repository.assessAlerts(merged, lat, lon)
 
         // Only notify if score-derived level meets user's threshold
-        val thresholdLevel = when {
-            threshold >= 7 -> AlertLevel.EXTREME
-            threshold >= 5 -> AlertLevel.DANGER
-            threshold >= 3 -> AlertLevel.WARNING
-            else           -> AlertLevel.INFO
-        }
+        val level = thresholdLevel(threshold)
 
         val cutoff = System.currentTimeMillis() - 2 * 60 * 60 * 1000L
         val recentAlerts = dao.getAlertsSince(cutoff)
 
         for (alert in alerts) {
             dao.insert(alert)
-            val meetsThreshold = alert.level.ordinal >= thresholdLevel.ordinal
-            val notRecentlySent = recentAlerts.none { it.level.ordinal >= alert.level.ordinal }
+            val meetsThreshold = alert.level.ordinal >= level.ordinal
+            // Dedup per location so different cities don't suppress each other
+            val notRecentlySent = recentAlerts.none {
+                sameLocation(it, alert) && it.level.ordinal >= alert.level.ordinal
+            }
             if (meetsThreshold && notRecentlySent) {
                 NotificationHelper.sendAlertNotification(applicationContext, alert)
             }
@@ -94,14 +87,27 @@ class WeatherAlertWorker(context: Context, params: WorkerParameters) : Coroutine
         dao.deleteOlderThan(System.currentTimeMillis() - 48 * 60 * 60 * 1000L)
 
         // Check favorite cities for alerts
-        checkFavoriteCityAlerts(prefs, thresholdLevel)
+        checkFavoriteCityAlerts(prefs, level)
 
         return Result.success()
     }
 
+    private fun thresholdLevel(threshold: Int): AlertLevel = when {
+        threshold >= 10 -> AlertLevel.EXTREME
+        threshold >= 7  -> AlertLevel.DANGER
+        threshold >= 4  -> AlertLevel.WARNING
+        else            -> AlertLevel.INFO
+    }
+
+    /** True when two alerts refer to roughly the same place (~5 km). */
+    private fun sameLocation(a: it.shinyup.meteoradar.data.models.WeatherAlert,
+                             b: it.shinyup.meteoradar.data.models.WeatherAlert): Boolean =
+        kotlin.math.abs(a.latitude - b.latitude) < 0.05 &&
+        kotlin.math.abs(a.longitude - b.longitude) < 0.05
+
     private suspend fun checkFavoriteCityAlerts(
         prefs: android.content.SharedPreferences,
-        thresholdLevel: AlertLevel
+        minLevel: AlertLevel
     ) {
         val favorites = listOf(
             Triple(Prefs.FAVORITE_1_LAT, Prefs.FAVORITE_1_LON, Prefs.FAVORITE_1_NAME),
@@ -125,8 +131,11 @@ class WeatherAlertWorker(context: Context, params: WorkerParameters) : Coroutine
                     title = "$cityName: ${alert.title}"
                 )
                 dao.insert(prefixedAlert)
-                val meetsThreshold = prefixedAlert.level.ordinal >= thresholdLevel.ordinal
-                val notRecentlySent = recentAlerts.none { it.level.ordinal >= prefixedAlert.level.ordinal }
+                val meetsThreshold = prefixedAlert.level.ordinal >= minLevel.ordinal
+                // Dedup per location so this city isn't suppressed by another city's alert
+                val notRecentlySent = recentAlerts.none {
+                    sameLocation(it, prefixedAlert) && it.level.ordinal >= prefixedAlert.level.ordinal
+                }
                 if (meetsThreshold && notRecentlySent) {
                     NotificationHelper.sendAlertNotification(applicationContext, prefixedAlert)
                 }
