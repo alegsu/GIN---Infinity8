@@ -228,11 +228,11 @@ class RadarFragment : Fragment() {
     }
 
     private fun scoreToDisplay(score: Int): Pair<String, Int> = when {
-        score >= 7 -> getString(R.string.risk_extreme)  to Color.parseColor("#9C27B0")
-        score >= 5 -> getString(R.string.risk_danger)   to Color.parseColor("#F44336")
-        score >= 3 -> getString(R.string.risk_moderate)  to Color.parseColor("#FF9800")
-        score >= 1 -> getString(R.string.risk_possible)  to Color.parseColor("#FFC107")
-        else       -> getString(R.string.risk_low)       to Color.parseColor("#4CAF50")
+        score >= 10 -> getString(R.string.risk_extreme)   to Color.parseColor("#9C27B0")
+        score >= 7  -> getString(R.string.risk_danger)    to Color.parseColor("#F44336")
+        score >= 4  -> getString(R.string.risk_moderate)  to Color.parseColor("#FF9800")
+        score >= 1  -> getString(R.string.risk_possible)  to Color.parseColor("#FFC107")
+        else        -> getString(R.string.risk_low)       to Color.parseColor("#4CAF50")
     }
 
     override fun onDestroyView() {

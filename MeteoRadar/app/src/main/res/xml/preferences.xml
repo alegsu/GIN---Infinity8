@@ -100,7 +100,7 @@
             android:summary="@string/pref_alert_threshold_summary"
             android:entries="@array/threshold_entries"
             android:entryValues="@array/threshold_values"
-            android:defaultValue="3"
+            android:defaultValue="4"
             app:useSimpleSummaryProvider="true" />
 
         <SwitchPreferenceCompat
