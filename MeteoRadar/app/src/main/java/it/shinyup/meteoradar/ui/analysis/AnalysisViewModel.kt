@@ -14,6 +14,7 @@ import it.shinyup.meteoradar.data.models.DailyData
 import it.shinyup.meteoradar.data.models.WeatherCode
 import it.shinyup.meteoradar.utils.GeocoderHelper
 import it.shinyup.meteoradar.utils.Prefs
+import it.shinyup.meteoradar.utils.SnapshotHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -74,7 +75,16 @@ class AnalysisViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch {
             _isLoading.value = true
 
+            // Keep the CURRENT location fresh so evolution/monitor don't stall
+            val city = withContext(Dispatchers.IO) {
+                GeocoderHelper.cityName(getApplication(), lat, lon)
+            }
+            SnapshotHelper.fetchAndSave(getApplication(), repository, lat, lon, city)
+
             saveFavoriteCitySnapshots()
+
+            // Reload evolution now that fresh snapshots (incl. current location) exist
+            loadEvolution()
 
             repository.getPastDaysData(lat, lon).onSuccess { response ->
                 val daily = response.daily ?: return@onSuccess
@@ -91,9 +101,6 @@ class AnalysisViewModel(application: Application) : AndroidViewModel(application
     }
 
     private suspend fun saveFavoriteCitySnapshots() {
-        val dao = AppDatabase.getInstance(getApplication()).snapshotDao()
-
-        // Process both favorite slots
         val favorites = listOf(
             Triple(Prefs.FAVORITE_1_LAT, Prefs.FAVORITE_1_LON, Prefs.FAVORITE_1_NAME),
             Triple(Prefs.FAVORITE_2_LAT, Prefs.FAVORITE_2_LON, Prefs.FAVORITE_2_NAME)
@@ -108,33 +115,7 @@ class AnalysisViewModel(application: Application) : AndroidViewModel(application
                     GeocoderHelper.cityName(getApplication(), favLat, favLon)
                 }
 
-            val lastFetch = dao.getLastFetchTimeForLocation(cityName) ?: 0L
-            if (System.currentTimeMillis() - lastFetch < 1 * 60 * 60 * 1000L) continue
-
-            val result = repository.getDailyForecast(favLat, favLon)
-            val daily = result.getOrNull()?.daily ?: continue
-
-            val fetchedAt = System.currentTimeMillis()
-            val snapshots = daily.time.indices.mapNotNull { i ->
-                val date = daily.time.getOrNull(i) ?: return@mapNotNull null
-                ForecastSnapshot(
-                    fetchedAt = fetchedAt,
-                    targetDate = date,
-                    locationName = cityName,
-                    minTemp = daily.temperatureMin.getOrElse(i) { 0.0 },
-                    maxTemp = daily.temperatureMax.getOrElse(i) { 0.0 },
-                    weatherCode = daily.weatherCode.getOrElse(i) { 0 },
-                    precipProb = daily.precipitationProbabilityMax.getOrElse(i) { 0 },
-                    precipSum = daily.precipitationSum.getOrElse(i) { 0.0 },
-                    apparentTempMax = daily.apparentTemperatureMax?.getOrElse(i) { 0.0 } ?: 0.0,
-                    apparentTempMin = daily.apparentTemperatureMin?.getOrElse(i) { 0.0 } ?: 0.0,
-                    windSpeedMax = daily.windSpeedMax?.getOrElse(i) { 0.0 } ?: 0.0,
-                    humidityMax = daily.humidityMax?.getOrElse(i) { 0 } ?: 0
-                )
-            }
-            if (snapshots.isNotEmpty()) {
-                dao.insertAll(snapshots)
-            }
+            SnapshotHelper.fetchAndSave(getApplication(), repository, favLat, favLon, cityName)
         }
     }
 
