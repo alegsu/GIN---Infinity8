@@ -126,6 +126,9 @@
     <string name="monitor_notif_on">Les notifications de variation sont actives (seuil ±%s°)</string>
     <string name="monitor_notif_off">Les notifications de variation sont désactivées. Activez-les dans les Paramètres.</string>
 
+    <string name="radar_title">Radar</string>
+    <string name="radar_opacity">Opacité</string>
+
     <string name="city_search_title">Rechercher une ville</string>
     <string name="city_search_hint">Nom de la ville…</string>
     <string name="city_not_found">Aucune ville trouvée</string>

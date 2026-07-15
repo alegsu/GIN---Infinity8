@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <link rel="stylesheet" href="leaflet/leaflet.css" />
+  <script src="leaflet/leaflet.js"></script>
+  <style>
+    html, body, #map { height: 100%; margin: 0; padding: 0; background: #0D1117; }
+    #map { width: 100%; }
+    .leaflet-container { background: #0D1117; }
+    #hint {
+      position: absolute; left: 8px; bottom: 8px; z-index: 1000;
+      background: rgba(13,17,23,0.78); color: #E6EDF3;
+      font: 11px sans-serif; padding: 4px 8px; border-radius: 6px;
+      max-width: 70%; pointer-events: none;
+    }
+    .leaflet-control-attribution { font-size: 9px; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div id="hint">Radar: Dip. Protezione Civile · Mappa: © OpenStreetMap</div>
+
+  <script>
+    // ---- Config -------------------------------------------------------------
+    // DPC Radar-DPC v2 GeoWebCache WMS endpoint (open access, no key).
+    // Layer names follow the product codes; adjust here if GetCapabilities
+    // exposes a workspace prefix (e.g. "radar:VMI").
+    var DPC_WMS = "https://radar-geowebcache.protezionecivile.it/service/wms";
+
+    var map = L.map('map', { zoomControl: true, attributionControl: true })
+                .setView([42.5, 12.5], 6); // Italy fallback
+
+    // Base map
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    var radarLayer = null;
+    var currentProduct = 'VMI';
+    var currentOpacity = 0.72;
+
+    function buildRadar(product) {
+      return L.tileLayer.wms(DPC_WMS, {
+        layers: product,
+        format: 'image/png',
+        transparent: true,
+        version: '1.1.1',
+        opacity: currentOpacity,
+        attribution: 'Radar © Dipartimento Protezione Civile'
+      });
+    }
+
+    function setProduct(product) {
+      currentProduct = product;
+      if (radarLayer) { map.removeLayer(radarLayer); }
+      radarLayer = buildRadar(product);
+      radarLayer.on('tileerror', function () {
+        document.getElementById('hint').textContent =
+          'Layer "' + product + '" non disponibile. Riprova o cambia prodotto.';
+      });
+      radarLayer.addTo(map);
+    }
+
+    function setOpacity(v) {
+      currentOpacity = v;
+      if (radarLayer) radarLayer.setOpacity(v);
+    }
+
+    function refresh() {
+      // Force reload of the overlay (cache-buster on the same product)
+      setProduct(currentProduct);
+    }
+
+    var meMarker = null, meCircle = null;
+    function setMyLocation(lat, lon, zoom) {
+      if (isNaN(lat) || isNaN(lon)) return;
+      map.setView([lat, lon], zoom || 8);
+      if (meMarker) map.removeLayer(meMarker);
+      if (meCircle) map.removeLayer(meCircle);
+      meCircle = L.circle([lat, lon], { radius: 3000, color: '#42A5F5', weight: 1, fillOpacity: 0.08 }).addTo(map);
+      meMarker = L.circleMarker([lat, lon], {
+        radius: 6, color: '#ffffff', weight: 2, fillColor: '#42A5F5', fillOpacity: 1
+      }).addTo(map);
+    }
+
+    // Initial radar layer
+    setProduct(currentProduct);
+  </script>
+</body>
+</html>

@@ -126,6 +126,9 @@
     <string name="monitor_notif_on">Change notifications are active (threshold ±%s°)</string>
     <string name="monitor_notif_off">Change notifications are disabled. Enable them in Settings.</string>
 
+    <string name="radar_title">Radar</string>
+    <string name="radar_opacity">Opacity</string>
+
     <string name="city_search_title">Search city</string>
     <string name="city_search_hint">City name…</string>
     <string name="city_not_found">No city found</string>
