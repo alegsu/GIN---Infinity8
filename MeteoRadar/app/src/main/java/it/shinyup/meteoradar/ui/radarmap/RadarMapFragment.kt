@@ -23,19 +23,19 @@ class RadarMapFragment : Fragment() {
     private val binding get() = _binding!!
 
     private var pageReady = false
-    private var selectedProduct = "VMI"
+    private var selectedProduct = "radar:vmi"
 
-    /** DPC Radar-DPC v2 products. code = WMS layer name, label shown on chip. */
+    /** DPC Radar-DPC v2 products. code = GeoServer WMS layer name (radar: workspace). */
     private data class Product(val code: String, val label: String)
 
     private val products = listOf(
-        Product("VMI", "Riflettività"),
-        Product("SRI", "Pioggia"),
-        Product("POH", "Grandine"),
-        Product("CUM3", "Cum. 3h"),
-        Product("CUM6", "Cum. 6h"),
-        Product("CUM24", "Cum. 24h"),
-        Product("TEMP", "Temperatura")
+        Product("radar:vmi", "Riflettività"),
+        Product("radar:sri", "Pioggia"),
+        Product("radar:poh", "Grandine"),
+        Product("radar:cum3", "Cum. 3h"),
+        Product("radar:cum6", "Cum. 6h"),
+        Product("radar:cum24", "Cum. 24h"),
+        Product("radar:temp", "Temperatura")
     )
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

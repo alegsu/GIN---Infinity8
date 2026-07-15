@@ -24,10 +24,11 @@
 
   <script>
     // ---- Config -------------------------------------------------------------
-    // DPC Radar-DPC v2 GeoWebCache WMS endpoint (open access, no key).
-    // Layer names follow the product codes; adjust here if GetCapabilities
-    // exposes a workspace prefix (e.g. "radar:VMI").
-    var DPC_WMS = "https://radar-geowebcache.protezionecivile.it/service/wms";
+    // DPC Radar-DPC v2. We use the GeoServer OWS/WMS endpoint (open access, no
+    // key) because it reprojects on the fly to the map CRS (EPSG:3857), unlike
+    // the GeoWebCache tile cache which serves a fixed EPSG:4326 gridset.
+    // Layer names use the "radar:" workspace prefix, lowercase (e.g. radar:vmi).
+    var DPC_WMS = "https://radar-geoserver.protezionecivile.it/ows";
 
     var map = L.map('map', { zoomControl: true, attributionControl: true })
                 .setView([42.5, 12.5], 6); // Italy fallback
@@ -39,7 +40,7 @@
     }).addTo(map);
 
     var radarLayer = null;
-    var currentProduct = 'VMI';
+    var currentProduct = 'radar:vmi';
     var currentOpacity = 0.72;
 
     function buildRadar(product) {
@@ -57,9 +58,14 @@
       currentProduct = product;
       if (radarLayer) { map.removeLayer(radarLayer); }
       radarLayer = buildRadar(product);
-      radarLayer.on('tileerror', function () {
+      radarLayer.on('tileerror', function (e) {
+        var src = (e && e.tile && e.tile.src) ? e.tile.src : '(url ?)';
         document.getElementById('hint').textContent =
-          'Layer "' + product + '" non disponibile. Riprova o cambia prodotto.';
+          'Radar "' + product + '" non caricato. URL: ' + src;
+      });
+      radarLayer.on('load', function () {
+        document.getElementById('hint').textContent =
+          'Radar: Dip. Protezione Civile · Mappa: © OpenStreetMap';
       });
       radarLayer.addTo(map);
     }
