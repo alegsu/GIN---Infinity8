@@ -126,6 +126,9 @@
     <string name="monitor_notif_on">Änderungsbenachrichtigungen sind aktiv (Schwelle ±%s°)</string>
     <string name="monitor_notif_off">Änderungsbenachrichtigungen sind deaktiviert. Aktivieren Sie sie in den Einstellungen.</string>
 
+    <string name="radar_title">Radar</string>
+    <string name="radar_opacity">Deckkraft</string>
+
     <string name="city_search_title">Stadt suchen</string>
     <string name="city_search_hint">Stadtname…</string>
     <string name="city_not_found">Keine Stadt gefunden</string>

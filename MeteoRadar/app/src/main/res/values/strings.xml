@@ -139,6 +139,10 @@
     <string name="monitor_notif_on">Le notifiche di variazione sono attive (soglia ±%s°)</string>
     <string name="monitor_notif_off">Le notifiche di variazione sono disattivate. Attivale nelle Impostazioni.</string>
 
+    <!-- Radar map -->
+    <string name="radar_title">Radar</string>
+    <string name="radar_opacity">Opacità</string>
+
     <!-- City search -->
     <string name="city_search_title">Cerca città</string>
     <string name="city_search_hint">Nome città…</string>
