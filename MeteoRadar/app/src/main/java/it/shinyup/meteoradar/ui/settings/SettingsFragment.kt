@@ -40,7 +40,13 @@ class SettingsFragment : PreferenceFragmentCompat(), android.content.SharedPrefe
 
         findPreference<ListPreference>(Prefs.CHECK_INTERVAL)?.setOnPreferenceChangeListener { _, _ ->
             (requireContext().applicationContext as MeteoRadarApp).scheduleAlertWorker()
+            it.shinyup.meteoradar.workers.AlarmScheduler.schedule(requireContext())
             Toast.makeText(requireContext(), "Frequenza aggiornata", Toast.LENGTH_SHORT).show()
+            true
+        }
+
+        findPreference<Preference>("battery_optimization")?.setOnPreferenceClickListener {
+            (activity as? it.shinyup.meteoradar.MainActivity)?.openBatteryExemption()
             true
         }
 

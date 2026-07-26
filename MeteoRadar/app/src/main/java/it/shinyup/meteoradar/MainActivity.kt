@@ -1,10 +1,15 @@
 package it.shinyup.meteoradar
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
+import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.result.contract.ActivityResultContracts
@@ -12,6 +17,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import androidx.preference.PreferenceManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import it.shinyup.meteoradar.databinding.ActivityMainBinding
 import it.shinyup.meteoradar.utils.LocaleHelper
 
@@ -40,6 +47,7 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNav.setupWithNavController(navController)
 
         requestNotificationPermissionIfNeeded()
+        maybePromptBatteryExemption()
     }
 
     private fun requestNotificationPermissionIfNeeded() {
@@ -50,6 +58,40 @@ class MainActivity : AppCompatActivity() {
             if (!granted) {
                 notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
+        }
+    }
+
+    /**
+     * Background alert checks are killed by OEM battery management ("deep sleep")
+     * unless the app is exempted from battery optimization. Prompt once.
+     */
+    private fun maybePromptBatteryExemption() {
+        val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
+        if (pm.isIgnoringBatteryOptimizations(packageName)) return
+
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        if (prefs.getBoolean("battery_prompt_shown", false)) return
+        prefs.edit().putBoolean("battery_prompt_shown", true).apply()
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.battery_opt_title)
+            .setMessage(R.string.battery_opt_message)
+            .setPositiveButton(R.string.battery_opt_allow) { _, _ -> openBatteryExemption() }
+            .setNegativeButton(R.string.battery_opt_later, null)
+            .show()
+    }
+
+    @SuppressLint("BatteryLife")
+    fun openBatteryExemption() {
+        try {
+            startActivity(Intent(
+                Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+                Uri.parse("package:$packageName")
+            ))
+        } catch (_: Exception) {
+            try {
+                startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+            } catch (_: Exception) { /* no-op */ }
         }
     }
 

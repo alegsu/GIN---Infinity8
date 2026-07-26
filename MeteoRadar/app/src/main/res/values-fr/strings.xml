@@ -90,6 +90,14 @@
 
     <string name="pref_notifications_enabled">Activer les notifications</string>
     <string name="pref_notifications_enabled_summary">Envoyer des alertes pour des événements météo importants</string>
+    <string name="pref_battery">Notifications en arrière-plan</string>
+    <string name="pref_battery_summary">Autoriser l\'exécution quand l\'app est fermée : indispensable pour recevoir les alertes à temps</string>
+
+    <!-- Battery optimization dialog -->
+    <string name="battery_opt_title">Notifications même app fermée</string>
+    <string name="battery_opt_message">Pour recevoir les alertes grêle et orages même quand l\'app est fermée, autorisez GrandineAlert à ignorer l\'optimisation de la batterie. Sans cela, Android peut bloquer les vérifications en arrière-plan.</string>
+    <string name="battery_opt_allow">Autoriser</string>
+    <string name="battery_opt_later">Plus tard</string>
     <string name="pref_check_interval">Fréquence de vérification</string>
     <string name="pref_check_interval_summary">Fréquence de vérification des conditions météo</string>
     <string name="pref_alert_threshold">Seuil d\'alerte</string>

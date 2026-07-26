@@ -90,6 +90,14 @@
 
     <string name="pref_notifications_enabled">Benachrichtigungen aktivieren</string>
     <string name="pref_notifications_enabled_summary">Warnungen bei bedeutenden Wetterereignissen senden</string>
+    <string name="pref_battery">Hintergrund-Benachrichtigungen</string>
+    <string name="pref_battery_summary">Ausführung bei geschlossener App erlauben: nötig für rechtzeitige Warnungen</string>
+
+    <!-- Battery optimization dialog -->
+    <string name="battery_opt_title">Benachrichtigungen auch bei geschlossener App</string>
+    <string name="battery_opt_message">Um Hagel- und Gewitterwarnungen auch bei geschlossener App zu erhalten, erlaube GrandineAlert, die Akku-Optimierung zu ignorieren. Andernfalls kann Android die Hintergrundprüfungen blockieren.</string>
+    <string name="battery_opt_allow">Erlauben</string>
+    <string name="battery_opt_later">Später</string>
     <string name="pref_check_interval">Prüfhäufigkeit</string>
     <string name="pref_check_interval_summary">Wie oft die Wetterbedingungen prüfen</string>
     <string name="pref_alert_threshold">Warnschwelle</string>

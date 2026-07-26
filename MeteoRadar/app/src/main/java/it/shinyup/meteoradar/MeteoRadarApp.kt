@@ -16,6 +16,8 @@ class MeteoRadarApp : Application() {
         NotificationHelper.createChannels(this)
         scheduleAlertWorker()
         scheduleForecastChangeWorker()
+        // Doze-resilient heartbeat in addition to the periodic worker.
+        it.shinyup.meteoradar.workers.AlarmScheduler.schedule(this)
     }
 
     private fun scheduleForecastChangeWorker() {
