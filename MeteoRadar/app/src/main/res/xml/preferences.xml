@@ -85,6 +85,11 @@
             android:summary="@string/pref_notifications_enabled_summary"
             android:defaultValue="true" />
 
+        <Preference
+            android:key="battery_optimization"
+            android:title="@string/pref_battery"
+            android:summary="@string/pref_battery_summary" />
+
         <ListPreference
             android:key="check_interval_min"
             android:title="@string/pref_check_interval"

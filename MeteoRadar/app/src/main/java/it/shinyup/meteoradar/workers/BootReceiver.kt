@@ -33,5 +33,8 @@ class BootReceiver : BroadcastReceiver() {
             ExistingPeriodicWorkPolicy.KEEP,
             forecastRequest
         )
+
+        // Re-arm the Doze-resilient alarm heartbeat after reboot.
+        AlarmScheduler.schedule(context)
     }
 }

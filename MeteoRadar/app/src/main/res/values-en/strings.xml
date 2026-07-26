@@ -90,6 +90,14 @@
 
     <string name="pref_notifications_enabled">Enable notifications</string>
     <string name="pref_notifications_enabled_summary">Send alerts for significant weather events</string>
+    <string name="pref_battery">Background notifications</string>
+    <string name="pref_battery_summary">Allow running when the app is closed: essential to receive alerts on time</string>
+
+    <!-- Battery optimization dialog -->
+    <string name="battery_opt_title">Notifications even when closed</string>
+    <string name="battery_opt_message">To receive hail and storm alerts even when the app is closed, allow GrandineAlert to ignore battery optimization. Without this, Android may block background checks.</string>
+    <string name="battery_opt_allow">Allow</string>
+    <string name="battery_opt_later">Later</string>
     <string name="pref_check_interval">Check frequency</string>
     <string name="pref_check_interval_summary">How often to check weather conditions</string>
     <string name="pref_alert_threshold">Alert threshold</string>
