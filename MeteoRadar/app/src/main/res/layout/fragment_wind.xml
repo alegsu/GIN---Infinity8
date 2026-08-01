@@ -21,6 +21,33 @@
             android:orientation="vertical"
             android:padding="12dp">
 
+            <!-- Mode toggle: Vento | Humidex -->
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/toggleMode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                app:singleSelection="true"
+                app:selectionRequired="true">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnModeWind"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="@string/nav_vento" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnModeHumidex"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="@string/humidex_title" />
+
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+
             <!-- Location name -->
             <TextView
                 android:id="@+id/tvWindLocation"
@@ -30,7 +57,7 @@
                 android:textSize="12sp"
                 android:layout_marginBottom="8dp" />
 
-            <!-- Day selector chips -->
+            <!-- Day selector chips (shared) -->
             <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -46,193 +73,390 @@
 
             </HorizontalScrollView>
 
-            <!-- Summary card -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardSummary"
+            <!-- ============ WIND SECTION ============ -->
+            <LinearLayout
+                android:id="@+id/windSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:visibility="gone"
-                app:cardBackgroundColor="@color/surface_dark"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="4dp">
+                android:orientation="vertical">
 
-                <LinearLayout
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardSummary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:id="@+id/tvSummaryTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/text_primary"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
+                    android:layout_marginBottom="8dp"
+                    android:visibility="gone"
+                    app:cardBackgroundColor="@color/surface_dark"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginTop="8dp">
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:id="@+id/tvSummaryTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/text_primary"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
 
                         <LinearLayout
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
+                            android:orientation="horizontal"
+                            android:layout_marginTop="8dp">
 
-                            <TextView
-                                android:layout_width="wrap_content"
+                            <LinearLayout
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:text="@string/wind_avg"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="10sp" />
+                                android:layout_weight="1"
+                                android:orientation="vertical">
 
-                            <TextView
-                                android:id="@+id/tvAvgWind"
-                                android:layout_width="wrap_content"
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/wind_avg"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="10sp" />
+
+                                <TextView
+                                    android:id="@+id/tvAvgWind"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="#66BB6A"
+                                    android:textSize="18sp"
+                                    android:textStyle="bold" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:textColor="#66BB6A"
-                                android:textSize="18sp"
-                                android:textStyle="bold" />
+                                android:layout_weight="1"
+                                android:orientation="vertical">
 
-                        </LinearLayout>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/wind_max_gust"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="10sp" />
 
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
+                                <TextView
+                                    android:id="@+id/tvMaxGust"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="#FF9800"
+                                    android:textSize="18sp"
+                                    android:textStyle="bold" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:text="@string/wind_max_gust"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="10sp" />
+                                android:layout_weight="1"
+                                android:orientation="vertical">
 
-                            <TextView
-                                android:id="@+id/tvMaxGust"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textColor="#FF9800"
-                                android:textSize="18sp"
-                                android:textStyle="bold" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/wind_temp_range"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="10sp" />
 
-                        </LinearLayout>
+                                <TextView
+                                    android:id="@+id/tvTempRange"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="18sp"
+                                    android:textStyle="bold" />
 
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/wind_temp_range"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="10sp" />
-
-                            <TextView
-                                android:id="@+id/tvTempRange"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/text_primary"
-                                android:textSize="18sp"
-                                android:textStyle="bold" />
+                            </LinearLayout>
 
                         </LinearLayout>
 
                     </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Wind speed color scale -->
-            <LinearLayout
-                android:id="@+id/layoutWindScale"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:paddingVertical="6dp"
-                android:layout_marginBottom="4dp"
-                android:visibility="gone">
-
-                <View android:layout_width="12dp" android:layout_height="12dp"
-                    android:background="#66BB6A" android:layout_marginEnd="3dp" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="&lt; 15" android:textColor="@color/text_secondary" android:textSize="10sp"
-                    android:layout_marginEnd="12dp" />
-
-                <View android:layout_width="12dp" android:layout_height="12dp"
-                    android:background="#FFC107" android:layout_marginEnd="3dp" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="15–25" android:textColor="@color/text_secondary" android:textSize="10sp"
-                    android:layout_marginEnd="12dp" />
-
-                <View android:layout_width="12dp" android:layout_height="12dp"
-                    android:background="#FF9800" android:layout_marginEnd="3dp" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="25–40" android:textColor="@color/text_secondary" android:textSize="10sp"
-                    android:layout_marginEnd="12dp" />
-
-                <View android:layout_width="12dp" android:layout_height="12dp"
-                    android:background="#F44336" android:layout_marginEnd="3dp" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="&gt; 40 km/h" android:textColor="@color/text_secondary" android:textSize="10sp" />
-
-            </LinearLayout>
-
-            <!-- Column header -->
-            <LinearLayout
-                android:id="@+id/layoutHeader"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingHorizontal="20dp"
-                android:paddingVertical="4dp"
-                android:visibility="gone">
-
-                <TextView android:layout_width="44dp" android:layout_height="wrap_content"
-                    android:text="@string/wind_col_time"
-                    android:textColor="@color/text_secondary" android:textSize="10sp" />
-                <TextView android:layout_width="44dp" android:layout_height="wrap_content"
-                    android:text="@string/wind_col_temp"
-                    android:textColor="@color/text_secondary" android:textSize="10sp" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/wind_col_speed"
-                    android:textColor="@color/text_secondary" android:textSize="10sp" />
-                <TextView android:layout_width="40dp" android:layout_height="wrap_content"
-                    android:text="@string/wind_col_dir"
-                    android:textColor="@color/text_secondary" android:textSize="10sp" android:gravity="center" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="@string/wind_col_gust"
-                    android:textColor="@color/text_secondary" android:textSize="10sp" android:gravity="end" />
-            </LinearLayout>
-
-            <!-- Hourly wind list -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardWindList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:cardBackgroundColor="@color/surface_dark"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvWind"
+                <!-- Wind speed color scale -->
+                <LinearLayout
+                    android:id="@+id/layoutWindScale"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:nestedScrollingEnabled="false"
-                    android:padding="4dp" />
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:paddingVertical="6dp"
+                    android:layout_marginBottom="4dp"
+                    android:visibility="gone">
 
-            </com.google.android.material.card.MaterialCardView>
+                    <View android:layout_width="12dp" android:layout_height="12dp"
+                        android:background="#66BB6A" android:layout_marginEnd="3dp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="&lt; 15" android:textColor="@color/text_secondary" android:textSize="10sp"
+                        android:layout_marginEnd="12dp" />
+
+                    <View android:layout_width="12dp" android:layout_height="12dp"
+                        android:background="#FFC107" android:layout_marginEnd="3dp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="15–25" android:textColor="@color/text_secondary" android:textSize="10sp"
+                        android:layout_marginEnd="12dp" />
+
+                    <View android:layout_width="12dp" android:layout_height="12dp"
+                        android:background="#FF9800" android:layout_marginEnd="3dp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="25–40" android:textColor="@color/text_secondary" android:textSize="10sp"
+                        android:layout_marginEnd="12dp" />
+
+                    <View android:layout_width="12dp" android:layout_height="12dp"
+                        android:background="#F44336" android:layout_marginEnd="3dp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="&gt; 40 km/h" android:textColor="@color/text_secondary" android:textSize="10sp" />
+
+                </LinearLayout>
+
+                <!-- Wind column header -->
+                <LinearLayout
+                    android:id="@+id/layoutHeader"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="20dp"
+                    android:paddingVertical="4dp"
+                    android:visibility="gone">
+
+                    <TextView android:layout_width="44dp" android:layout_height="wrap_content"
+                        android:text="@string/wind_col_time"
+                        android:textColor="@color/text_secondary" android:textSize="10sp" />
+                    <TextView android:layout_width="44dp" android:layout_height="wrap_content"
+                        android:text="@string/wind_col_temp"
+                        android:textColor="@color/text_secondary" android:textSize="10sp" />
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/wind_col_speed"
+                        android:textColor="@color/text_secondary" android:textSize="10sp" />
+                    <TextView android:layout_width="40dp" android:layout_height="wrap_content"
+                        android:text="@string/wind_col_dir"
+                        android:textColor="@color/text_secondary" android:textSize="10sp" android:gravity="center" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="@string/wind_col_gust"
+                        android:textColor="@color/text_secondary" android:textSize="10sp" android:gravity="end" />
+                </LinearLayout>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardWindList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:cardBackgroundColor="@color/surface_dark"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvWind"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"
+                        android:padding="4dp" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+
+            <!-- ============ HUMIDEX SECTION ============ -->
+            <LinearLayout
+                android:id="@+id/humidexSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    app:cardBackgroundColor="@color/surface_dark"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:id="@+id/tvHxSummaryTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/text_primary"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="8dp">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/humidex_max"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="10sp" />
+
+                                <TextView
+                                    android:id="@+id/tvHxMax"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="22sp"
+                                    android:textStyle="bold" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1.4"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/humidex_level"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="10sp" />
+
+                                <TextView
+                                    android:id="@+id/tvHxLevel"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/humidex_avg_hum"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="10sp" />
+
+                                <TextView
+                                    android:id="@+id/tvHxAvgHum"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="18sp"
+                                    android:textStyle="bold" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Humidex color scale -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:paddingVertical="6dp"
+                    android:layout_marginBottom="4dp">
+
+                    <View android:layout_width="12dp" android:layout_height="12dp"
+                        android:background="#66BB6A" android:layout_marginEnd="3dp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="&lt; 30" android:textColor="@color/text_secondary" android:textSize="10sp"
+                        android:layout_marginEnd="10dp" />
+
+                    <View android:layout_width="12dp" android:layout_height="12dp"
+                        android:background="#FFC107" android:layout_marginEnd="3dp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="30–39" android:textColor="@color/text_secondary" android:textSize="10sp"
+                        android:layout_marginEnd="10dp" />
+
+                    <View android:layout_width="12dp" android:layout_height="12dp"
+                        android:background="#FF9800" android:layout_marginEnd="3dp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="40–45" android:textColor="@color/text_secondary" android:textSize="10sp"
+                        android:layout_marginEnd="10dp" />
+
+                    <View android:layout_width="12dp" android:layout_height="12dp"
+                        android:background="#F44336" android:layout_marginEnd="3dp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="46–53" android:textColor="@color/text_secondary" android:textSize="10sp"
+                        android:layout_marginEnd="10dp" />
+
+                    <View android:layout_width="12dp" android:layout_height="12dp"
+                        android:background="#9C27B0" android:layout_marginEnd="3dp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="≥ 54" android:textColor="@color/text_secondary" android:textSize="10sp" />
+
+                </LinearLayout>
+
+                <!-- Humidex column header -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="20dp"
+                    android:paddingVertical="4dp">
+
+                    <TextView android:layout_width="52dp" android:layout_height="wrap_content"
+                        android:text="@string/wind_col_time"
+                        android:textColor="@color/text_secondary" android:textSize="10sp" />
+                    <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+                        android:text="@string/wind_col_temp"
+                        android:textColor="@color/text_secondary" android:textSize="10sp" />
+                    <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+                        android:text="@string/humidex_col_hum"
+                        android:textColor="@color/text_secondary" android:textSize="10sp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="@string/humidex_title"
+                        android:textColor="@color/text_secondary" android:textSize="10sp" android:gravity="end" />
+                </LinearLayout>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardBackgroundColor="@color/surface_dark"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvHumidex"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"
+                        android:padding="4dp" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
 
             <!-- Sources -->
             <TextView

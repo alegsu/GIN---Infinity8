@@ -14,6 +14,7 @@ object Prefs {
     const val SHOW_APPARENT_TEMP = "show_apparent_temp"
     const val SHOW_WIND          = "show_wind"
     const val SHOW_HUMIDITY      = "show_humidity"
+    const val SHOW_HUMIDEX       = "show_humidex"
     const val NOTIFICATIONS_ENABLED = "notifications_enabled"
     const val CHECK_INTERVAL     = "check_interval_min"
     const val ALERT_THRESHOLD    = "alert_threshold"

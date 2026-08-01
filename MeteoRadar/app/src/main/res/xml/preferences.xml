@@ -158,6 +158,12 @@
             android:summary="@string/pref_show_humidity_summary"
             android:defaultValue="false" />
 
+        <SwitchPreferenceCompat
+            android:key="show_humidex"
+            android:title="@string/pref_show_humidex"
+            android:summary="@string/pref_show_humidex_summary"
+            android:defaultValue="false" />
+
     </PreferenceCategory>
 
     <!-- LINGUA -->

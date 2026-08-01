@@ -127,6 +127,8 @@
     <string name="pref_show_wind_summary">Show max wind speed in charts</string>
     <string name="pref_show_humidity">Humidity</string>
     <string name="pref_show_humidity_summary">Show max relative humidity in charts</string>
+    <string name="pref_show_humidex">Humidex</string>
+    <string name="pref_show_humidex_summary">Show the Humidex index (perceived heat) in evolution charts</string>
 
     <string name="monitor_title">Temperature Monitor</string>
     <string name="monitor_subtitle">Changes detected in upcoming forecasts, comparing successive readings from ECMWF, GFS, ICON, ICON-EU and ICON-D2 (COSMO).</string>
@@ -136,6 +138,18 @@
 
     <string name="radar_title">Radar</string>
     <string name="radar_opacity">Opacity</string>
+
+    <string name="humidex_title">Humidex</string>
+    <string name="humidex_summary_title">Humidex %s</string>
+    <string name="humidex_max">Humidex max</string>
+    <string name="humidex_level">Level</string>
+    <string name="humidex_avg_hum">Avg humidity</string>
+    <string name="humidex_col_hum">Humidity</string>
+    <string name="humidex_lvl_0">Comfort</string>
+    <string name="humidex_lvl_1">Some discomfort</string>
+    <string name="humidex_lvl_2">Great discomfort</string>
+    <string name="humidex_lvl_3">Dangerous</string>
+    <string name="humidex_lvl_4">Heat stroke</string>
 
     <string name="city_search_title">Search city</string>
     <string name="city_search_hint">City name…</string>
