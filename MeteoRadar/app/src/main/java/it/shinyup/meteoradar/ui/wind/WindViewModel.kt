@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.preference.PreferenceManager
 import it.shinyup.meteoradar.data.WeatherRepository
+import it.shinyup.meteoradar.data.models.CurrentWind
 import it.shinyup.meteoradar.data.models.HourlyWindData
 import it.shinyup.meteoradar.utils.GeocoderHelper
 import it.shinyup.meteoradar.utils.HumidexUtil
@@ -56,6 +57,7 @@ class WindViewModel(application: Application) : AndroidViewModel(application) {
     val selectedDay: LiveData<String> = _selectedDay
 
     private var cachedData: HourlyWindData? = null
+    private var cachedCurrent: CurrentWind? = null
     private var lastFetchMs = 0L
 
     fun loadData(location: Location?) {
@@ -86,6 +88,7 @@ class WindViewModel(application: Application) : AndroidViewModel(application) {
                 val hourly = response.hourly
                 if (hourly != null) {
                     cachedData = hourly
+                    cachedCurrent = response.current
                     lastFetchMs = System.currentTimeMillis()
                     _windData.value = Result.success(hourly)
 
@@ -139,13 +142,24 @@ class WindViewModel(application: Application) : AndroidViewModel(application) {
 
     fun getHumidexHoursForDay(day: String): List<HumidexHourItem> {
         val data = cachedData ?: return emptyList()
+        val cur = cachedCurrent
         val nowHour = LocalDateTime.now().hour
         val isToday = day == LocalDate.now().toString()
         return data.time.indices.filter { data.time[it].startsWith(day) }.map { i ->
             val hour = data.time[i].substringAfter("T").take(2).toIntOrNull() ?: -1
-            val temp = data.temperature[i]
-            val dew = data.dewPoint?.getOrNull(i)
-            val hum = data.humidity?.getOrNull(i) ?: 0
+            val isCurrentHour = isToday && hour == nowHour
+
+            // For the current hour, prefer Open-Meteo's real-time reading so the
+            // "now" value tracks observations (closer to ARPA stations).
+            var temp = data.temperature[i]
+            var hum = data.humidity?.getOrNull(i) ?: 0
+            var dew = data.dewPoint?.getOrNull(i)
+            if (isCurrentHour && cur?.temperature != null) {
+                temp = cur.temperature
+                cur.humidity?.let { hum = it }
+                dew = cur.dewPoint
+            }
+
             val humidex = if (dew != null) HumidexUtil.fromDewPoint(temp, dew)
                           else HumidexUtil.fromHumidity(temp, hum.toDouble())
             HumidexHourItem(
@@ -153,7 +167,7 @@ class WindViewModel(application: Application) : AndroidViewModel(application) {
                 temperature = temp,
                 humidity = hum,
                 humidex = humidex,
-                isCurrentHour = isToday && hour == nowHour
+                isCurrentHour = isCurrentHour
             )
         }
     }

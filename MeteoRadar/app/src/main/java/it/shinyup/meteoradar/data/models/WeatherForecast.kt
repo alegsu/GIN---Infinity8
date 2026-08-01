@@ -50,7 +50,15 @@ data class DailyData(
 data class WindForecastResponse(
     val latitude: Double,
     val longitude: Double,
-    val hourly: HourlyWindData?
+    val hourly: HourlyWindData?,
+    val current: CurrentWind? = null
+)
+
+data class CurrentWind(
+    val time: String? = null,
+    @SerializedName("temperature_2m") val temperature: Double? = null,
+    @SerializedName("relative_humidity_2m") val humidity: Int? = null,
+    @SerializedName("dew_point_2m") val dewPoint: Double? = null
 )
 
 data class HourlyWindData(
