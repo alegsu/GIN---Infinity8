@@ -61,6 +61,8 @@ interface OpenMeteoApi {
         @Query("hourly") hourly: String =
             "wind_speed_10m,wind_direction_10m,windgusts_10m,temperature_2m," +
             "relative_humidity_2m,dew_point_2m",
+        @Query("current") current: String =
+            "temperature_2m,relative_humidity_2m,dew_point_2m",
         @Query("timezone") timezone: String = "auto",
         @Query("forecast_days") forecastDays: Int = 7
     ): WindForecastResponse
