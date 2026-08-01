@@ -131,7 +131,7 @@ class AnalysisFragment : Fragment() {
             binding.tvEvolutionEmpty.visibility = View.VISIBLE
             binding.tvEvolutionEmpty.text = getString(R.string.evolution_no_data)
             binding.tvSelectedDateLabel.visibility = View.GONE
-            binding.chartView.visibility = View.GONE
+            binding.chartScroll.visibility = View.GONE
             binding.tvChartLegend.visibility = View.GONE
             return
         }
@@ -140,7 +140,7 @@ class AnalysisFragment : Fragment() {
         binding.tvEvolutionEmpty.text = getString(R.string.evolution_need_more)
         binding.tvSelectedDateLabel.visibility = View.VISIBLE
         binding.tvSelectedDateLabel.text = getString(R.string.evolution_selected_date, state.dateLabel)
-        binding.chartView.visibility = if (state.hasEnoughData) View.VISIBLE else View.GONE
+        binding.chartScroll.visibility = if (state.hasEnoughData) View.VISIBLE else View.GONE
         binding.tvChartLegend.visibility = if (state.hasEnoughData) View.VISIBLE else View.GONE
         binding.tvModelSources.visibility = if (state.hasEnoughData) View.VISIBLE else View.GONE
 
