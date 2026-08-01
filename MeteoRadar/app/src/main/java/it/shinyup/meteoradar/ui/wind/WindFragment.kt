@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.chip.Chip
 import it.shinyup.meteoradar.R
 import it.shinyup.meteoradar.databinding.FragmentWindBinding
+import it.shinyup.meteoradar.utils.HumidexUtil
 import it.shinyup.meteoradar.utils.LocationHelper
 import kotlinx.coroutines.launch
 
@@ -27,6 +28,13 @@ class WindFragment : Fragment() {
 
     private val viewModel: WindViewModel by viewModels()
     private val adapter = WindHourAdapter()
+    private val humidexAdapter = HumidexHourAdapter()
+    private var humidexMode = false
+
+    private val levelLabels = intArrayOf(
+        R.string.humidex_lvl_0, R.string.humidex_lvl_1, R.string.humidex_lvl_2,
+        R.string.humidex_lvl_3, R.string.humidex_lvl_4
+    )
 
     private val locationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -46,6 +54,17 @@ class WindFragment : Fragment() {
 
         binding.rvWind.layoutManager = LinearLayoutManager(requireContext())
         binding.rvWind.adapter = adapter
+        binding.rvHumidex.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvHumidex.adapter = humidexAdapter
+
+        binding.toggleMode.check(R.id.btnModeWind)
+        binding.toggleMode.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (!isChecked) return@addOnButtonCheckedListener
+            humidexMode = checkedId == R.id.btnModeHumidex
+            binding.windSection.visibility = if (humidexMode) View.GONE else View.VISIBLE
+            binding.humidexSection.visibility = if (humidexMode) View.VISIBLE else View.GONE
+            viewModel.selectedDay.value?.let { updateDayView(it) }
+        }
 
         viewModel.isLoading.observe(viewLifecycleOwner) { loading ->
             binding.progressBar.visibility = if (loading) View.VISIBLE else View.GONE
@@ -86,9 +105,9 @@ class WindFragment : Fragment() {
     }
 
     private fun updateDayView(day: String) {
+        // Wind section
         val hours = viewModel.getHoursForDay(day)
         adapter.submitList(hours)
-
         val summary = viewModel.getSummaryForDay(day)
         if (summary != null) {
             binding.tvSummaryTitle.text = getString(R.string.wind_summary_title, viewModel.formatDayLabel(day))
@@ -101,16 +120,30 @@ class WindFragment : Fragment() {
             binding.cardWindList.visibility = View.VISIBLE
         }
 
+        // Humidex section
+        val hxHours = viewModel.getHumidexHoursForDay(day)
+        humidexAdapter.submitList(hxHours)
+        val hx = viewModel.getHumidexSummaryForDay(day)
+        if (hx != null) {
+            val color = HumidexUtil.color(hx.maxHumidex.toDouble())
+            binding.tvHxSummaryTitle.text = getString(R.string.humidex_summary_title, viewModel.formatDayLabel(day))
+            binding.tvHxMax.text = "${hx.maxHumidex}"
+            binding.tvHxMax.setTextColor(color)
+            binding.tvHxLevel.text = getString(levelLabels[hx.levelIndex])
+            binding.tvHxLevel.setTextColor(color)
+            binding.tvHxAvgHum.text = "${hx.avgHumidity}%"
+        }
+
         for (i in 0 until binding.chipGroupDay.childCount) {
             val chip = binding.chipGroupDay.getChildAt(i) as? Chip
             chip?.isChecked = chip?.tag == day
         }
 
-        val currentPos = adapter.currentHourPosition()
+        val rv = if (humidexMode) binding.rvHumidex else binding.rvWind
+        val currentPos = if (humidexMode) humidexAdapter.currentHourPosition() else adapter.currentHourPosition()
         if (currentPos >= 0) {
-            binding.rvWind.post {
-                (binding.rvWind.layoutManager as? LinearLayoutManager)
-                    ?.scrollToPositionWithOffset(currentPos, 0)
+            rv.post {
+                (rv.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(currentPos, 0)
             }
         }
     }

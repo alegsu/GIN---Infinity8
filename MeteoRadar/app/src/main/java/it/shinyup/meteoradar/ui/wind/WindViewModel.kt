@@ -10,6 +10,7 @@ import androidx.preference.PreferenceManager
 import it.shinyup.meteoradar.data.WeatherRepository
 import it.shinyup.meteoradar.data.models.HourlyWindData
 import it.shinyup.meteoradar.utils.GeocoderHelper
+import it.shinyup.meteoradar.utils.HumidexUtil
 import it.shinyup.meteoradar.utils.Prefs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,6 +26,13 @@ data class WindDaySummary(
     val maxGust: Int,
     val tempMin: Int,
     val tempMax: Int
+)
+
+data class HumidexDaySummary(
+    val maxHumidex: Int,
+    val levelIndex: Int,
+    val tempMax: Int,
+    val avgHumidity: Int
 )
 
 class WindViewModel(application: Application) : AndroidViewModel(application) {
@@ -126,6 +134,39 @@ class WindViewModel(application: Application) : AndroidViewModel(application) {
             maxGust = hours.maxOf { it.windGusts }.roundToInt(),
             tempMin = hours.minOf { it.temperature }.roundToInt(),
             tempMax = hours.maxOf { it.temperature }.roundToInt()
+        )
+    }
+
+    fun getHumidexHoursForDay(day: String): List<HumidexHourItem> {
+        val data = cachedData ?: return emptyList()
+        val nowHour = LocalDateTime.now().hour
+        val isToday = day == LocalDate.now().toString()
+        return data.time.indices.filter { data.time[it].startsWith(day) }.map { i ->
+            val hour = data.time[i].substringAfter("T").take(2).toIntOrNull() ?: -1
+            val temp = data.temperature[i]
+            val dew = data.dewPoint?.getOrNull(i)
+            val hum = data.humidity?.getOrNull(i) ?: 0
+            val humidex = if (dew != null) HumidexUtil.fromDewPoint(temp, dew)
+                          else HumidexUtil.fromHumidity(temp, hum.toDouble())
+            HumidexHourItem(
+                time = data.time[i].substringAfter("T").take(5),
+                temperature = temp,
+                humidity = hum,
+                humidex = humidex,
+                isCurrentHour = isToday && hour == nowHour
+            )
+        }
+    }
+
+    fun getHumidexSummaryForDay(day: String): HumidexDaySummary? {
+        val hours = getHumidexHoursForDay(day)
+        if (hours.isEmpty()) return null
+        val maxHx = hours.maxOf { it.humidex }
+        return HumidexDaySummary(
+            maxHumidex = maxHx.roundToInt(),
+            levelIndex = HumidexUtil.levelIndex(maxHx),
+            tempMax = hours.maxOf { it.temperature }.roundToInt(),
+            avgHumidity = hours.map { it.humidity }.average().roundToInt()
         )
     }
 

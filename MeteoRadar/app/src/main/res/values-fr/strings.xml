@@ -127,6 +127,8 @@
     <string name="pref_show_wind_summary">Afficher la vitesse maximale du vent dans les graphiques</string>
     <string name="pref_show_humidity">Humidité</string>
     <string name="pref_show_humidity_summary">Afficher l\'humidité relative maximale dans les graphiques</string>
+    <string name="pref_show_humidex">Humidex</string>
+    <string name="pref_show_humidex_summary">Afficher l\'indice Humidex (chaleur ressentie) dans les graphiques d\'évolution</string>
 
     <string name="monitor_title">Moniteur de Température</string>
     <string name="monitor_subtitle">Variations détectées dans les prévisions des prochains jours, en comparant les relevés successifs d\'ECMWF, GFS, ICON, ICON-EU et ICON-D2 (COSMO).</string>
@@ -136,6 +138,18 @@
 
     <string name="radar_title">Radar</string>
     <string name="radar_opacity">Opacité</string>
+
+    <string name="humidex_title">Humidex</string>
+    <string name="humidex_summary_title">Humidex %s</string>
+    <string name="humidex_max">Humidex max</string>
+    <string name="humidex_level">Niveau</string>
+    <string name="humidex_avg_hum">Humidité moy.</string>
+    <string name="humidex_col_hum">Humidité</string>
+    <string name="humidex_lvl_0">Confort</string>
+    <string name="humidex_lvl_1">Inconfort</string>
+    <string name="humidex_lvl_2">Grand inconfort</string>
+    <string name="humidex_lvl_3">Danger</string>
+    <string name="humidex_lvl_4">Coup de chaleur</string>
 
     <string name="city_search_title">Rechercher une ville</string>
     <string name="city_search_hint">Nom de la ville…</string>

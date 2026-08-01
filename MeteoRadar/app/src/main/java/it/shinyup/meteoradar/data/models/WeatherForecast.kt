@@ -58,7 +58,9 @@ data class HourlyWindData(
     @SerializedName("wind_speed_10m") val windSpeed: List<Double>,
     @SerializedName("wind_direction_10m") val windDirection: List<Double>,
     @SerializedName("windgusts_10m") val windGusts: List<Double>,
-    @SerializedName("temperature_2m") val temperature: List<Double>
+    @SerializedName("temperature_2m") val temperature: List<Double>,
+    @SerializedName("relative_humidity_2m") val humidity: List<Int>? = null,
+    @SerializedName("dew_point_2m") val dewPoint: List<Double>? = null
 )
 
 /** Response from multi-model comparison endpoint */

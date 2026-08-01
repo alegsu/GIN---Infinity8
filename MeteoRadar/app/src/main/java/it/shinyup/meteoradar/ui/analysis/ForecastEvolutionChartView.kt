@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
+import it.shinyup.meteoradar.utils.HumidexUtil
 
 class ForecastEvolutionChartView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
@@ -17,7 +18,8 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
         val apparentMax: Float = 0f,
         val apparentMin: Float = 0f,
         val windSpeed: Float = 0f,
-        val humidity: Int = 0
+        val humidity: Int = 0,
+        val humidex: Float = 0f
     )
     data class ScaleRange(val maxFloor: Float, val maxCeil: Float, val minFloor: Float, val minCeil: Float)
 
@@ -26,6 +28,7 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
     private var showApparentTemp: Boolean = false
     private var showWind: Boolean = false
     private var showHumidity: Boolean = false
+    private var showHumidex: Boolean = false
 
     private val linePaintMax = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#F44336")
@@ -107,6 +110,12 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
         textSize = 32f
         textAlign = Paint.Align.CENTER
     }
+    private val humidexTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#FF7043")
+        textSize = 32f
+        textAlign = Paint.Align.CENTER
+        typeface = Typeface.DEFAULT_BOLD
+    }
 
     fun setScale(scale: ScaleRange?) {
         fixedScale = scale
@@ -117,10 +126,11 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
         invalidate()
     }
 
-    fun setOverlays(apparentTemp: Boolean, wind: Boolean, humidity: Boolean) {
+    fun setOverlays(apparentTemp: Boolean, wind: Boolean, humidity: Boolean, humidex: Boolean = false) {
         showApparentTemp = apparentTemp
         showWind = wind
         showHumidity = humidity
+        showHumidex = humidex
         invalidate()
     }
 
@@ -270,6 +280,7 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
         textPaint.textSize = dynTextSize
         apparentTextPaint.textSize = (dynTextSize * 0.76f)
         humidityTextPaint.textSize = (dynTextSize * 0.76f)
+        humidexTextPaint.textSize  = (dynTextSize * 0.76f)
         windTextPaint.textSize     = (dynTextSize * 0.72f)
 
         points.forEachIndexed { i, p ->
@@ -289,6 +300,12 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
                 if (showApparentTemp) {
                     canvas.drawText("${"%.0f".format(p.apparentMax)}°", x, yMax - 50f, apparentTextPaint)
                     canvas.drawText("${"%.0f".format(p.apparentMin)}°", x, yMin + 76f, apparentTextPaint)
+                }
+
+                if (showHumidex && p.humidex > 0f) {
+                    humidexTextPaint.color = HumidexUtil.color(p.humidex.toDouble())
+                    val hxY = if (showApparentTemp) yMax - 82f else yMax - 50f
+                    canvas.drawText("H${p.humidex.toInt()}", x, hxY, humidexTextPaint)
                 }
 
                 if (showHumidity && p.humidity > 0) {

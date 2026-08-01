@@ -139,6 +139,8 @@
     <string name="pref_show_wind_summary">Mostra la velocità massima del vento nei grafici</string>
     <string name="pref_show_humidity">Umidità</string>
     <string name="pref_show_humidity_summary">Mostra l\'umidità relativa massima nei grafici</string>
+    <string name="pref_show_humidex">Humidex</string>
+    <string name="pref_show_humidex_summary">Mostra l\'indice Humidex (caldo percepito) nei grafici evoluzione</string>
 
     <!-- Monitor tab -->
     <string name="monitor_title">Monitor Temperature</string>
@@ -150,6 +152,19 @@
     <!-- Radar map -->
     <string name="radar_title">Radar</string>
     <string name="radar_opacity">Opacità</string>
+
+    <!-- Humidex -->
+    <string name="humidex_title">Humidex</string>
+    <string name="humidex_summary_title">Humidex %s</string>
+    <string name="humidex_max">Humidex max</string>
+    <string name="humidex_level">Livello</string>
+    <string name="humidex_avg_hum">Umidità media</string>
+    <string name="humidex_col_hum">Umidità</string>
+    <string name="humidex_lvl_0">Benessere</string>
+    <string name="humidex_lvl_1">Disagio</string>
+    <string name="humidex_lvl_2">Molto disagio</string>
+    <string name="humidex_lvl_3">Pericolo</string>
+    <string name="humidex_lvl_4">Colpo di calore</string>
 
     <!-- City search -->
     <string name="city_search_title">Cerca città</string>

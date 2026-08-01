@@ -152,11 +152,13 @@ class AnalysisFragment : Fragment() {
             val showApparent = prefs.getBoolean(Prefs.SHOW_APPARENT_TEMP, false)
             val showWind = prefs.getBoolean(Prefs.SHOW_WIND, false)
             val showHumidity = prefs.getBoolean(Prefs.SHOW_HUMIDITY, false)
-            binding.chartView.setOverlays(showApparent, showWind, showHumidity)
+            val showHumidex = prefs.getBoolean(Prefs.SHOW_HUMIDEX, false)
+            binding.chartView.setOverlays(showApparent, showWind, showHumidity, showHumidex)
 
             binding.legendApparent.visibility = if (showApparent) View.VISIBLE else View.GONE
             binding.legendWind.visibility = if (showWind) View.VISIBLE else View.GONE
             binding.legendHumidity.visibility = if (showHumidity) View.VISIBLE else View.GONE
+            binding.legendHumidex.visibility = if (showHumidex) View.VISIBLE else View.GONE
         }
     }
 

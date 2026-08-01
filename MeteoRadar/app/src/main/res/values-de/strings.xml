@@ -127,6 +127,8 @@
     <string name="pref_show_wind_summary">Maximale Windgeschwindigkeit in Diagrammen anzeigen</string>
     <string name="pref_show_humidity">Luftfeuchtigkeit</string>
     <string name="pref_show_humidity_summary">Maximale relative Luftfeuchtigkeit in Diagrammen anzeigen</string>
+    <string name="pref_show_humidex">Humidex</string>
+    <string name="pref_show_humidex_summary">Humidex-Index (gefühlte Hitze) in Entwicklungsdiagrammen anzeigen</string>
 
     <string name="monitor_title">Temperatur-Monitor</string>
     <string name="monitor_subtitle">Erkannte Änderungen in den Vorhersagen der nächsten Tage, basierend auf aufeinanderfolgenden Messungen von ECMWF, GFS, ICON, ICON-EU und ICON-D2 (COSMO).</string>
@@ -136,6 +138,18 @@
 
     <string name="radar_title">Radar</string>
     <string name="radar_opacity">Deckkraft</string>
+
+    <string name="humidex_title">Humidex</string>
+    <string name="humidex_summary_title">Humidex %s</string>
+    <string name="humidex_max">Humidex max</string>
+    <string name="humidex_level">Stufe</string>
+    <string name="humidex_avg_hum">Ø Feuchte</string>
+    <string name="humidex_col_hum">Feuchte</string>
+    <string name="humidex_lvl_0">Behaglich</string>
+    <string name="humidex_lvl_1">Unbehagen</string>
+    <string name="humidex_lvl_2">Starkes Unbehagen</string>
+    <string name="humidex_lvl_3">Gefährlich</string>
+    <string name="humidex_lvl_4">Hitzschlag</string>
 
     <string name="city_search_title">Stadt suchen</string>
     <string name="city_search_hint">Stadtname…</string>
