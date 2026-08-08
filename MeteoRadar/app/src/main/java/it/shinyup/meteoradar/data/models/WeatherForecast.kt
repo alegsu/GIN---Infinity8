@@ -44,7 +44,8 @@ data class DailyData(
     @SerializedName("apparent_temperature_max") val apparentTemperatureMax: List<Double>?,
     @SerializedName("apparent_temperature_min") val apparentTemperatureMin: List<Double>?,
     @SerializedName("windspeed_10m_max") val windSpeedMax: List<Double>?,
-    @SerializedName("relative_humidity_2m_max") val humidityMax: List<Int>?
+    @SerializedName("relative_humidity_2m_max") val humidityMax: List<Int>?,
+    @SerializedName("relative_humidity_2m_min") val humidityMin: List<Int>?
 )
 
 data class WindForecastResponse(

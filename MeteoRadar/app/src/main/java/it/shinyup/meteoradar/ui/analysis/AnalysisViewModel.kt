@@ -225,8 +225,11 @@ class AnalysisViewModel(application: Application) : AndroidViewModel(application
         val snapshots = grouped[date]?.sortedBy { it.fetchedAt } ?: emptyList()
 
         val points = snapshots.map { snap ->
-            val humidex = if (snap.humidityMax > 0)
+            val humidexMax = if (snap.humidityMax > 0)
                 HumidexUtil.fromHumidity(snap.maxTemp, snap.humidityMax.toDouble()).toFloat()
+            else 0f
+            val humidexMin = if (snap.humidityMin > 0)
+                HumidexUtil.fromHumidity(snap.minTemp, snap.humidityMin.toDouble()).toFloat()
             else 0f
             ForecastEvolutionChartView.DataPoint(
                 xLabel = formatFetchAge(snap.fetchedAt),
@@ -237,7 +240,9 @@ class AnalysisViewModel(application: Application) : AndroidViewModel(application
                 apparentMin = snap.apparentTempMin.toFloat(),
                 windSpeed = snap.windSpeedMax.toFloat(),
                 humidity = snap.humidityMax,
-                humidex = humidex
+                humidityMin = snap.humidityMin,
+                humidex = humidexMax,
+                humidexMin = humidexMin
             )
         }
 

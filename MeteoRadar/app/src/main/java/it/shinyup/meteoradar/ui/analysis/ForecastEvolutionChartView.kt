@@ -18,8 +18,10 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
         val apparentMax: Float = 0f,
         val apparentMin: Float = 0f,
         val windSpeed: Float = 0f,
-        val humidity: Int = 0,
-        val humidex: Float = 0f
+        val humidity: Int = 0,        // daily max relative humidity %
+        val humidityMin: Int = 0,     // daily min relative humidity %
+        val humidex: Float = 0f,      // daily max humidex
+        val humidexMin: Float = 0f    // daily min humidex
     )
     data class ScaleRange(val maxFloor: Float, val maxCeil: Float, val minFloor: Float, val minCeil: Float)
 
@@ -307,14 +309,31 @@ class ForecastEvolutionChartView @JvmOverloads constructor(
                 }
 
                 if (showHumidex && p.humidex > 0f) {
+                    val hxMaxY = if (showApparentTemp) yMax - dp(40f) else yMax - dp(24f)
                     humidexTextPaint.color = HumidexUtil.color(p.humidex.toDouble())
-                    val hxY = if (showApparentTemp) yMax - dp(40f) else yMax - dp(24f)
-                    canvas.drawText("H${p.humidex.toInt()}", x, hxY, humidexTextPaint)
+                    canvas.drawText("H${p.humidex.toInt()}", x, hxMaxY, humidexTextPaint)
+                    if (p.humidexMin > 0f) {
+                        val hxMinY = if (showApparentTemp) yMin + dp(46f) else yMin + dp(32f)
+                        humidexTextPaint.color = HumidexUtil.color(p.humidexMin.toDouble())
+                        canvas.drawText("H${p.humidexMin.toInt()}", x, hxMinY, humidexTextPaint)
+                    }
                 }
 
                 if (showHumidity && p.humidity > 0) {
-                    val humY = if (showApparentTemp) yMin + dp(46f) else yMin + dp(32f)
-                    canvas.drawText("${p.humidity}%", x, humY, humidityTextPaint)
+                    val hMaxY = when {
+                        showApparentTemp && showHumidex -> yMax - dp(56f)
+                        showApparentTemp || showHumidex -> yMax - dp(40f)
+                        else -> yMax - dp(24f)
+                    }
+                    canvas.drawText("${p.humidity}%", x, hMaxY, humidityTextPaint)
+                    if (p.humidityMin > 0) {
+                        val hMinY = when {
+                            showApparentTemp && showHumidex -> yMin + dp(60f)
+                            showApparentTemp || showHumidex -> yMin + dp(46f)
+                            else -> yMin + dp(32f)
+                        }
+                        canvas.drawText("${p.humidityMin}%", x, hMinY, humidityTextPaint)
+                    }
                 }
 
                 canvas.drawText(p.xLabel, x, height.toFloat() - dp(6f), labelPaint)
