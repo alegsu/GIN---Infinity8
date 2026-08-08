@@ -28,7 +28,7 @@ interface OpenMeteoApi {
             "temperature_2m_max,temperature_2m_min,weathercode," +
             "precipitation_sum,precipitation_probability_max," +
             "apparent_temperature_max,apparent_temperature_min," +
-            "windspeed_10m_max,relative_humidity_2m_max",
+            "windspeed_10m_max,relative_humidity_2m_max,relative_humidity_2m_min",
         @Query("timezone") timezone: String = "auto",
         @Query("forecast_days") forecastDays: Int = 7
     ): OpenMeteoResponse

@@ -17,5 +17,6 @@ data class ForecastSnapshot(
     val apparentTempMax: Double = 0.0,
     val apparentTempMin: Double = 0.0,
     val windSpeedMax: Double = 0.0,
-    val humidityMax: Int = 0
+    val humidityMax: Int = 0,
+    val humidityMin: Int = 0
 )

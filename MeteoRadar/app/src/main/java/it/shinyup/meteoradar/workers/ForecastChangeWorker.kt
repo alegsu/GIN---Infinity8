@@ -80,7 +80,8 @@ class ForecastChangeWorker(context: Context, params: WorkerParameters) : Corouti
                 apparentTempMax = daily.apparentTemperatureMax?.getOrElse(i) { 0.0 } ?: 0.0,
                 apparentTempMin = daily.apparentTemperatureMin?.getOrElse(i) { 0.0 } ?: 0.0,
                 windSpeedMax = daily.windSpeedMax?.getOrElse(i) { 0.0 } ?: 0.0,
-                humidityMax = daily.humidityMax?.getOrElse(i) { 0 } ?: 0
+                humidityMax = daily.humidityMax?.getOrElse(i) { 0 } ?: 0,
+                humidityMin = daily.humidityMin?.getOrElse(i) { 0 } ?: 0
             )
         }
 
@@ -149,7 +150,8 @@ class ForecastChangeWorker(context: Context, params: WorkerParameters) : Corouti
                     apparentTempMax = dailyFav.apparentTemperatureMax?.getOrElse(i) { 0.0 } ?: 0.0,
                     apparentTempMin = dailyFav.apparentTemperatureMin?.getOrElse(i) { 0.0 } ?: 0.0,
                     windSpeedMax = dailyFav.windSpeedMax?.getOrElse(i) { 0.0 } ?: 0.0,
-                    humidityMax = dailyFav.humidityMax?.getOrElse(i) { 0 } ?: 0
+                    humidityMax = dailyFav.humidityMax?.getOrElse(i) { 0 } ?: 0,
+                    humidityMin = dailyFav.humidityMin?.getOrElse(i) { 0 } ?: 0
                 )
             }
 

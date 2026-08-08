@@ -171,7 +171,7 @@
                 android:id="@+id/legendHumidity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="💧 Umidità %"
+                android:text="💧 Umidità max/min"
                 android:textColor="#4FC3F7"
                 android:textSize="12sp"
                 android:layout_marginEnd="12dp"
@@ -181,7 +181,7 @@
                 android:id="@+id/legendHumidex"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="H Humidex"
+                android:text="H Humidex max/min"
                 android:textColor="#FF7043"
                 android:textSize="12sp"
                 android:visibility="gone" />

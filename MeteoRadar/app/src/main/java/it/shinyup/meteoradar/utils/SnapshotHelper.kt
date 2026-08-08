@@ -33,7 +33,8 @@ object SnapshotHelper {
                 apparentTempMax = daily.apparentTemperatureMax?.getOrElse(i) { 0.0 } ?: 0.0,
                 apparentTempMin = daily.apparentTemperatureMin?.getOrElse(i) { 0.0 } ?: 0.0,
                 windSpeedMax = daily.windSpeedMax?.getOrElse(i) { 0.0 } ?: 0.0,
-                humidityMax = daily.humidityMax?.getOrElse(i) { 0 } ?: 0
+                humidityMax = daily.humidityMax?.getOrElse(i) { 0 } ?: 0,
+                humidityMin = daily.humidityMin?.getOrElse(i) { 0 } ?: 0
             )
         }
 
