@@ -48,6 +48,23 @@ object SnapshotHelper {
         if (snapshots.isNotEmpty()) dao.insertAll(snapshots)
     }
 
+    /**
+     * Delete history for "transit" locations — anything not in [keep]
+     * (favorites + current location) that hasn't been refreshed in
+     * [staleAfterMs] (default 36h), so places you merely passed through
+     * disappear once you leave.
+     */
+    suspend fun pruneStaleLocations(
+        context: Context,
+        keep: List<String>,
+        staleAfterMs: Long = 36 * 60 * 60 * 1000L
+    ) {
+        val protectedNames = keep.filter { it.isNotBlank() }.distinct()
+        if (protectedNames.isEmpty()) return
+        val dao = AppDatabase.getInstance(context).snapshotDao()
+        dao.pruneStaleExcept(protectedNames, System.currentTimeMillis() - staleAfterMs)
+    }
+
     /** Fetches the 7-day daily forecast for the location and stores a snapshot,
      *  skipping if one was stored within the last hour. */
     suspend fun fetchAndSave(

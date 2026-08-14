@@ -84,6 +84,14 @@ class AnalysisViewModel(application: Application) : AndroidViewModel(application
 
             saveFavoriteCitySnapshots()
 
+            // Drop history for places merely passed through (not favorite/current).
+            val keep = listOfNotNull(
+                city,
+                prefs.getString(Prefs.FAVORITE_1_NAME, null),
+                prefs.getString(Prefs.FAVORITE_2_NAME, null)
+            )
+            SnapshotHelper.pruneStaleLocations(getApplication(), keep)
+
             // Reload evolution now that fresh snapshots (incl. current location) exist
             loadEvolution()
 

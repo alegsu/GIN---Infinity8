@@ -16,6 +16,17 @@ interface ForecastSnapshotDao {
     @Query("DELETE FROM forecast_snapshots WHERE fetchedAt < :cutoff")
     suspend fun deleteOlderThan(cutoff: Long)
 
+    /**
+     * Remove "transit" locations: those not in [keep] (favorites + current)
+     * whose most recent snapshot is older than [minFetch] — i.e. places you
+     * passed through and left.
+     */
+    @Query(
+        "DELETE FROM forecast_snapshots WHERE locationName NOT IN (:keep) AND locationName IN " +
+        "(SELECT locationName FROM forecast_snapshots GROUP BY locationName HAVING MAX(fetchedAt) < :minFetch)"
+    )
+    suspend fun pruneStaleExcept(keep: List<String>, minFetch: Long)
+
     @Query("SELECT * FROM forecast_snapshots WHERE targetDate = :date ORDER BY fetchedAt ASC")
     suspend fun getSnapshotsForDate(date: String): List<ForecastSnapshot>
 
